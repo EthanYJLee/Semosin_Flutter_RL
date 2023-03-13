@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>156582900159-km3j79cnujes9luqojc8sp1vvhr89qp7.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.156582900159-km3j79cnujes9luqojc8sp1vvhr89qp7</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCyKgAiUNNB-9xTvMm1p7YEOjgAQz_7sY0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>156582900159</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.semosin</string>
+	<key>PROJECT_ID</key>
+	<string>saemosin</string>
+	<key>STORAGE_BUCKET</key>
+	<string>saemosin.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:156582900159:ios:32c2ff0231f01d2651f10a</string>
+</dict>
+</plist>
