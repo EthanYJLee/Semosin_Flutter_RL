@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class Signup extends StatefulWidget {
@@ -16,9 +18,28 @@ class _SignupState extends State<Signup> {
   late TextEditingController nameTextController;
   late TextEditingController nicknameTextController;
   late TextEditingController phoneTextController;
-  late TextEditingController address1TextController;
-  late TextEditingController address2TextController;
+  late TextEditingController addressTextController;
+  late TextEditingController addressDetailTextController;
   late TextEditingController postcodeTextController;
+
+  // --- Text Field Focus 관련
+  late FocusNode nameFocusNode;
+  late FocusNode nicknameFocusNode;
+  late FocusNode phoneFocusNode;
+  late FocusNode addressDetailFocusNode;
+  //
+  late String nameCheckText = "";
+  late String nicknameCheckText = "";
+  late String phoneCheckText = "";
+  late String addressDetailCheckText = "";
+  //
+  bool nameCheckColor = true;
+  bool nicknameCheckColor = true;
+  bool phoneCheckColor = true;
+  bool addressDetailCheckColor = true;
+  // --- Text Field Focus 관련 End
+
+  // late StreamController<String> controller = StreamController();
 
   @override
   void initState() {
@@ -27,9 +48,24 @@ class _SignupState extends State<Signup> {
     nameTextController = TextEditingController();
     nicknameTextController = TextEditingController();
     phoneTextController = TextEditingController();
-    address1TextController = TextEditingController();
-    address2TextController = TextEditingController();
+    addressTextController = TextEditingController();
+    addressDetailTextController = TextEditingController();
     postcodeTextController = TextEditingController();
+
+    // --- Text Field Focus 관련
+    //
+    nameCheckText = '';
+    nicknameCheckText = '';
+    phoneCheckText = '';
+    addressDetailCheckText = '';
+    //
+    nameFocusNode = FocusNode();
+    nicknameFocusNode = FocusNode();
+    phoneFocusNode = FocusNode();
+    addressDetailFocusNode = FocusNode();
+    //
+    focusListener();
+    // --- Text Field Focus 관련 End
   }
 
   @override
@@ -45,24 +81,27 @@ class _SignupState extends State<Signup> {
             child: Column(
               children: [
                 // email - tf (disabled)
-                textFormField(emailTextController, true,
+                textFormField(emailTextController, null, true,
                     TextInputType.emailAddress, 'email', null),
                 // name - tf
-                textFormField(nameTextController, false, TextInputType.text,
-                    'name', null),
+                textFormField(nameTextController, nameFocusNode, false,
+                    TextInputType.text, 'name', null),
+                checkText(nameCheckText, nameCheckColor),
                 // nickname - tf : nicknameDuplicationCheck()
-                textFormField(nicknameTextController, false, TextInputType.text,
-                    'nickname', null),
+                textFormField(nicknameTextController, nicknameFocusNode, false,
+                    TextInputType.text, 'nickname', null),
+                checkText(nicknameCheckText, nicknameCheckColor),
                 // sex - radio button
                 // phone - tf
-                textFormField(phoneTextController, false, TextInputType.phone,
-                    'phone', null),
+                textFormField(phoneTextController, phoneFocusNode, false,
+                    TextInputType.phone, 'phone', null),
+                checkText(phoneCheckText, phoneCheckColor),
                 // address1- tf(disabled) - api
                 Row(
                   children: [
                     SizedBox(
                       width: 285,
-                      child: textFormField(address1TextController, true,
+                      child: textFormField(addressTextController, null, true,
                           TextInputType.text, 'address', null),
                     ),
                     SizedBox(
@@ -87,11 +126,17 @@ class _SignupState extends State<Signup> {
                   ],
                 ),
                 // postcode - tf(disabled) - api
-                textFormField(postcodeTextController, true,
+                textFormField(postcodeTextController, null, true,
                     TextInputType.number, 'postcode', null),
-                // address2 - tf
-                textFormField(address2TextController, false, TextInputType.text,
-                    'address detail', null),
+                // address detail - tf
+                textFormField(
+                    addressDetailTextController,
+                    addressDetailFocusNode,
+                    false,
+                    TextInputType.text,
+                    'address detail',
+                    null),
+                checkText(addressDetailCheckText, addressDetailCheckColor),
                 // 회원가입 버튼 : insertUserInfo()
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -121,11 +166,17 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  textFormField(controller, readOnly, keyboardType, label, onChanged) {
+  /// 날짜 : 2023.03.14
+  /// 작성자 : 신오수
+  /// 만든이 : 신오수
+  /// 내용 : sign up에 사용되는 textField
+  textFormField(
+      controller, focusNode, readOnly, keyboardType, label, onChanged) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
         controller: controller,
+        focusNode: focusNode,
         readOnly: readOnly,
         keyboardType: keyboardType,
         decoration: InputDecoration(
@@ -146,6 +197,77 @@ class _SignupState extends State<Signup> {
         onChanged: (value) {
           onChanged;
         },
+      ),
+    );
+  }
+
+  /// 날짜 : 2023.03.14
+  /// 작성자 : 신오수
+  /// 만든이 : 신오수
+  /// 내용 : textField에서 포커스가 풀릴때 내용이 비어있는지 확인하는 기능
+  focusListener() {
+    nameFocusNode.addListener(() {
+      if (!nameFocusNode.hasFocus) {
+        if (nameTextController.text.trim().isEmpty) {
+          setState(() {
+            nameCheckText = '이름을 입력하세요.';
+            nameCheckColor = false;
+            // signUpButtonEnabled[0] = false;
+          });
+        }
+      }
+    });
+    nicknameFocusNode.addListener(() {
+      if (!nicknameFocusNode.hasFocus) {
+        if (nicknameTextController.text.trim().isEmpty) {
+          setState(() {
+            nicknameCheckText = '닉네임을 입력하세요.';
+            nicknameCheckColor = false;
+            // signUpButtonEnabled[1] = false;
+          });
+        }
+      }
+    });
+    phoneFocusNode.addListener(() {
+      if (!phoneFocusNode.hasFocus) {
+        if (phoneTextController.text.trim().isEmpty) {
+          setState(() {
+            phoneCheckText = '전화번호를 입력하세요.';
+            phoneCheckColor = false;
+            // signUpButtonEnabled[2] = false;
+          });
+        }
+      }
+    });
+    addressDetailFocusNode.addListener(() {
+      if (!addressDetailFocusNode.hasFocus) {
+        if (addressDetailTextController.text.trim().isEmpty) {
+          setState(() {
+            addressDetailCheckText = '상세주소를 입력하세요.';
+            addressDetailCheckColor = false;
+            // signUpButtonEnabled[2] = false;
+          });
+        }
+      }
+    });
+  }
+
+  /// 날짜 : 2023.03.14
+  /// 작성자 : 신오수
+  /// 만든이 : 신오수
+  /// 내용 : textField 아래 사용자가 입력 잘 했는지 보여주는 텍스트
+  checkText(checkText, checkColor) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15),
+      child: Row(
+        children: [
+          Text(
+            checkText,
+            style: TextStyle(
+                fontSize: 12,
+                color: nicknameCheckColor ? Colors.blue : Colors.red),
+          ),
+        ],
       ),
     );
   }
