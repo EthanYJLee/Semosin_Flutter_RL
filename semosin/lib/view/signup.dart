@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
-  /// 날짜 : 2023.03.13
-  /// 작성자 : 송명철, 신오수
-  /// 만든이 :
-  /// 내용 : sign up 화면
+  @override
+  State<Signup> createState() => _SignupState();
+}
+
+/// 날짜 : 2023.03.13
+/// 작성자 : 송명철, 신오수
+/// 만든이 :
+/// 내용 : sign up 화면
+class _SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
