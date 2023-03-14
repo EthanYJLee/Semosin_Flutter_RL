@@ -12,24 +12,140 @@ class Signup extends StatefulWidget {
 /// 만든이 :
 /// 내용 : sign up 화면
 class _SignupState extends State<Signup> {
+  late TextEditingController emailTextController;
+  late TextEditingController nameTextController;
+  late TextEditingController nicknameTextController;
+  late TextEditingController phoneTextController;
+  late TextEditingController address1TextController;
+  late TextEditingController address2TextController;
+  late TextEditingController postcodeTextController;
+
+  @override
+  void initState() {
+    super.initState();
+    emailTextController = TextEditingController();
+    nameTextController = TextEditingController();
+    nicknameTextController = TextEditingController();
+    phoneTextController = TextEditingController();
+    address1TextController = TextEditingController();
+    address2TextController = TextEditingController();
+    postcodeTextController = TextEditingController();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(), //
-      body: Center(
-        child: Column(
-          children: [
-            // email - tf (disabled)
-            // name - tf
-            // nickname - tf : nicknameDuplicationCheck()
-            // sex - radio button
-            // phone - tf
-            // address1- tf(disabled) - api
-            // postcode - tf(disabled) - api
-            // address2 - tf
-            // 회원가입 버튼 : insertUserInfo()
-          ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('회원가입'),
+        ), //
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                // email - tf (disabled)
+                textFormField(emailTextController, true,
+                    TextInputType.emailAddress, 'email', null),
+                // name - tf
+                textFormField(nameTextController, false, TextInputType.text,
+                    'name', null),
+                // nickname - tf : nicknameDuplicationCheck()
+                textFormField(nicknameTextController, false, TextInputType.text,
+                    'nickname', null),
+                // sex - radio button
+                // phone - tf
+                textFormField(phoneTextController, false, TextInputType.phone,
+                    'phone', null),
+                // address1- tf(disabled) - api
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 285,
+                      child: textFormField(address1TextController, true,
+                          TextInputType.text, 'address', null),
+                    ),
+                    SizedBox(
+                      width: 100,
+                      height: 58,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber),
+                        onPressed: () {
+                          addressAPI();
+                        },
+                        child: const Text(
+                          '주소검색',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // postcode - tf(disabled) - api
+                textFormField(postcodeTextController, true,
+                    TextInputType.number, 'postcode', null),
+                // address2 - tf
+                textFormField(address2TextController, false, TextInputType.text,
+                    'address detail', null),
+                // 회원가입 버튼 : insertUserInfo()
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 400,
+                    height: 58,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.amber),
+                      onPressed: () {},
+                      child: const Text(
+                        '회원가입',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  textFormField(controller, readOnly, keyboardType, label, onChanged) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: controller,
+        readOnly: readOnly,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          label: Text(label),
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              width: 1,
+              color: Colors.grey,
+            ),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              width: 1,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        onChanged: (value) {
+          onChanged;
+        },
       ),
     );
   }
