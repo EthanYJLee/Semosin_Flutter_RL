@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
   /// 날짜 :2023.03.13
   /// 작성자 : 권순형
   /// 만든이 : 이영진
+  /// 작성일 : 2023.03.15
   /// 내용 : firebase auth로 login 했는지 안했는지 체크 하기
   /// 상세 내용 : login 한적 있으면 Home , 없으면 Welcome
   @override
@@ -33,10 +34,10 @@ class MyApp extends StatelessWidget {
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, userSnapshot) {
-          if (userSnapshot.hasData) {
-            return const Home();
-          } else {
+          if (!userSnapshot.hasData) {
             return const Welcome();
+          } else {
+            return const ShoesTabBar();
           }
         },
       ),
