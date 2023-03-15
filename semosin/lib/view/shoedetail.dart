@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:semosin/model/selected_shoe.dart';
 import 'package:semosin/model/shoe.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
 
@@ -29,17 +30,33 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
     isLoading = true;
     // 해당 모델의 데이터 받아오는 거 함수 호출
-    // await selectModelNameData();
   }
 
   @override
   Widget build(BuildContext context) {
     // return isLoading ? loadingTrueWidget() : getDataWidget();
     return Scaffold(
-      body: Center(
-          child: Column(
-        children: [],
-      )),
+      body: SingleChildScrollView(
+        child: Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FutureBuilder(
+              future: _selectModelNameData(),
+              builder: (context, snapshot) {
+                return Container(
+                  height: 300,
+                  width: 200,
+                  child: AlertDialog(
+                    title: Text(snapshot.data!.brand),
+                    content: Text(snapshot.data!.price),
+                  ),
+                );
+              },
+            )
+          ],
+        )),
+      ),
     );
   }
 
@@ -66,29 +83,21 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// 작성자 : 권순형 , 이성연
   /// 만든이 :
   /// 내용 : shoe detail 정보 보여주기
-  Future<Shoe> selectModelNameData() async {
+  Future<SelectedShoe> _selectModelNameData() async {
     String _modelName = '그랜드 코트 미니마우스 EL 칠드런';
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('shoes')
         .where('model', isEqualTo: _modelName)
         .get();
 
-    Map<String, dynamic>? data =
+    Map<String, dynamic> data =
         querySnapshot.docs[0].data() as Map<String, dynamic>;
-    Shoe _shoe = Shoe(
-        images: data['images'][0],
-        model: data['model'],
-        brand: data['brand'],
-        price: data['price'],
-        material: data['material'],
-        height: data['height'],
-        colors: data['colors'],
-        sizes: data['sizes'],
-        maker: data['maker'],
-        country: data['country'],
-        method: data['method'],
-        initdate: data['initate']);
 
-    return _shoe;
+    SelectedShoe _selectedShoe = SelectedShoe.fromJson(data);
+    return _selectedShoe;
+  }
+
+  _showDialog() {
+    return AlertDialog();
   }
 }
