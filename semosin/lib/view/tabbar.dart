@@ -40,11 +40,6 @@ class _ShoesTabBarState extends State<ShoesTabBar>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'ShoesTabBar',
-        ),
-      ),
       body: TabBarView(
         controller: controller, // field 에 생성한 TabController 변수 사용
         children: const [
