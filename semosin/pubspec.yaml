@@ -42,6 +42,7 @@ dependencies:
   firebase_storage: ^11.0.15
   kpostal: ^0.5.1
   google_sign_in: ^6.0.2
+  shared_preferences: ^2.0.18
   
 
 dev_dependencies:

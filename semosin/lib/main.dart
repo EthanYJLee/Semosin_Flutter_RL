@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/firebase_options.dart';
 import 'package:semosin/view/signup.dart';
+import 'package:semosin/view/welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
