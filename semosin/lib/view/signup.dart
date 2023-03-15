@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:semosin/services/firebase_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:semosin/view_model/signup_view_model.dart';
 
 import '../widget/phone_formatter.dart';
 
 class Signup extends StatefulWidget {
-  const Signup({super.key});
+  const Signup({super.key, required this.signUpViewModel});
+
+  final SignUpViewModel? signUpViewModel;
 
   @override
   State<Signup> createState() => _SignupState();
@@ -59,6 +61,7 @@ class _SignupState extends State<Signup> {
   @override
   void initState() {
     super.initState();
+
     emailTextController = TextEditingController();
     nameTextController = TextEditingController();
     nicknameTextController = TextEditingController();
@@ -67,11 +70,10 @@ class _SignupState extends State<Signup> {
     addressDetailTextController = TextEditingController();
     postcodeTextController = TextEditingController();
 
-    // emailTextController에 이메일값 주기
-    _initSharedPreferences();
-
     sex = '';
-    emailTextController.text = phoneTextController.text = '010';
+
+    emailTextController.text = widget.signUpViewModel?.email ?? "";
+    phoneTextController.text = '010';
 
     // --- Text Field Focus 관련
     //
@@ -210,12 +212,6 @@ class _SignupState extends State<Signup> {
                 checkText(addressDetailCheckText, addressDetailCheckColor),
                 // 회원가입 버튼 : insertUserInfo()
                 signupButton(),
-                TextButton(
-                  onPressed: () {
-                    signUpSuccessDialog();
-                  },
-                  child: Text('test'),
-                ),
               ],
             ),
           ),
@@ -347,17 +343,6 @@ class _SignupState extends State<Signup> {
 
   // ---------------------------------------------------------------------------------------
   // function
-
-  /// 날짜 : 2023.03.15
-  /// 작성자 : 신오수
-  /// 만든이 : 신오수
-  /// 내용 : 로그인 할때 SharedPreference에 저장된 사용자 이메일 가져오는 기능
-  _initSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      emailTextController.text = (prefs.getString('email'))!; // ! = nullsafety
-    });
-  }
 
   /// 날짜 : 2023.03.14
   /// 작성자 : 신오수
@@ -497,7 +482,8 @@ class _SignupState extends State<Signup> {
   /// 수정사항 : 예외처리
   Future<void> insertUserInfo() async {
     await FireStore().insertIntoFirestore(
-        'email',
+        widget.signUpViewModel?.uid,
+        widget.signUpViewModel?.email,
         nameTextController.text.trim(),
         nicknameTextController.text.trim(),
         sex,

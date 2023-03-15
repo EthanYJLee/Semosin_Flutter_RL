@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:semosin/view/login.dart';
+import 'package:semosin/services/google_api.dart';
 import 'package:semosin/view/signup.dart';
+import 'package:semosin/view/tabbar.dart';
+import 'package:semosin/view_model/signup_view_model.dart';
 
 class Welcome extends StatefulWidget {
   const Welcome({super.key});
@@ -89,7 +91,6 @@ class _WelcomeState extends State<Welcome> {
                   onPressed: () {
                     // email, password
                     // _verifyAccount(_emailController.text.trim(), _passwordController.text.trim()){}
-                    
                   },
                   child: const Text('Log In'),
                 ),
@@ -112,6 +113,7 @@ class _WelcomeState extends State<Welcome> {
                           borderRadius: BorderRadius.circular(20))),
                   onPressed: () {
                     //-----
+                    googleLoginAPI();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -182,7 +184,10 @@ class _WelcomeState extends State<Welcome> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Signup(),
+                            builder: (context) => Signup(
+                              signUpViewModel:
+                                  SignUpViewModel(uid: "", email: ""),
+                            ),
                           ),
                         );
                       },
@@ -219,6 +224,9 @@ class _WelcomeState extends State<Welcome> {
   /// 내용 : 구글 로그인 API service class와 연결 하는 함수
   Future<void> googleLoginAPI() async {
     // service -> GoogleAPI 객체 생성 후 함수 불러오기
+    GoogleApi googleApi = GoogleApi();
+    var signUpViewModel = await googleApi.googleLogin(context);
+    await googleApi.userCheck(signUpViewModel, context);
   }
 
   /// Desc : 이메일과 비밀번호 입력받는 TextFormField

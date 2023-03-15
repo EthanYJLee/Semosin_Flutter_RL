@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FireStore {
   /// 날짜 :2023.03.14
@@ -22,13 +21,10 @@ class FireStore {
     }
   }
 
-  insertIntoFirestore(email, name, nickname, sex, phone, postcode, address,
+  insertIntoFirestore(uid, email, name, nickname, sex, phone, postcode, address,
       addressDetail) async {
     // FirebaseAuth.instance.authStateChanges().listen((User? user) {
     //   if (user != null) {
-    final pref = await SharedPreferences.getInstance();
-    String uid = pref.getString('uid')!;
-    String email = pref.getString('email')!;
     FirebaseFirestore.instance.collection('users').doc(email).set({
       'uid': uid,
       'email': email,

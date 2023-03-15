@@ -27,7 +27,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
     isLoading = true;
     // 해당 모델의 데이터 받아오는 거 함수 호출
-    await selectModelNameData();
+    // await selectModelNameData();
   }
 
   @override
@@ -58,7 +58,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// 작성자 : 권순형 , 이성연
   /// 만든이 :
   /// 내용 : shoe detail 정보 보여주기
-  Future<Shoe> selectModelNameData() {
-    //
-  }
+  // Future<Shoe> selectModelNameData() {
+  //   //
+  // }
 }

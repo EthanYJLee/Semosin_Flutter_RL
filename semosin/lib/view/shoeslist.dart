@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:semosin/main.dart';
+import 'package:semosin/services/google_api.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShoesList extends StatefulWidget {
   const ShoesList({super.key});
@@ -36,7 +39,10 @@ class _ShoesListState extends State<ShoesList> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          final pref = await SharedPreferences.getInstance();
+          await pref.clear();
+        },
         child: Icon(Icons.card_travel), // 임시로 넣어둠. 장바구니 이미지로 바꾸기
       ),
     );
@@ -49,7 +55,7 @@ class _ShoesListState extends State<ShoesList> {
   /// 작성자 : 권순형 , 이호식
   /// 만든이 :
   /// 내용 : 신발 데이터 select 위해 firestore와 연결되는 객체 생성 및 함수 호출
-  Future<List<ShoeViewModel>> selectShoesAndLike() async {
-    // firestore_select -> selectShoesAndLike() 함수 호출 해서 데이터 값 받기
-  }
+  // Future<List<ShoeViewModel>> selectShoesAndLike() async {
+  //   // firestore_select -> selectShoesAndLike() 함수 호출 해서 데이터 값 받기
+  // }
 }
