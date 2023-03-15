@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:semosin/services/firebase_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widget/phone_formatter.dart';
 
@@ -17,7 +17,7 @@ class Signup extends StatefulWidget {
 
 /// 날짜 : 2023.03.13
 /// 작성자 : 송명철, 신오수
-/// 만든이 :
+/// 만든이 : 신오수
 /// 내용 : sign up 화면
 class _SignupState extends State<Signup> {
   late TextEditingController emailTextController;
@@ -67,9 +67,11 @@ class _SignupState extends State<Signup> {
     addressDetailTextController = TextEditingController();
     postcodeTextController = TextEditingController();
 
-    sex = '';
+    // emailTextController에 이메일값 주기
+    _initSharedPreferences();
 
-    phoneTextController.text = '010';
+    sex = '';
+    emailTextController.text = phoneTextController.text = '010';
 
     // --- Text Field Focus 관련
     //
@@ -178,15 +180,8 @@ class _SignupState extends State<Signup> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.amber),
                         onPressed: () async {
-                          Kpostal result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => KpostalView(),
-                              ));
-                          setState(() {
-                            addressTextController.text = result.address;
-                            postcodeTextController.text = result.postCode;
-                          });
+                          takeAddress();
+                          // 네트워크 쓰는거 때문에 예외 처리 해야 될듯
                         },
                         child: const Text(
                           '주소검색',
@@ -215,6 +210,12 @@ class _SignupState extends State<Signup> {
                 checkText(addressDetailCheckText, addressDetailCheckColor),
                 // 회원가입 버튼 : insertUserInfo()
                 signupButton(),
+                TextButton(
+                  onPressed: () {
+                    signUpSuccessDialog();
+                  },
+                  child: Text('test'),
+                ),
               ],
             ),
           ),
@@ -222,6 +223,9 @@ class _SignupState extends State<Signup> {
       ),
     );
   }
+
+  // ---------------------------------------------------------------------------------------
+  // child widget
 
   /// 날짜 : 2023.03.14
   /// 작성자 : 신오수
@@ -278,6 +282,10 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  /// 날짜 : 2023.03.14
+  /// 작성자 : 신오수
+  /// 만든이 : 신오수
+  /// 내용 : 사용자 입력값이 모두 입력되면 signup 버튼을 활성화
   signupButton() {
     return nameCheckColor &
             nicknameCheckColor &
@@ -294,7 +302,14 @@ class _SignupState extends State<Signup> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
                 onPressed: () {
-                  // insertUserInfo();
+                  insertUserInfo();
+                  signUpSuccessDialog();
+                  Navigator.pop(context);
+                  // Navigator.push(context, MaterialPageRoute(
+                  //   builder: (context) {
+                  //     return ShoesTabBar();
+                  //   },
+                  // ));
                 },
                 child: const Text(
                   '회원가입',
@@ -328,6 +343,20 @@ class _SignupState extends State<Signup> {
               ),
             ),
           );
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // function
+
+  /// 날짜 : 2023.03.15
+  /// 작성자 : 신오수
+  /// 만든이 : 신오수
+  /// 내용 : 로그인 할때 SharedPreference에 저장된 사용자 이메일 가져오는 기능
+  _initSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      emailTextController.text = (prefs.getString('email'))!; // ! = nullsafety
+    });
   }
 
   /// 날짜 : 2023.03.14
@@ -421,6 +450,7 @@ class _SignupState extends State<Signup> {
   /// 작성자 : 송명철, 신오수
   /// 만든이 : 신오수
   /// 내용 : nickname 중복체크
+  /// 수정사항 : 예외처리
   Future<void> nicknameDuplicationCheck() async {
     bool isDuplicate = await FireStore()
         .duplicationCheck('nickname', nicknameTextController.text);
@@ -444,9 +474,27 @@ class _SignupState extends State<Signup> {
   }
 
   /// 날짜 : 2023.03.13
+  /// 작성자 : 신오수
+  /// 만든이 : 신오수
+  /// 내용 : Kpostal openAPI 이용하여 주소 정보 가져오기
+  /// 수정사항 : 예외 처리
+  takeAddress() async {
+    Kpostal result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => KpostalView(),
+        ));
+    setState(() {
+      addressTextController.text = result.address;
+      postcodeTextController.text = result.postCode;
+    });
+  }
+
+  /// 날짜 : 2023.03.13
   /// 작성자 : 송명철, 신오수
   /// 만든이 :
   /// 내용 : 입력정보 firestore에 저장
+  /// 수정사항 : 예외처리
   Future<void> insertUserInfo() async {
     await FireStore().insertIntoFirestore(
         'email',
@@ -464,6 +512,17 @@ class _SignupState extends State<Signup> {
   /// 만든이 :
   /// 내용 : 회원가입 성공 Dialog
   signUpSuccessDialog() {
-    //
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.blue,
+        content: Text(
+          '회원가입이 완료되었습니다.',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
 } // End
