@@ -1,26 +1,51 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-class ImageRepository {
-  final CollectionReference _collectionRef =
-      FirebaseFirestore.instance.collection('shoes');
+class Model {
+  final StreamController<List<String>> _imagesController =
+      StreamController<List<String>>.broadcast();
 
-  Future<List<String>> getImageURLs(
-      int limit, DocumentSnapshot? lastDocument) async {
-    Query query =
-        _collectionRef.orderBy('createdAt', descending: true).limit(limit);
-    if (lastDocument != null) {
-      query = query.startAfterDocument(lastDocument);
+  Stream<List<String>> get imagesStream => _imagesController.stream;
+
+  final int _limit = 5;
+  DocumentSnapshot? _lastDocument;
+  bool _isLoading = false;
+  List<String> _images = [];
+
+  Future<void> getDocuments() async {
+    if (_isLoading) return;
+    _isLoading = true;
+
+    QuerySnapshot querySnapshot;
+    if (_lastDocument == null) {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('shoes')
+          .limit(_limit)
+          .get();
+    } else {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('shoes')
+          .startAfterDocument(_lastDocument!)
+          .limit(_limit)
+          .get();
     }
-    final QuerySnapshot snapshot = await query.get();
-    final List<String> imageURLs = [];
-    for (final doc in snapshot.docs) {
+
+    final documents = querySnapshot.docs;
+    final List<String> urls = [];
+    for (final doc in documents) {
       final List<dynamic> images = doc['images'];
-      final String imagePath = images[0].substring(1); //첫번째 문자 .을 지우겠따.
-      final String URL =
+      final String imagePath = images[0].substring(1); // 첫번째 문자 .을 지움
+      final String url =
           await FirebaseStorage.instance.ref(imagePath).getDownloadURL();
-      imageURLs.add(URL);
+      urls.add(url);
     }
-    return imageURLs;
+
+    _images.addAll(urls);
+    _imagesController.add(_images);
+
+    _lastDocument = documents.last;
+    _isLoading = false;
   }
 }
