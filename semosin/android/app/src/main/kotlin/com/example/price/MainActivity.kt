@@ -1,4 +1,4 @@
-package com.example.semosin
+package com.example.price
 
 import io.flutter.embedding.android.FlutterActivity
 
