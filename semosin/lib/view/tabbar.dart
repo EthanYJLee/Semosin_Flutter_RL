@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:semosin/view/cart.dart';
+import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view/findshoes.dart';
 import 'package:semosin/view/mypage.dart';
 import 'package:semosin/view/shoeslist.dart';
@@ -44,7 +44,7 @@ class _ShoesTabBarState extends State<ShoesTabBar>
         controller: controller, // field 에 생성한 TabController 변수 사용
         children: const [
           ShoesList(),
-          Cart(),
+          CartView(),
           FindShoes(),
           MyPage(),
         ],

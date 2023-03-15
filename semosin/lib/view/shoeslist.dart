@@ -48,8 +48,9 @@ class _ShoesListState extends State<ShoesList> {
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이호식
   /// 만든이 :
-  /// 내용 : 신발 데이터 select 위해 firestore와 연결되는 객체 생성 및 함수 호출 -> selectShoes()
+  /// 내용 : 신발 데이터 select 위해 firestore와 연결되는 객체 생성 및 함수 호출
   Future<List<ShoeViewModel>> selectShoesAndLike() async {
-    // ...
+    // 신발 데이터 가져오는 함수 호출 : selectShoes()
+    // user의 관심 모델 가져오는 함수 호출 : selectLikes()
   }
 }

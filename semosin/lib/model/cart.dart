@@ -12,7 +12,7 @@ class Cart {
       required this.selectedSize,
       required this.amount});
 
-  Cart.fromJson(Map<String, Object> json)
+  Cart.fromJson(Map<String, dynamic> json)
       : checkStatus = int.parse(json['checkStatus'].toString()),
         cartNo = json['cartNo'].toString(),
         cartModelName = json['cartModelName'].toString(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:semosin/viewmodel/shoe_view_model.dart';
+import 'package:semosin/view_model/shoe_view_model.dart';
 
 class Shoe extends StatelessWidget {
   const Shoe({super.key, required this.shoeViewModel});
@@ -34,5 +34,13 @@ class Shoe extends StatelessWidget {
 
   // ------------------------------------------------------------------------------------------
   // backend
+  /// 날짜 :2023.03.15
+  /// 작성자 : 권순형
+  /// 만든이 :
+  /// 내용 : 이미지 관심 선택 시 user에 favorites에 추가하기
+  insertFavorite() {
+    // FireStoreInsert와 연결하여 함수 호출 : insertFavorite()
+  }
+
   // ------------------------------------------------------------------------------------------
 }
