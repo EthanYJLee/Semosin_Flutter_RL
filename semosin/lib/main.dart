@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/firebase_options.dart';
+import 'package:semosin/view/signup.dart';
 import 'package:semosin/view/welcome.dart';
 
 void main() async {
@@ -37,7 +38,9 @@ class MyApp extends StatelessWidget {
           if (!userSnapshot.hasData) {
             return const Welcome();
           } else {
-            return const ShoesTabBar();
+            // [임시] merge 후 TabBar와 연결할 것
+            // return const ShoesTabBar();
+            return const Signup();
           }
         },
       ),
