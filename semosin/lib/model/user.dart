@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:semosin/model/cart.dart';
+import 'package:semosin/model/order.dart';
 
 class User {
   final String name;
