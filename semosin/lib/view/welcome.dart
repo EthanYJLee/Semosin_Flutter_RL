@@ -29,7 +29,7 @@ class _WelcomeState extends State<Welcome> {
 
   /// 날짜 :2023.03.13
   /// 작성자 : 권순형
-  /// 만든이 :
+  /// 만든이 : 이영진
   /// 내용 : welcome 초기 화면
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,11 @@ class _WelcomeState extends State<Welcome> {
                       backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
-                  onPressed: () {},
+                  onPressed: () {
+                    // email, password
+                    // _verifyAccount(_emailController.text.trim(), _passwordController.text.trim()){}
+                    
+                  },
                   child: const Text('Log In'),
                 ),
               ),
@@ -219,7 +223,7 @@ class _WelcomeState extends State<Welcome> {
 
   /// Desc : 이메일과 비밀번호 입력받는 TextFormField
   /// Date : 2023.03.15
-  /// youngjin lee
+  /// Author : youngjin lee
   Widget _textFormField(controller, focusNode, readOnly, keyboardType,
       obscureText, label, inputFormatters, onChanged) {
     return Container(
@@ -256,7 +260,7 @@ class _WelcomeState extends State<Welcome> {
 
   /// Desc : '회원정보 기억하기' Check Box
   /// Date : 2023.03.15
-  /// youngjin lee
+  /// Author : youngjin lee
   Widget _rememberAccount() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
