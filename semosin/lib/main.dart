@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/firebase_options.dart';
-import 'package:semosin/view/tabbar.dart';
+import 'package:semosin/view/shoedetail.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ShoesTabBar(),
+      home: const ShoeDetail(modelName: "BW 아미"),
     );
   }
 }
