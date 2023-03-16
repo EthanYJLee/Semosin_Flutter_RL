@@ -59,7 +59,7 @@ class GoogleApi {
         var uid = result.user!.uid;
         var email = result.user!.email;
 
-        return SignUpViewModel(uid: uid, email: email);
+        return SignUpViewModel(uid: uid, email: email, pw: null);
       } catch (e) {
         if (e == 'accessToken != null || idToken != null') {
           Navigator.pop(context);
