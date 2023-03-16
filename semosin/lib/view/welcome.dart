@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:semosin/services/google_api.dart';
+import 'package:semosin/view/emailsignup.dart';
 import 'package:semosin/view/signup.dart';
 import 'package:semosin/view_model/signup_view_model.dart';
 
@@ -183,11 +184,7 @@ class _WelcomeState extends State<Welcome> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Signup(
-                              signUpViewModel:
-                                  SignUpViewModel(uid: "", email: ""),
-                            ),
-                          ),
+                              builder: (context) => const EmailSignUp()),
                         );
                       },
                       child: const Text(

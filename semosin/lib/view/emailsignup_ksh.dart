@@ -1,9 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:semosin/view/signup.dart';
-import 'package:semosin/view_model/signup_view_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EmailSignUp extends StatefulWidget {
   const EmailSignUp({super.key});
@@ -24,7 +21,8 @@ class _EmailSignUpState extends State<EmailSignUp> {
   late String emailText;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
-  late int _isEmailSent = 0;
+
+  late bool emailSendStatus = false;
 
   @override
   void initState() {
@@ -74,6 +72,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
   /// 날짜 : 2023.03.14
   /// 작성자 : 신오수
   /// 만든이 : 신오수
+  /// 수정이 : 권순형 , 이영진
   /// 내용 : sign up에 사용되는 textField
   /// 비고 : obscureText를 추가함(상혁)
   textFormField(controller, focusNode, readOnly, keyboardType, obscureText,
@@ -104,6 +103,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
         inputFormatters: inputFormatters,
         onChanged: (value) {
           onChanged;
+          setState(() {});
         },
       ),
     );
@@ -112,12 +112,13 @@ class _EmailSignUpState extends State<EmailSignUp> {
   /// 날짜 :2023.03.16
   /// 작성자 : 이상혁
   /// 만든이 : 이상혁
+  /// 수정이 : 권순형 , 이영진
   /// 내용 : emailSignup 함수 호출을 포함한 버튼
   /// 비고 :
   sendEmailButton() {
     return emailTextController.text.trim().isNotEmpty &
             pwTextController.text.trim().isNotEmpty &
-            checkpwTextController.text.trim().isNotEmpty
+            (checkpwTextController.text.trim() == pwTextController.text.trim())
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
@@ -125,11 +126,14 @@ class _EmailSignUpState extends State<EmailSignUp> {
               height: 58,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-                onPressed: () {
-                  emailSignup(
+                onPressed: () async {
+                  setState(() {
+                    emailSendStatus = true;
+                  });
+                  var result = await emailSignup(
                       email: emailTextController.text,
                       password: pwTextController.text);
-                  // insertUserInfo();
+                  showDialogAboutSend(result, context);
                 },
                 child: const Text(
                   'Send Auth E-mail',
@@ -148,15 +152,10 @@ class _EmailSignUpState extends State<EmailSignUp> {
               width: 180,
               height: 58,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-                onPressed: () {
-                  emailSignup(
-                      email: emailTextController.text,
-                      password: pwTextController.text);
-                  // insertUserInfo();
-                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                onPressed: () {},
                 child: const Text(
-                  'Send Auth E-mail again',
+                  'Send Auth E-mail',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
@@ -171,131 +170,153 @@ class _EmailSignUpState extends State<EmailSignUp> {
   /// 날짜 :2023.03.16
   /// 작성자 : 이상혁
   /// 만든이 : 이상혁
+  /// 수정이 : 권순형 , 이영진
   /// 내용 : 이메일 인증 확인후 회원등록페이지 호출을 포함한 버튼
   /// 비고 :
   nextButton() {
-    return //(!user!.emailVerified)
-        // emailTextController.text.trim().isNotEmpty
-        _emailVerificationCheck() == true
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: 180,
-                  height: 58,
-                  child: ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-                    onPressed: () {
-                      emailText = emailTextController.text;
-                      _setEmailSharedPreferences();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Signup(
-                              signUpViewModel: SignUpViewModel(
-                                  uid: '', email: emailTextController.text)),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Next Page',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+    return emailSendStatus
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: 180,
+              height: 58,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                onPressed: () {
+                  // 1. verify 됐는지 체크 하는 함수
+                  // 2. 됐으면 푸쉬
+                  // 3. 안됐으면 다이얼로그
+                },
+                child: const Text(
+                  'Next Page',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: 180,
-                  height: 58,
-                  child: ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                    onPressed: () {
-                      // emailText = emailTextController.text;
-                      // _setEmailSharedPreferences();
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => Signup(
-                      //         signUpViewModel: SignUpViewModel(
-                      //             uid: '', email: emailTextController.text)),
-                      //   ),
-                      // );
-                    },
-                    child: const Text(
-                      'Next Page',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+              ),
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: 180,
+              height: 58,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                onPressed: () {},
+                child: const Text(
+                  'Next Page',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              );
+              ),
+            ),
+          );
   }
 
   /// 날짜 :2023.03.16
   /// 작성자 : 이상혁
   /// 만든이 : 이상혁
-  /// 내용 : SharedPreferences에 email 값 입력하는 함수
-  /// 비고 :
-  _setEmailSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('email', emailText);
-  }
-
-  /// 날짜 :2023.03.16
-  /// 작성자 : 이상혁
-  /// 만든이 : 이상혁
+  /// 수정이 : 권순형
   /// 내용 : emailSignup을 위해서 FireAuth에 계정생성하고 인증메일을 요청하는 함수
-  /// 비고 :
-
+  /// 수정사항 : store에 있는 user인지 아닌지 체크 후 auth에 등록하고 회원가입 안한 회원인지 찾아서 그거 지우고 다시 이메일 보내는 작업
   Future<String> emailSignup(
       {required String email, required String password}) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      print(email);
-      print(password);
-      user = userCredential.user!;
+    // already in user
+    final checkUser = await FirebaseFirestore.instance
+        .collection("users")
+        .where("email", isEqualTo: email)
+        .where("password", isEqualTo: password)
+        .get();
 
-      if (user != null && !user!.emailVerified) {
-        await user!.sendEmailVerification();
-        print("sendEmail");
-        _isEmailSent = 1;
-      }
-      return "success";
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        print("The account already exists for that email");
-        _isEmailSent = 0;
+    if (checkUser.docs.isEmpty) {
+      try {
+        final credential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
 
-        return "already";
-      } else {
-        print("fail");
-        _isEmailSent = 0;
+        user = credential.user!;
+
+        if (!user!.emailVerified) {
+          await user!.sendEmailVerification();
+          return "success";
+        } else {
+          await user!.delete();
+          final credential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email, password: password);
+
+          user = credential.user!;
+
+          await user!.sendEmailVerification();
+          return "success";
+        }
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email, password: password);
+          user = userCredential.user!;
+          await user!.sendEmailVerification();
+          return 'success';
+        }
         return "fail";
       }
+    } else {
+      return "already";
     }
   }
 
-  Future<bool> _emailVerificationCheck() async {
-    var _credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailTextController.text, password: pwTextController.text);
-    var _user = _credential.user!;
-    bool _result = false;
-    if (_user != null) {
-      if (_user.emailVerified) {
-        _result = true;
-      }
+  /// 날짜 :2023.03.16
+  /// 작성자 : 권순형
+  /// 만든이 : 권순형
+  /// 내용 : email 전송 버튼 눌렀을 때 뜰 다이얼로그
+  /// 비고 :
+  showDialogAboutSend(String result, BuildContext context) {
+    var title = "";
+    var content = "";
+
+    if (result == "success") {
+      title = "전송 성공";
+      content = "이메일 전송하였습니다.\n확인해서 인증해주세요.";
+    } else if (result == "already") {
+      title = "전송 실패";
+      content = "이미 회원가입이 되어 있는 이메일 입니다.";
+    } else {
+      title = "전송 실패";
+      content = "이메일 전송에 실패하였습니다.\n다시 시도해주세요.";
     }
-    return _result;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('닫기'),
+            ),
+          ],
+        );
+      },
+    );
   }
+
+  // ----------------------------------------------------------------------
+  /// 날짜 :2023.03.16
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 삭제이 : 권순형
+  /// 내용 : SharedPreferences에 email 값 입력하는 함수
+  /// 삭제 이유 : sharedPreference는 로그인 할 때만
+  // _setEmailSharedPreferences() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('email', emailText);
+  // }
+  // ----------------------------------------------------------------------
 }
