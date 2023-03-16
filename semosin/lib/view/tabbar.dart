@@ -65,8 +65,8 @@ class _ShoesTabBarState extends State<ShoesTabBar>
         children: const [
           ShoesList(),
           CartView(),
-          FindShoes(),
-          // ImageUpload(),
+          // FindShoes(),
+          ImageUpload(),
           MyPage(),
         ],
       ),
