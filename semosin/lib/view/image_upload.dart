@@ -51,6 +51,21 @@ class _ImageUploadState extends State<ImageUpload> {
             onPressed: () {
               if (_imageFile == null) {
                 // 선택한 사진이 없는 경우
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Container(
+                      height: 50,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            '이미지를 선택해주세요',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      )),
+                  dismissDirection: DismissDirection.up,
+                  duration: const Duration(milliseconds: 500),
+                ));
               } else {
                 // 선택한 사진이 있는 경우
                 // _saveSharedPreferences();
@@ -60,7 +75,9 @@ class _ImageUploadState extends State<ImageUpload> {
                         builder: (context) => Result(image: _imageFile!)));
               }
             },
-            style: ElevatedButton.styleFrom(),
+            style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    _imageFile != null ? Colors.blue : Colors.grey),
             child: const Text(
               '모델 예측하기',
             ),
