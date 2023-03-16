@@ -30,3 +30,6 @@ hs_err_pid*
 *.jpeg
 *.png
 *.gif
+*.h5
+*.tflite
+*.json

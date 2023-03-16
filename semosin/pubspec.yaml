@@ -40,6 +40,12 @@ dependencies:
   cloud_firestore: ^4.4.4
   firebase_auth: ^4.2.10
   firebase_storage: ^11.0.15
+  kpostal: ^0.5.1
+  google_sign_in: ^6.0.2
+  shared_preferences: ^2.0.18
+  # 이미지 업로드
+  image_picker: ^0.8.7
+  
 
 dev_dependencies:
   flutter_test:
@@ -64,8 +70,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
