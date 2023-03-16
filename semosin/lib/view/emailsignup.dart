@@ -23,6 +23,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
   late String emailText;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
+  late int resend = 0;
 
   late bool emailSendStatus = false;
 
@@ -120,7 +121,9 @@ class _EmailSignUpState extends State<EmailSignUp> {
   sendEmailButton() {
     return emailTextController.text.trim().isNotEmpty &
             pwTextController.text.trim().isNotEmpty &
-            (checkpwTextController.text.trim() == pwTextController.text.trim())
+            (checkpwTextController.text.trim() ==
+                pwTextController.text.trim()) &
+            (resend == 0)
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
@@ -129,13 +132,19 @@ class _EmailSignUpState extends State<EmailSignUp> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
                 onPressed: () async {
-                  setState(() {
-                    emailSendStatus = true;
-                  });
                   var result = await emailSignup(
                       email: emailTextController.text,
                       password: pwTextController.text);
                   showDialogAboutSend(result, context);
+                  if (result == "success") {
+                    setState(() {
+                      emailSendStatus = true;
+                      resend = 60;
+                      // 재전송 timer 시작
+                      Future.delayed(const Duration(seconds: 60))
+                          .then((_) => resend = 0);
+                    });
+                  }
                 },
                 child: const Text(
                   'Send Auth E-mail',
