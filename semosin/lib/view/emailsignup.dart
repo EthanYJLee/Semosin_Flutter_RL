@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/view/signup.dart';
+import 'package:semosin/view_model/signup_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EmailSignUp extends StatefulWidget {
@@ -23,6 +24,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
   late String emailText;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
+  late int _isEmailSent = 0;
 
   @override
   void initState() {
@@ -173,7 +175,8 @@ class _EmailSignUpState extends State<EmailSignUp> {
   /// 비고 :
   nextButton() {
     return //(!user!.emailVerified)
-        emailTextController.text.trim().isNotEmpty
+        // emailTextController.text.trim().isNotEmpty
+        _emailVerificationCheck() == true
             ? Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
@@ -188,7 +191,9 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Signup(),
+                          builder: (context) => Signup(
+                              signUpViewModel: SignUpViewModel(
+                                  uid: '', email: emailTextController.text)),
                         ),
                       );
                     },
@@ -212,14 +217,16 @@ class _EmailSignUpState extends State<EmailSignUp> {
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.grey),
                     onPressed: () {
-                      emailText = emailTextController.text;
-                      _setEmailSharedPreferences();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Signup(),
-                        ),
-                      );
+                      // emailText = emailTextController.text;
+                      // _setEmailSharedPreferences();
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => Signup(
+                      //         signUpViewModel: SignUpViewModel(
+                      //             uid: '', email: emailTextController.text)),
+                      //   ),
+                      // );
                     },
                     child: const Text(
                       'Next Page',
@@ -262,17 +269,33 @@ class _EmailSignUpState extends State<EmailSignUp> {
       if (user != null && !user!.emailVerified) {
         await user!.sendEmailVerification();
         print("sendEmail");
+        _isEmailSent = 1;
       }
       return "success";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         print("The account already exists for that email");
+        _isEmailSent = 0;
 
         return "already";
       } else {
         print("fail");
+        _isEmailSent = 0;
         return "fail";
       }
     }
+  }
+
+  Future<bool> _emailVerificationCheck() async {
+    var _credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailTextController.text, password: pwTextController.text);
+    var _user = _credential.user!;
+    bool _result = false;
+    if (_user != null) {
+      if (_user.emailVerified) {
+        _result = true;
+      }
+    }
+    return _result;
   }
 }
