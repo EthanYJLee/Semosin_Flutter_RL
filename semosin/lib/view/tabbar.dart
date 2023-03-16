@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view/findshoes.dart';
+import 'package:semosin/view/image_upload.dart';
 import 'package:semosin/view/mypage.dart';
 import 'package:semosin/view/shoeslist.dart';
 
@@ -46,6 +47,7 @@ class _ShoesTabBarState extends State<ShoesTabBar>
           ShoesList(),
           CartView(),
           FindShoes(),
+          // ImageUpload(),
           MyPage(),
         ],
       ),
