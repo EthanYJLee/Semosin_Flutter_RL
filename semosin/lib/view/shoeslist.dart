@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:semosin/main.dart';
-import 'package:semosin/services/google_api.dart';
-import 'package:semosin/view_model/shoe_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShoesList extends StatefulWidget {
@@ -39,11 +37,8 @@ class _ShoesListState extends State<ShoesList> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final pref = await SharedPreferences.getInstance();
-          await pref.clear();
-        },
-        child: Icon(Icons.card_travel), // 임시로 넣어둠. 장바구니 이미지로 바꾸기
+        onPressed: () {},
+        child: const Icon(Icons.card_travel), // 임시로 넣어둠. 장바구니 이미지로 바꾸기
       ),
     );
   }

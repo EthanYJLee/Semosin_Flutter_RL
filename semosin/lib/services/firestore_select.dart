@@ -1,8 +1,6 @@
-// import 'package:semosin/model/user.dart';
-// import 'package:semosin/view_model/shoe_view_model.dart';
-// import 'package:semosin/widget/shoe.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// class FireStoreSelect {
+class FireStoreSelect {
 //   /// 날짜 :2023.03.15
 //   /// 작성자 : 권순형 , 이호식
 //   /// 만든이 :
@@ -29,4 +27,14 @@
 //     // 가져온 신발 데이터들 에서 user가 관심 모델인 것을 isLike를 true 아니면 false
 //     // 로 해서 새로운 ShoeViewModel로 만들어서 이걸 리턴해 주면 된다.
 //   }
-// }
+
+  Future<bool> isRight(String email, String password) async {
+    var doc = await FirebaseFirestore.instance
+        .collection("users")
+        .where("email", isEqualTo: email)
+        .where("password", isEqualTo: password)
+        .get();
+
+    return doc.docs.isNotEmpty;
+  }
+}

@@ -7,11 +7,6 @@ import 'package:semosin/view_model/signup_view_model.dart';
 class EmailSignUp extends StatefulWidget {
   const EmailSignUp({super.key});
 
-  /// 날짜 :2023.03.15
-  /// 작성자 : 이상혁
-  /// 만든이 : 이상혁
-  /// 내용 :  Email Sign up 화면
-
   @override
   State<EmailSignUp> createState() => _EmailSignUpState();
 }
@@ -21,7 +16,6 @@ class _EmailSignUpState extends State<EmailSignUp> {
   late TextEditingController pwTextController;
   late TextEditingController checkpwTextController;
   late String emailText;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   late int resend = 0;
 
@@ -36,6 +30,12 @@ class _EmailSignUpState extends State<EmailSignUp> {
     emailText = "";
   }
 
+  //------------------------------------------------------------------------------------
+  // front
+  /// 날짜 :2023.03.15
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 내용 :  Email Sign up 화면
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,9 +69,8 @@ class _EmailSignUpState extends State<EmailSignUp> {
       ),
     );
   }
-//--------Function --------------------------------------
-  // child widget
 
+  // child widget
   /// 날짜 : 2023.03.14
   /// 작성자 : 신오수
   /// 만든이 : 신오수
@@ -240,57 +239,10 @@ class _EmailSignUpState extends State<EmailSignUp> {
             ),
           );
   }
+  //------------------------------------------------------------------------------------
 
-  /// 날짜 :2023.03.16
-  /// 작성자 : 이상혁
-  /// 만든이 : 이상혁
-  /// 수정이 : 권순형
-  /// 내용 : emailSignup을 위해서 FireAuth에 계정생성하고 인증메일을 요청하는 함수
-  /// 수정사항 : store에 있는 user인지 아닌지 체크 후 auth에 등록하고 회원가입 안한 회원인지 찾아서 그거 지우고 다시 이메일 보내는 작업
-  Future<String> emailSignup(
-      {required String email, required String password}) async {
-    // already in user
-    final checkUser = await FirebaseFirestore.instance
-        .collection("users")
-        .where("email", isEqualTo: email)
-        .where("password", isEqualTo: password)
-        .get();
-
-    if (checkUser.docs.isEmpty) {
-      try {
-        final credential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
-
-        user = credential.user!;
-
-        if (!user!.emailVerified) {
-          await user!.sendEmailVerification();
-          return "success";
-        } else {
-          await user!.delete();
-          final credential = await FirebaseAuth.instance
-              .createUserWithEmailAndPassword(email: email, password: password);
-
-          user = credential.user!;
-
-          await user!.sendEmailVerification();
-          return "success";
-        }
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          UserCredential userCredential = await FirebaseAuth.instance
-              .createUserWithEmailAndPassword(email: email, password: password);
-          user = userCredential.user!;
-          await user!.sendEmailVerification();
-          return 'success';
-        }
-        return "fail";
-      }
-    } else {
-      return "already";
-    }
-  }
-
+  //------------------------------------------------------------------------------------
+  // dialog
   /// 날짜 :2023.03.16
   /// 작성자 : 권순형
   /// 만든이 : 권순형
@@ -352,6 +304,59 @@ class _EmailSignUpState extends State<EmailSignUp> {
       },
     );
   }
+  //------------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------------
+  // backend
+  /// 날짜 :2023.03.16
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 수정이 : 권순형
+  /// 내용 : emailSignup을 위해서 FireAuth에 계정생성하고 인증메일을 요청하는 함수
+  /// 수정사항 : store에 있는 user인지 아닌지 체크 후 auth에 등록하고 회원가입 안한 회원인지 찾아서 그거 지우고 다시 이메일 보내는 작업
+  Future<String> emailSignup(
+      {required String email, required String password}) async {
+    // already in user
+    final checkUser = await FirebaseFirestore.instance
+        .collection("users")
+        .where("email", isEqualTo: email)
+        .where("password", isEqualTo: password)
+        .get();
+
+    if (checkUser.docs.isEmpty) {
+      try {
+        final credential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+
+        user = credential.user!;
+
+        if (!user!.emailVerified) {
+          await user!.sendEmailVerification();
+          return "success";
+        } else {
+          await user!.delete();
+          final credential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email, password: password);
+
+          user = credential.user!;
+
+          await user!.sendEmailVerification();
+          return "success";
+        }
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email, password: password);
+          user = userCredential.user!;
+          await user!.sendEmailVerification();
+          return 'success';
+        }
+        return "fail";
+      }
+    } else {
+      return "already";
+    }
+  }
 
   /// 날짜 :2023.03.16
   /// 작성자 : 이영진
@@ -372,7 +377,6 @@ class _EmailSignUpState extends State<EmailSignUp> {
     return null;
   }
 
-  // ----------------------------------------------------------------------
   /// 날짜 :2023.03.16
   /// 작성자 : 이상혁
   /// 만든이 : 이상혁
@@ -383,5 +387,5 @@ class _EmailSignUpState extends State<EmailSignUp> {
   //   final prefs = await SharedPreferences.getInstance();
   //   await prefs.setString('email', emailText);
   // }
-  // ----------------------------------------------------------------------
+  //------------------------------------------------------------------------------------
 }

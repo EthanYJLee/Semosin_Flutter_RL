@@ -21,13 +21,14 @@ class FireStore {
     }
   }
 
-  insertIntoFirestore(uid, email, name, nickname, sex, phone, postcode, address,
-      addressDetail) async {
+  insertIntoFirestore(uid, email, pw, name, nickname, sex, phone, postcode,
+      address, addressDetail) async {
     // FirebaseAuth.instance.authStateChanges().listen((User? user) {
     //   if (user != null) {
     FirebaseFirestore.instance.collection('users').doc(email).set({
       'uid': uid,
       'email': email,
+      'password': pw,
       'name': name,
       'nickname': nickname,
       'sex': sex,

@@ -48,12 +48,25 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  /// 날짜 :2023.03.16
+  /// 작성자 : 권순형
+  /// 만든이 : 권순형
+  /// 내용 : autho Login 인지 아닌지 찾기
   Stream<bool> isDataInSharedPreferece() async* {
     final pref = await SharedPreferences.getInstance();
-    if (pref.getString('uid') == null || pref.getString('uid')!.isEmpty) {
-      yield false;
-    } else {
+    final email = pref.getString('saemosinemail');
+    final password = pref.getString("saemosinpassword");
+    final autoLogin = pref.getBool("saemosin-auto-login-status");
+
+    if (email != null &&
+        email.isNotEmpty &&
+        password != null &&
+        password.isNotEmpty &&
+        autoLogin != null &&
+        autoLogin == true) {
       yield true;
+    } else {
+      yield false;
     }
   }
 }

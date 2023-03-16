@@ -484,6 +484,7 @@ class _SignupState extends State<Signup> {
     await FireStore().insertIntoFirestore(
         widget.signUpViewModel?.uid,
         widget.signUpViewModel?.email,
+        widget.signUpViewModel?.pw,
         nameTextController.text.trim(),
         nicknameTextController.text.trim(),
         sex,
