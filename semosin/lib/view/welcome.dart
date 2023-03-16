@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:semosin/services/google_api.dart';
 import 'package:semosin/view/signup.dart';
-import 'package:semosin/view/tabbar.dart';
 import 'package:semosin/view_model/signup_view_model.dart';
 
 class Welcome extends StatefulWidget {
