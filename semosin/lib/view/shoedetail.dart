@@ -1,8 +1,16 @@
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/model/selected_shoe.dart';
 import 'package:semosin/model/shoe.dart';
+import 'package:semosin/services/firebase_firestore.dart';
+import 'package:semosin/services/shoes_info.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ShoeDetail extends StatefulWidget {
   const ShoeDetail({super.key, required this.modelName});
@@ -22,6 +30,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// 만든이 :
   /// 내용 : shoe detail 정보 보여주기
   late bool isLoading;
+  ShoesInfo shoesInfo = ShoesInfo();
 
   @override
   void initState() {
@@ -37,22 +46,31 @@ class _ShoeDetailState extends State<ShoeDetail> {
   Widget build(BuildContext context) {
     // return isLoading ? loadingTrueWidget() : getDataWidget();
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Center(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FutureBuilder(
-              future: _selectModelNameData(),
+              future: shoesInfo.selectModelNameData(widget.modelName),
               builder: (context, snapshot) {
-                return Container(
-                  height: 300,
-                  width: 200,
-                  child: AlertDialog(
-                    title: Text(snapshot.data!.brand),
-                    content: Text(snapshot.data!.price),
-                  ),
-                );
+                if (snapshot.hasData) {
+                  return Container(
+                    height: 300,
+                    width: 200,
+                    child: AlertDialog(
+                      title: Text(snapshot.data!.brand),
+                      content: Text(snapshot.data!.price),
+                    ),
+                  );
+                } else {
+                  return Container(
+                    height: 100,
+                    width: 100,
+                    child: CircularProgressIndicator(),
+                  );
+                }
               },
             )
           ],
@@ -84,22 +102,4 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// 작성자 : 권순형 , 이성연
   /// 만든이 :
   /// 내용 : shoe detail 정보 보여주기
-
-  Future<SelectedShoe> _selectModelNameData() async {
-    String _modelName = '그랜드 코트 미니마우스 EL 칠드런';
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('shoes')
-        .where('model', isEqualTo: _modelName)
-        .get();
-
-    Map<String, dynamic> data =
-        querySnapshot.docs[0].data() as Map<String, dynamic>;
-
-    SelectedShoe _selectedShoe = SelectedShoe.fromJson(data);
-    return _selectedShoe;
-  }
-
-  _showDialog() {
-    return AlertDialog();
-  }
 }
