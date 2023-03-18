@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:semosin/view/result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
@@ -15,7 +17,7 @@ class ImageUpload extends StatefulWidget {
   State<ImageUpload> createState() => _ImageUploadState();
 }
 
-/// Desc : 콜백함수 원형 선언 (_showAccessDialog에서 300,300으로 설정, 변경 계획 없음)
+/// Desc : 콜백함수 원형 선언 (_showAccessDialog에서 300,300으로 설정)
 /// Date : 2023.03.16
 /// Author : youngjin
 typedef ImageSizeCallback = void Function(
@@ -172,6 +174,7 @@ class _ImageUploadState extends State<ImageUpload> {
           );
         });
   }
+
 // ------------------------------------------------------------------ FUNCTIONS
 
 // --------------------------------- WIDGETS ---------------------------------
@@ -253,5 +256,6 @@ class _ImageUploadState extends State<ImageUpload> {
   //   final pref = await SharedPreferences.getInstance();
   //   pref.setString('imagePath', _imagePath);
   // }
+
 // ------------------------------------------------------------------ WIDGETS
 }
