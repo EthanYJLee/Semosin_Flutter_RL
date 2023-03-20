@@ -6,12 +6,14 @@ class PopupCard extends StatelessWidget {
     Key? key,
     required this.maker,
     required this.country,
+    required this.color,
     required this.material,
     required this.height,
   }) : super(key: key);
 
   final String maker;
   final String country;
+  final String color;
   final String material;
   final String height;
 
@@ -53,6 +55,11 @@ class PopupCard extends StatelessWidget {
                           thickness: 0.2,
                         ),
                         Text('제조국가: $country'),
+                        const Divider(
+                          color: Colors.black,
+                          thickness: 0.2,
+                        ),
+                        Text('색상코드: $color'),
                         const Divider(
                           color: Colors.black,
                           thickness: 0.2,

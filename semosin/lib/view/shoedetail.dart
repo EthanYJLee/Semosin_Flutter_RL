@@ -30,10 +30,13 @@ class _ShoeDetailState extends State<ShoeDetail> {
   // Page Controller
   late PageController pageController =
       PageController(initialPage: selectedImageIndex);
-
   // 선택된 사이즈
   String? selectedSize;
   List<int> sizeList = [];
+  // 선택한 사이즈의 남은 수량
+  String? availableQuantity;
+  // 선택한 상품 수량
+  int productCount = 1;
   // 선택된 신발색상
   Color selectedColor = Colors.black;
 
@@ -110,18 +113,41 @@ class _ShoeDetailState extends State<ShoeDetail> {
           child: Column(
             children: [
               const SizedBox(
-                height: 30, // safearea를 사용하면 시간 및 배터리가 보이지 않음
+                height: 20, // safearea를 사용하면 시간 및 배터리가 보이지 않음
               ),
 
               // 제품명 타이틀 -----------------------------------------------------
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: Text(
-                  widget.modelName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 28,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.modelName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 28,
+                      ),
+                    ),
+                    // 관심상품 등록 및 해제  --------------------------------------------
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            bookmark = !bookmark;
+                          });
+                          print(bookmark);
+                        },
+                        icon: Icon(
+                          bookmark
+                              ? Icons.bookmark_outlined
+                              : Icons.bookmark_outline,
+                          size: 44,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -130,7 +156,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 padding: const EdgeInsets.all(10.0),
                 child: SizedBox(
                     width: 500,
-                    height: 550,
+                    height: 600,
                     child: FutureBuilder(
                       future: shoesInfo.selectModelNameData(widget.modelName),
                       builder: (context, snapshot) {
@@ -144,8 +170,10 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                 width: 200,
                                 child: imagePathViewModel.imagePath.isEmpty
                                     ? const Padding(
-                                        padding: EdgeInsets.all(50),
-                                        child: CircularProgressIndicator(),
+                                        padding: EdgeInsets.all(70),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.black,
+                                        ),
                                       )
                                     // 상품 Image Page View ---------------------------
                                     : PageView.builder(
@@ -219,116 +247,127 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                 thickness: 2,
                               ),
                               // 상품명 및 가격 -----------------------------------------------------
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 20.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          snapshot.data!.brand,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
+                              IntrinsicHeight(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 20.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            snapshot.data!.brand,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                            ),
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          height: 3,
-                                        ),
-                                        Text(
-                                          '${snapshot.data!.price}원',
-                                          style: const TextStyle(
-                                            fontSize: 20,
+                                          const SizedBox(
+                                            height: 3,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 30,
-                                  ),
-                                  // 사이즈 선택---------------------------------------------------
-                                  Container(
-                                    width: 150,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        selectedSize == null
-                                            ? const Text("")
-                                            : const Text(
-                                                "Size:",
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                        TextButton(
-                                          onPressed: () {
-                                            showSizeBottomSheet(
-                                                context, snapshot.data!.sizes!);
-                                          },
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                selectedSize ?? "사이즈 선택",
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 20,
-                                                ),
-                                              ),
-                                            ],
+                                          Text(
+                                            '${snapshot.data!.price}원',
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // 관심상품 등록 및 해제  --------------------------------------------
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 20),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          bookmark = !bookmark;
-                                        });
-                                        print(bookmark);
-                                      },
-                                      icon: Icon(
-                                        bookmark
-                                            ? Icons.bookmark_outlined
-                                            : Icons.bookmark_outline,
-                                        size: 44,
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
+
+                                    const VerticalDivider(
+                                      width: 100,
+                                      thickness: 2,
+                                      indent: 0,
+                                      endIndent: 0,
+                                    ),
+
+                                    /// Desc : 상품정보제공 고시 Dialog (제조사, 제조국, 소재, 굽높이)
+                                    /// Date : 2023.03.20
+                                    /// Author : youngjin
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            CardDialog(builder: (context) {
+                                          return PopupCard(
+                                            maker: snapshot.data!.maker,
+                                            country: snapshot.data!.country,
+                                            color: snapshot.data!.colors![0],
+                                            material: snapshot.data!.material,
+                                            height: snapshot.data!.height,
+                                          );
+                                        }));
+                                      },
+                                      child: const Text(
+                                        '상품정보 보기',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               const Divider(
                                 thickness: 2,
                               ),
-
-                              /// Desc : 상품정보제공 고시 Dialog (제조사, 제조국, 소재, 굽높이)
-                              /// Date : 2023.03.20
-                              /// Author : youngjin
-                              InkWell(
-                                onTap: () {
-                                  Navigator.of(context)
-                                      .push(CardDialog(builder: (context) {
-                                    return PopupCard(
-                                      maker: snapshot.data!.maker,
-                                      country: snapshot.data!.country,
-                                      material: snapshot.data!.material,
-                                      height: snapshot.data!.height,
-                                    );
-                                  }));
-                                },
-                                child: const Text(
-                                  '상품정보 보기',
-                                  style: TextStyle(fontSize: 20),
+                              // 사이즈 선택---------------------------------------------------
+                              Container(
+                                height: 50,
+                                width: 350,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IntrinsicHeight(
+                                      child: Row(
+                                        children: [
+                                          const SizedBox(
+                                            width: 20,
+                                          ),
+                                          selectedSize == null
+                                              ? const Text("")
+                                              : const Text("Size:",
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                          TextButton(
+                                            onPressed: () {
+                                              showSizeBottomSheet(context,
+                                                  snapshot.data!.sizes!);
+                                            },
+                                            child: Text(
+                                                selectedSize ?? "사이즈 선택",
+                                                style: const TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
+                                          SizedBox(
+                                            width: 80,
+                                            child: availableQuantity == null
+                                                ? const Text("")
+                                                : Text(
+                                                    '수량:  ${availableQuantity.toString()}',
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                          ),
+                                          const VerticalDivider(
+                                            width: 40,
+                                            thickness: 2,
+                                            indent: 0,
+                                            endIndent: 0,
+                                          ),
+                                          countProduct(),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
 
@@ -341,7 +380,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                     const EdgeInsets.symmetric(horizontal: 14),
                                 child: SizedBox(
                                   width: 350,
-                                  height: 150,
+                                  height: 100,
                                   child: SingleChildScrollView(
                                     // 글자수가 sized 박스를 넘어갈수도 있기 때문에 스크롤뷰로 해놈
                                     child: Column(
@@ -406,6 +445,56 @@ class _ShoeDetailState extends State<ShoeDetail> {
                               //     ],
                               //   ),
                               // ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 180,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: selectedSize == null
+                                            ? const Color.fromARGB(157, 0, 0, 0)
+                                            : Colors.black,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        addToCart(
+                                            widget.modelName,
+                                            productCount,
+                                            int.parse(snapshot.data!.price));
+                                      },
+                                      child: const Text("장바구니"),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  SizedBox(
+                                    width: 180,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: selectedSize == null
+                                            ? const Color.fromARGB(157, 0, 0, 0)
+                                            : Colors.black,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        checkOut();
+                                      },
+                                      child: const Text("구매하기"),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           );
                         } else {
@@ -415,53 +504,11 @@ class _ShoeDetailState extends State<ShoeDetail> {
                     )),
               ),
 
-              const SizedBox(
-                height: 20,
-              ),
+              // const SizedBox(
+              //   height: 20,
+              // ),
 
               // 장바구니 / 구매하기 버튼 ---------------------------------------------
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 180,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: selectedSize == null
-                            ? const Color.fromARGB(157, 0, 0, 0)
-                            : Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      onPressed: () {
-                        addToCart();
-                      },
-                      child: const Text("장바구니"),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 180,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: selectedSize == null
-                            ? const Color.fromARGB(157, 0, 0, 0)
-                            : Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      onPressed: () {
-                        checkOut();
-                      },
-                      child: const Text("구매하기"),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
@@ -499,6 +546,66 @@ class _ShoeDetailState extends State<ShoeDetail> {
         // child: selectedColor == color
         //     ? const Icon(Icons.check, size: 20, color: Colors.grey)
         //     : null,
+      ),
+    );
+  }
+
+  Widget countProduct() {
+    return Container(
+      child: Row(
+        children: [
+          Container(
+            height: 30,
+            width: 30,
+            child: FittedBox(
+              child: FloatingActionButton(
+                elevation: 0,
+                heroTag: 'btn1',
+                onPressed: () {
+                  setState(() {
+                    if (productCount > 1) {
+                      productCount--;
+                    }
+                  });
+                },
+                backgroundColor: const Color.fromARGB(255, 124, 124, 124),
+                foregroundColor: Colors.black,
+                child: const Icon(
+                  Icons.remove,
+                  size: 30,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 10, left: 10),
+            child: Text(
+              productCount.toString(),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Container(
+            height: 30,
+            width: 30,
+            child: FittedBox(
+              child: FloatingActionButton(
+                elevation: 0,
+                heroTag: 'btn2',
+                onPressed: () {
+                  setState(() {
+                    productCount++;
+                  });
+                },
+                backgroundColor: const Color.fromARGB(255, 124, 124, 124),
+                foregroundColor: Colors.black,
+                child: const Icon(
+                  Icons.add,
+                  size: 30,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -560,10 +667,15 @@ class _ShoeDetailState extends State<ShoeDetail> {
                     final size = sortedMap.keys.toList()[index].toString();
                     final isSelected = size == selectedSize;
 
+                    final quantity =
+                        sortedMap.values.toList()[index].toString();
+
                     return ElevatedButton(
                       onPressed: () {
                         setState(() {
                           selectedSize = size.toString();
+                          availableQuantity = quantity.toString();
+                          print(availableQuantity);
                         });
                         Navigator.of(context).pop();
                       },
@@ -604,7 +716,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 장바구니 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
-  void addToCart() {
+  void addToCart(String model, int count, int price) {
     if (selectedSize == null) {
       showDialog(
         context: context,
@@ -634,7 +746,18 @@ class _ShoeDetailState extends State<ShoeDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("장바구니"),
-          content: const Text("해당제품을 장바구니에 담으시겠습니까?"),
+          content: Container(
+              height: 150,
+              child: Column(
+                children: [
+                  const Text("해당제품을 장바구니에 담으시겠습니까?"),
+                  Text("제품명: $model"),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [Text("수량:$count"), Text("총액:${count * price}")],
+                  ),
+                ],
+              )),
           actions: <Widget>[
             TextButton(
               child: const Text(
