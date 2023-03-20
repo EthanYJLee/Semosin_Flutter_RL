@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/widget/brand_list.dart';
+
+import 'package:semosin/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShoesList extends StatefulWidget {
   const ShoesList({super.key});
@@ -82,7 +86,7 @@ class _ShoesListState extends State<ShoesList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: Icon(Icons.card_travel), // 임시로 넣어둠. 장바구니 이미지로 바꾸기
+        child: const Icon(Icons.card_travel), // 임시로 넣어둠. 장바구니 이미지로 바꾸기
       ),
     );
   }

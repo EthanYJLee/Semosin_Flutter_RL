@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/firebase_options.dart';
-import 'package:semosin/view/shoedetail.dart';
-import 'package:semosin/view/signup.dart';
+import 'package:semosin/view/tabbar.dart';
 import 'package:semosin/view/welcome.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,20 +30,43 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      // home: const Signup(),
       // 저장된 토큰 유무를 확인한 후 결과에 따라 존재한다면 Home으로, 없다면 로그인-회원가입으로 이동
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
+      home: StreamBuilder<bool>(
+        stream: isDataInSharedPreferece(),
         builder: (context, userSnapshot) {
-          if (!userSnapshot.hasData) {
-            return const Welcome();
+          if (userSnapshot.hasData) {
+            if (userSnapshot.data!) {
+              return const ShoesTabBar();
+            } else {
+              return const Welcome();
+            }
           } else {
-            // [임시] merge 후 TabBar와 연결할 것
-            // return const ShoesTabBar();
-            return const Signup();
+            return const Welcome();
           }
         },
       ),
     );
+  }
+
+  /// 날짜 :2023.03.16
+  /// 작성자 : 권순형
+  /// 만든이 : 권순형
+  /// 내용 : autho Login 인지 아닌지 찾기
+  Stream<bool> isDataInSharedPreferece() async* {
+    final pref = await SharedPreferences.getInstance();
+    final email = pref.getString('saemosinemail');
+    final password = pref.getString("saemosinpassword");
+    final autoLogin = pref.getBool("saemosin-auto-login-status");
+
+    if (email != null &&
+        email.isNotEmpty &&
+        password != null &&
+        password.isNotEmpty &&
+        autoLogin != null &&
+        autoLogin == true) {
+      yield true;
+    } else {
+      yield false;
+    }
   }
 }
