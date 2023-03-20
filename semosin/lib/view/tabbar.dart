@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:semosin/main.dart';
 import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view/findshoes.dart';
+import 'package:semosin/view/image_upload.dart';
 import 'package:semosin/view/mypage.dart';
 import 'package:semosin/view/shoeslist.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShoesTabBar extends StatefulWidget {
   const ShoesTabBar({super.key});
@@ -40,12 +43,30 @@ class _ShoesTabBarState extends State<ShoesTabBar>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: const SizedBox(),
+        actions: [
+          IconButton(
+            onPressed: () {
+              SharedPreferences.getInstance().then((value) {
+                final pref = value;
+                pref.remove("saemosin-auto-login-status");
+
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => const MyApp()));
+              });
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ],
+      ),
       body: TabBarView(
         controller: controller, // field 에 생성한 TabController 변수 사용
         children: const [
           ShoesList(),
           CartView(),
           FindShoes(),
+          // ImageUpload(),
           MyPage(),
         ],
       ),

@@ -43,6 +43,8 @@ dependencies:
   kpostal: ^0.5.1
   google_sign_in: ^6.0.2
   shared_preferences: ^2.0.18
+  # 이미지 업로드
+  image_picker: ^0.8.7
   
 
 dev_dependencies:
