@@ -1,8 +1,13 @@
+import 'dart:ffi';
+
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/model/selected_shoe.dart';
 import 'package:semosin/services/shoes_info.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
+import 'package:semosin/widget/card_dialog.dart';
+import 'package:semosin/widget/popup_card.dart';
 import 'package:semosin/widget/shoe.dart';
 
 class ShoeDetail extends StatefulWidget {
@@ -28,7 +33,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
   // 선택된 사이즈
   String? selectedSize;
-  Map<String, int> sizeList = Map<String, int>();
+  List<int> sizeList = [];
   // 선택된 신발색상
   Color selectedColor = Colors.black;
 
@@ -41,7 +46,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
   ShoesInfo shoesInfo = ShoesInfo();
   // 이미지 경로 뷰모델
   late ImagePathViewModel imagePathViewModel;
-  late SelectedShoe selectedShoe;
 
   // ------------------------------------------------------------------------------------------
   // front
@@ -73,6 +77,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
     // return isLoading ? loadingTrueWidget() : getDataWidget();
     return getDataWidget();
   }
+  // ------------------------------------------------ WIDGET ------------------------------------------------
 
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이성연
@@ -95,7 +100,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이성연
-  /// 만든이 :
+  /// 만든이 : 이성연, 이영진
   /// 내용 : 데이터 받아 왓을 때 뜰 위젯
   getDataWidget() {
     return Scaffold(
@@ -142,6 +147,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         padding: EdgeInsets.all(50),
                                         child: CircularProgressIndicator(),
                                       )
+                                    // 상품 Image Page View ---------------------------
                                     : PageView.builder(
                                         controller: pageController,
                                         onPageChanged: (value) {
@@ -209,6 +215,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              const Divider(
+                                thickness: 2,
+                              ),
                               // 상품명 및 가격 -----------------------------------------------------
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -238,6 +247,45 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                       ],
                                     ),
                                   ),
+                                  const SizedBox(
+                                    width: 30,
+                                  ),
+                                  // 사이즈 선택---------------------------------------------------
+                                  Container(
+                                    width: 150,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        selectedSize == null
+                                            ? const Text("")
+                                            : const Text(
+                                                "Size:",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                        TextButton(
+                                          onPressed: () {
+                                            showSizeBottomSheet(
+                                                context, snapshot.data!.sizes!);
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                selectedSize ?? "사이즈 선택",
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
 
                                   // 관심상품 등록 및 해제  --------------------------------------------
                                   Padding(
@@ -259,104 +307,105 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                   ),
                                 ],
                               ),
+                              const Divider(
+                                thickness: 2,
+                              ),
+
+                              /// Desc : 상품정보제공 고시 Dialog (제조사, 제조국, 소재, 굽높이)
+                              /// Date : 2023.03.20
+                              /// Author : youngjin
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .push(CardDialog(builder: (context) {
+                                    return PopupCard(
+                                      maker: snapshot.data!.maker,
+                                      country: snapshot.data!.country,
+                                      material: snapshot.data!.material,
+                                      height: snapshot.data!.height,
+                                    );
+                                  }));
+                                },
+                                child: const Text(
+                                  '상품정보 보기',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ),
+
+                              const Divider(
+                                thickness: 2,
+                              ),
                               // 제품설명 ---------------------------------------------------------
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 14),
                                 child: SizedBox(
-                                  width: 360,
-                                  height: 130,
+                                  width: 350,
+                                  height: 150,
                                   child: SingleChildScrollView(
                                     // 글자수가 sized 박스를 넘어갈수도 있기 때문에 스크롤뷰로 해놈
-                                    child: Text(
-                                      // "러닝 내내 최상의 쿠셔닝을 선사하는 Nike Running는 발 아래에 최고의 편안함을 선사해 언제든 러닝을 이어갈 수 있게 해줍니다. 러닝을 지속할 수 있게 도와주는 디자인으로, 지지력과 탄성이 매우 우수해 좋아하는 코스를 빠르게 달리고 돌아와 활력을 재충전하고 다음 러닝을 준비할 수 있습니다.",
-                                      snapshot.data!.method,
-                                      softWrap: true,
-                                      style: const TextStyle(
-                                        color: Color(0xFF818181),
-                                        fontSize: 16,
-                                      ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          '소재별 관리방법: ${snapshot.data!.method}',
+                                          softWrap: true,
+                                          style: const TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 70, 70, 70),
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
                               // 신발 색상선택 ---------------------------------------------------------
-                              SizedBox(
-                                height:
-                                    52, // 이미지 선택시 커지는 효과 때문에 밑에 버튼의 위치가 움직여서 사이즈를 고정시켜놈
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Row(
-                                        children: [
-                                          const Text(
-                                            "색상 : ",
-                                            style: TextStyle(fontSize: 20),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child:
-                                                buildColorButton(Colors.black),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                border: Border.all(
-                                                    color: Colors.black,
-                                                    width: 1),
-                                              ),
-                                              child: buildColorButton(
-                                                  Colors.white),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: buildColorButton(Colors.red),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    // 사이즈 선택---------------------------------------------------
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 25.0),
-                                      child: Row(
-                                        children: [
-                                          selectedSize == null
-                                              ? const Text("")
-                                              : const Text(
-                                                  "Size :",
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                  ),
-                                                ),
-                                          TextButton(
-                                            onPressed: () {
-                                              print(snapshot.data!.sizes);
-                                              showSizeBottomSheet(context,
-                                                  snapshot.data!.sizes!);
-                                            },
-                                            child: Text(
-                                              selectedSize ?? "Choose size",
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              // 색상 형식이 통일이 안 되어있어서 사용불가
+                              // SizedBox(
+                              //   height:
+                              //       52, // 이미지 선택시 커지는 효과 때문에 밑에 버튼의 위치가 움직여서 사이즈를 고정시켜놈
+                              //   child: Row(
+                              //     mainAxisAlignment:
+                              //         MainAxisAlignment.spaceEvenly,
+                              //     children: [
+                              //       Padding(
+                              //         padding: const EdgeInsets.all(4.0),
+                              //         child: Row(
+                              //           children: [
+                              //             const Text(
+                              //               "색상 : ",
+                              //               style: TextStyle(fontSize: 20),
+                              //             ),
+                              //             Padding(
+                              //               padding: const EdgeInsets.all(4.0),
+                              //               child:
+                              //                   buildColorButton(Colors.black),
+                              //             ),
+                              //             Padding(
+                              //               padding: const EdgeInsets.all(4.0),
+                              //               child: Container(
+                              //                 decoration: BoxDecoration(
+                              //                   borderRadius:
+                              //                       BorderRadius.circular(50),
+                              //                   border: Border.all(
+                              //                       color: Colors.black,
+                              //                       width: 1),
+                              //                 ),
+                              //                 child: buildColorButton(
+                              //                     Colors.white),
+                              //               ),
+                              //             ),
+                              //             Padding(
+                              //               padding: const EdgeInsets.all(4.0),
+                              //               child: buildColorButton(Colors.red),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                             ],
                           );
                         } else {
@@ -420,8 +469,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  // ---------------------------------------------------------------------------------------------------------
-
   // 신발색상 선택 위젯
   Widget buildColorButton(Color color) {
     const double selectedSize = 30;
@@ -455,8 +502,12 @@ class _ShoeDetailState extends State<ShoeDetail> {
       ),
     );
   }
+  // -----------------------------------------------------------------------------------------------------
 
-  // 사이즈 선택 위젯
+  // ------------------------------------------------ FUNCTIONS ------------------------------------------------
+  /// Desc : 사이즈 선택 Modal Bottom Sheet
+  /// Date : 2023.03.20
+  /// Author : 이성연, 이영진
 
   void showSizeBottomSheet(BuildContext context, Map<String, int> sizes) {
     showModalBottomSheet(
@@ -487,7 +538,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Text('Select size',
+                  Text('Select Size',
                       style:
                           TextStyle(fontSize: 23, fontWeight: FontWeight.bold)),
                 ],
@@ -499,14 +550,20 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 children: List<Widget>.generate(
                   sizes.keys.length, // 버튼갯수
                   (int index) {
-                    final size = sizes.keys.map((e) => index).toString();
+                    /// Desc : Map<사이즈,잔여수량>을 사이즈별로 재정렬
+                    /// Date : 2023.03.20
+                    /// Author : youngjin
+                    Map<String, int> sortedMap = Map.fromEntries(
+                        sizes.entries.toList()
+                          ..sort((e1, e2) => e1.key.compareTo(e2.key)));
+
+                    final size = sortedMap.keys.toList()[index].toString();
                     final isSelected = size == selectedSize;
 
                     return ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          selectedSize = size;
-                          print(selectedSize);
+                          selectedSize = size.toString();
                         });
                         Navigator.of(context).pop();
                       },
@@ -523,7 +580,13 @@ class _ShoeDetailState extends State<ShoeDetail> {
                           ),
                         ),
                       ),
-                      child: Text(size, style: const TextStyle(fontSize: 20)),
+                      child: Column(
+                        children: [
+                          Text('${size}mm',
+                              style: const TextStyle(fontSize: 18)),
+                          Text('남은 수량 : ${sortedMap.values.toList()[index]}')
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -538,7 +601,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  // 장바구니 다이어로그창
+  /// Desc : 장바구니 다이어로그창
+  /// Date : 2023.03.20
+  /// Author : 이성연
   void addToCart() {
     if (selectedSize == null) {
       showDialog(
@@ -564,7 +629,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
       );
       return;
     }
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -596,7 +660,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  // 구매 다이어로그창
+  /// Desc : 구매하기 버튼 다이어로그창
+  /// Date : 2023.03.20
+  /// Author : 이성연
   void checkOut() {
     if (selectedSize == null) {
       showDialog(
@@ -622,7 +688,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
       );
       return;
     }
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -654,19 +719,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  // ------------------------------------------------------------------------------------------
-  // backend
-  /// 날짜 :2023.03.15
-  /// 작성자 : 권순형 , 이성연
-  /// 만든이 :
-  /// 내용 : shoe detail 정보 보여주기
-  // Future<Shoe> selectModelNameData() {
-  //   //
-  // }
   /// Desc : 신발 이미지 가져오기
   /// Date : 2023.03.19
   /// Author : youngjin
-  /// *** 이미지 프리뷰 너무 오래 걸림 (수정 필요할 듯) ***
   Future<void> getImageURL(List<String> path) async {
     List<String> pathList = [];
     for (int i = 0; i < path.length; i++) {
@@ -678,6 +733,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
       pathList.add(downloadURL.toString());
       // });
     }
+
     if (mounted) {
       setState(() {
         images = pathList;
