@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
-
-import '../model/shoe.dart';
 
 class FireStoreSelect {
   /// 날짜 :2023.03.15
@@ -15,12 +12,44 @@ class FireStoreSelect {
 
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('shoes').get();
+
+    int i = 0;
     for (var document in querySnapshot.docs) {
       ShoeViewModel shoeViewModel =
           ShoeViewModel.fromJson(document.data() as Map<String, dynamic>);
       shoeViewModelList.add(shoeViewModel);
+      // print(shoeViewModel.shoeImageName.substring(8));
+      var url = await FirebaseStorage.instance
+          .ref()
+          .child('신발 이미지')
+          .child(shoeViewModel.shoeImageName.substring(8))
+          .getDownloadURL();
+      String urlString = url.toString();
+      shoeViewModelList[i].shoeImageName = urlString;
+
+      i++;
+
+      if (i > 10) {
+        break;
+      }
     }
+    // print(shoeViewModelList[0].shoeImageName.substring(8));
     return shoeViewModelList;
+  }
+
+  Future<String> imageTest(imagePath) async {
+    // Points to the root reference
+    final storageRef = FirebaseStorage.instance.ref();
+
+    // Points to "images"
+    Reference? imagesRef = storageRef.child("신발 이미지");
+
+    // Points to "images/space.jpg"
+    final spaceRef = imagesRef.child(imagePath);
+
+    var downloadURL = await spaceRef.getDownloadURL();
+
+    return downloadURL;
   }
 
   /*

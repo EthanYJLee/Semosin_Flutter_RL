@@ -1,5 +1,5 @@
 class ShoeViewModel {
-  final String shoeImageName;
+  late String shoeImageName;
   final String shoeModelName;
   final String shoeBrandName;
   final bool isLike;
