@@ -18,21 +18,23 @@ class ShoeDetail extends StatefulWidget {
 }
 
 class _ShoeDetailState extends State<ShoeDetail> {
-  // 임의 이미지 리스트
-  final List<String> images = [
-    'images/converse.png',
-    'images/googlelogo.png',
-    'images/vanGogh.jpeg',
-    'images/vanGogh2.jpeg'
-  ];
+  // 페이지뷰를 위해 Storage에서 받아온 Image Path 담아주기
+  late List<String> images = [];
+  // 이미지 넘기는 index
+  int selectedImageIndex = 0;
+  // Page Controller
+  late PageController pageController =
+      PageController(initialPage: selectedImageIndex);
 
-  int selectedImageIndex = 0; // 이미지 넘기는 index
+  // 선택된 사이즈
+  String? selectedSize;
+  Map<String, int> sizeList = Map<String, int>();
+  // 선택된 신발색상
+  Color selectedColor = Colors.black;
 
-  String? selectedSize; // 선택된 사이즈
+  // 북마크 아이콘(관심있는 상품)
+  bool bookmark = false;
 
-  Color selectedColor = Colors.black; // 선택된 신발색상
-
-  bool bookmark = false; // 북마크 아이콘(관심있는 상품)
   // 로딩중
   late bool isLoading;
   // 선택한 신발 정보
@@ -103,15 +105,15 @@ class _ShoeDetailState extends State<ShoeDetail> {
           child: Column(
             children: [
               const SizedBox(
-                height: 60, // safearea를 사용하면 시간 및 배터리가 보이지 않음
+                height: 30, // safearea를 사용하면 시간 및 배터리가 보이지 않음
               ),
 
               // 제품명 타이틀 -----------------------------------------------------
               Padding(
-                padding: EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(5.0),
                 child: Text(
                   widget.modelName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
                   ),
@@ -122,12 +124,13 @@ class _ShoeDetailState extends State<ShoeDetail> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: SizedBox(
-                    width: 380,
-                    height: 280,
+                    width: 500,
+                    height: 550,
                     child: FutureBuilder(
                       future: shoesInfo.selectModelNameData(widget.modelName),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
+                          // ---------- Firebase Storage의 Image URL 불러오기 ----------
                           getImageURL(snapshot.data!.images as List<String>);
                           return Column(
                             children: [
@@ -136,26 +139,224 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                 width: 200,
                                 child: imagePathViewModel.imagePath.isEmpty
                                     ? const Padding(
-                                        padding: EdgeInsets.all(50.0),
+                                        padding: EdgeInsets.all(50),
                                         child: CircularProgressIndicator(),
                                       )
                                     : PageView.builder(
+                                        controller: pageController,
+                                        onPageChanged: (value) {
+                                          setState(() {
+                                            selectedImageIndex = value;
+                                            print(selectedImageIndex);
+                                          });
+                                        },
                                         itemCount:
                                             imagePathViewModel.imagePath.length,
                                         scrollDirection: Axis.horizontal,
                                         itemBuilder:
                                             (BuildContext context, int index) {
-                                          return Card(
-                                            child: Image.network(
-                                                imagePathViewModel
-                                                    .imagePath[index]),
+                                          return Container(
+                                            child: Column(
+                                              children: [
+                                                Card(
+                                                  child: Image.network(
+                                                      imagePathViewModel
+                                                          .imagePath[index]),
+                                                ),
+                                              ],
+                                            ),
                                           );
                                         },
                                       ),
                               ),
-                              Text("브랜드: ${snapshot.data!.brand}"),
-                              Text("모델명: ${snapshot.data!.model}"),
-                              Text("가격: ${snapshot.data!.price}"),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: images.map((image) {
+                                    int index = images.indexOf(image);
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        print(index);
+                                        setState(() {
+                                          selectedImageIndex = index;
+                                          if (pageController.hasClients) {
+                                            pageController.animateToPage(
+                                              selectedImageIndex,
+                                              duration: const Duration(
+                                                  milliseconds: 400),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          }
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 3.0),
+                                        child: CircleAvatar(
+                                          backgroundColor:
+                                              index == selectedImageIndex
+                                                  ? Colors.grey.shade700
+                                                  : Colors.grey.shade300,
+                                          radius: 5,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              // 상품명 및 가격 -----------------------------------------------------
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 20.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          snapshot.data!.brand,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 3,
+                                        ),
+                                        Text(
+                                          '${snapshot.data!.price}원',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // 관심상품 등록 및 해제  --------------------------------------------
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          bookmark = !bookmark;
+                                        });
+                                        print(bookmark);
+                                      },
+                                      icon: Icon(
+                                        bookmark
+                                            ? Icons.bookmark_outlined
+                                            : Icons.bookmark_outline,
+                                        size: 44,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // 제품설명 ---------------------------------------------------------
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 14),
+                                child: SizedBox(
+                                  width: 360,
+                                  height: 130,
+                                  child: SingleChildScrollView(
+                                    // 글자수가 sized 박스를 넘어갈수도 있기 때문에 스크롤뷰로 해놈
+                                    child: Text(
+                                      // "러닝 내내 최상의 쿠셔닝을 선사하는 Nike Running는 발 아래에 최고의 편안함을 선사해 언제든 러닝을 이어갈 수 있게 해줍니다. 러닝을 지속할 수 있게 도와주는 디자인으로, 지지력과 탄성이 매우 우수해 좋아하는 코스를 빠르게 달리고 돌아와 활력을 재충전하고 다음 러닝을 준비할 수 있습니다.",
+                                      snapshot.data!.method,
+                                      softWrap: true,
+                                      style: const TextStyle(
+                                        color: Color(0xFF818181),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // 신발 색상선택 ---------------------------------------------------------
+                              SizedBox(
+                                height:
+                                    52, // 이미지 선택시 커지는 효과 때문에 밑에 버튼의 위치가 움직여서 사이즈를 고정시켜놈
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Row(
+                                        children: [
+                                          const Text(
+                                            "색상 : ",
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child:
+                                                buildColorButton(Colors.black),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 1),
+                                              ),
+                                              child: buildColorButton(
+                                                  Colors.white),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: buildColorButton(Colors.red),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // 사이즈 선택---------------------------------------------------
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 25.0),
+                                      child: Row(
+                                        children: [
+                                          selectedSize == null
+                                              ? const Text("")
+                                              : const Text(
+                                                  "Size :",
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                          TextButton(
+                                            onPressed: () {
+                                              print(snapshot.data!.sizes);
+                                              showSizeBottomSheet(context,
+                                                  snapshot.data!.sizes!);
+                                            },
+                                            child: Text(
+                                              selectedSize ?? "Choose size",
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           );
                         } else {
@@ -165,170 +366,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                     )),
               ),
 
-              // 현재 이미지 위치 (조그만한 원)----------------------------------------
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: images.map((image) {
-                  int index = images.indexOf(image);
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedImageIndex = index;
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                      child: CircleAvatar(
-                        backgroundColor: index == selectedImageIndex
-                            ? Colors.grey.shade700
-                            : Colors.grey.shade300,
-                        radius: 5,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-
-              // 상품명 및 가격 -----------------------------------------------------
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Nike Running",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 3,
-                        ),
-                        Text(
-                          "90,000원",
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // 관심상품 등록 및 해제  --------------------------------------------
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          bookmark = !bookmark;
-                        });
-                        print(bookmark);
-                      },
-                      icon: Icon(
-                        bookmark
-                            ? Icons.bookmark_outlined
-                            : Icons.bookmark_outline,
-                        size: 44,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // 제품설명 ---------------------------------------------------------
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 14),
-                child: SizedBox(
-                  width: 360,
-                  height: 130,
-                  child: SingleChildScrollView(
-                    // 글자수가 sized 박스를 넘어갈수도 있기 때문에 스크롤뷰로 해놈
-                    child: Text(
-                      "러닝 내내 최상의 쿠셔닝을 선사하는 Nike Running는 발 아래에 최고의 편안함을 선사해 언제든 러닝을 이어갈 수 있게 해줍니다. 러닝을 지속할 수 있게 도와주는 디자인으로, 지지력과 탄성이 매우 우수해 좋아하는 코스를 빠르게 달리고 돌아와 활력을 재충전하고 다음 러닝을 준비할 수 있습니다.",
-                      softWrap: true,
-                      style: TextStyle(
-                        color: Color(0xFF818181),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // 신발 색상선택 ---------------------------------------------------------
-              SizedBox(
-                height: 52, // 이미지 선택시 커지는 효과 때문에 밑에 버튼의 위치가 움직여서 사이즈를 고정시켜놈
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
-                        children: [
-                          const Text(
-                            "color : ",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: buildColorButton(Colors.black),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                border:
-                                    Border.all(color: Colors.black, width: 1),
-                              ),
-                              child: buildColorButton(Colors.white),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: buildColorButton(Colors.red),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // 사이즈 선택---------------------------------------------------
-                    Padding(
-                      padding: const EdgeInsets.only(right: 25.0),
-                      child: Row(
-                        children: [
-                          selectedSize == null
-                              ? const Text("")
-                              : const Text(
-                                  "size :",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                          TextButton(
-                            onPressed: () {
-                              showSizeBottomSheet(context);
-                            },
-                            child: Text(
-                              selectedSize ?? "Choose size",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(
                 height: 20,
               ),
@@ -421,7 +458,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
   // 사이즈 선택 위젯
 
-  void showSizeBottomSheet(BuildContext context) {
+  void showSizeBottomSheet(BuildContext context, Map<String, int> sizes) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14.0),
@@ -460,9 +497,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 spacing: 8,
                 runSpacing: 8,
                 children: List<Widget>.generate(
-                  16, // 버튼갯수
+                  sizes.keys.length, // 버튼갯수
                   (int index) {
-                    final size = (index * 5 + 220).toString();
+                    final size = sizes.keys.map((e) => index).toString();
                     final isSelected = size == selectedSize;
 
                     return ElevatedButton(
@@ -643,6 +680,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
     }
     if (mounted) {
       setState(() {
+        images = pathList;
         imagePathViewModel = ImagePathViewModel(imagePath: pathList);
       });
     }
