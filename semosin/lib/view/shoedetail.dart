@@ -7,6 +7,8 @@ class ShoeDetail extends StatefulWidget {
   // click 시 모델 이름 받아오기
   final String modelName;
 
+  // image path 받아오기
+
   @override
   State<ShoeDetail> createState() => _ShoeDetailState();
 }
@@ -45,6 +47,14 @@ class _ShoeDetailState extends State<ShoeDetail> {
   //   // 해당 모델의 데이터 받아오는 거 함수 호출
   //   await selectModelNameData();
   // }
+
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
