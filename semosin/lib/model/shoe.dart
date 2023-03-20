@@ -28,14 +28,14 @@ class Shoe {
   });
 
   Shoe.fromJson(Map<String, dynamic> json)
-      : images = json['images'].toList(),
+      : images = json['images'].cast<String>(),
         model = json['model'].toString(),
         brand = json['brand'].toString(),
         price = json['price'].toString(),
         material = ['material'].toString(),
         height = json['height'].toString(),
-        colors = json['colors'].toList(),
-        sizes = json['sizes'].map(),
+        colors = json['colors'].cast<String>(),
+        sizes = json['sizes'].cast<String, int>(),
         maker = json['maker'].toString(),
         country = json['country'].toString(),
         method = json['method'].toString(),

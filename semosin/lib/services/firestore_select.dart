@@ -1,27 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:semosin/model/user.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:semosin/view_model/shoe_view_model.dart';
-import 'package:semosin/widget/shoe.dart';
+
+import '../model/shoe.dart';
 
 class FireStoreSelect {
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이호식
-  /// 만든이 :
+  /// 만든이 : Osu
   /// 내용 : firestore 에서 shoes data다 가지고 오기
-  String result = 'result';
-  Future<String> selectShoes() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('shoes')
-        // .where(fieldName, isEqualTo: textField)
-        .get();
-    if (querySnapshot.docs.isEmpty) {
-      return result;
-    } else {
-      return result;
-    }
-  }
+  Future<List<ShoeViewModel>> selectShoes() async {
+    List<ShoeViewModel> shoeViewModelList = [];
 
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('shoes').get();
+    for (var document in querySnapshot.docs) {
+      ShoeViewModel shoeViewModel =
+          ShoeViewModel.fromJson(document.data() as Map<String, dynamic>);
+      shoeViewModelList.add(shoeViewModel);
+    }
+    return shoeViewModelList;
+  }
+}
+
+  /*
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이호식
   /// 만든이 :
@@ -39,5 +47,5 @@ class FireStoreSelect {
   // user의 관심 모델 가져오는 함수 호출 : selectLikes()
   // 가져온 신발 데이터들 에서 user가 관심 모델인 것을 isLike를 true 아니면 false
   // 로 해서 새로운 ShoeViewModel로 만들어서 이걸 리턴해 주면 된다.
-  // }
-}
+  // } 
+  // */
