@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:semosin/view/signup.dart';
+import 'package:semosin/view/tabbar.dart';
+import 'package:semosin/view_model/signup_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GoogleApi {
   /// 날짜 : 2023.03.15
   /// 작성자 : 신오수
   /// 만든이 : 신오수
+  /// 수정이 : 권순형
   /// 내용 : 계정정보 중복 방지를 위해 초기화 먼저 진행
   signOutGoogle(context) async {
     showDialog(
@@ -28,9 +31,11 @@ class GoogleApi {
   /// 날짜 :2023.03.13
   /// 작성자 : 권순형
   /// 만든이 : 신오수
+  /// 수정이 : 권순형
   /// 내용 : 구글 로그인 API와 연결 하는 함수
   /// 비고 : 리턴 값 있을 시 알려주고 그 값을 받아와야 되는 값들을 model에 만들기
-  Future<UserCredential?> googleLogin(context) async {
+  /// 수정사항 : firebaseauth stream 때문에 자동로그인 되는 부분 수정
+  Future<SignUpViewModel?> googleLogin(context) async {
     // google API와 연결하여 로그인 하는 기능 구현
     try {
       await signOutGoogle(context);
@@ -47,16 +52,22 @@ class GoogleApi {
           accessToken: googleAuth?.accessToken,
           idToken: googleAuth?.idToken,
         );
-        userCheck(context);
-        return await FirebaseAuth.instance.signInWithCredential(credential);
+
+        var result =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        var uid = result.user!.uid;
+        var email = result.user!.email;
+
+        return SignUpViewModel(uid: uid, email: email, pw: "google");
       } catch (e) {
         if (e == 'accessToken != null || idToken != null') {
           Navigator.pop(context);
         } else {
           Navigator.pop(context);
         }
+        return null;
       }
-      return null;
 
       // Once signed in, return the UserCredential
     } on PlatformException catch (e) {
@@ -67,7 +78,7 @@ class GoogleApi {
       } else {
         Navigator.pop(context);
       }
-      rethrow;
+      return null;
     }
   }
 
@@ -76,51 +87,50 @@ class GoogleApi {
   /// 만든이 : 신오수
   /// 내용 : 구글 로그인시 회원인지 비회원인지 구분하는 기능
   /// 비고 : 회원일시 ShoesTabBar로 비회원일시 Signup으로
-  userCheck(context) async {
+  userCheck(SignUpViewModel? signUpViewModel, BuildContext context) async {
     // SharePreferences
     final pref = await SharedPreferences.getInstance();
     // ShaerdPreferces 중복 방지를 위해 초기화
     await pref.clear();
     // FirebaseAuth
-    FirebaseAuth.instance.authStateChanges().listen(
-      (User? user) async {
-        if (user != null) {
-          String? email = user.email;
-          QuerySnapshot snapshot = await FirebaseFirestore.instance
-              .collection('users')
-              .where('email', isEqualTo: email)
-              .get();
-          if (snapshot.docs.isNotEmpty) {
-            DocumentSnapshot document = snapshot.docs[0];
-            Map<String, dynamic> userData =
-                document.data()! as Map<String, dynamic>;
-            String? uid = userData['uid'];
-            String? email = userData['email'];
-            String? name = userData['name'];
-            String? nickname = userData['nickname'];
+    // FirebaseAuth.instance.authStateChanges().listen(
+    //   (User? user) async {
+    //     if (user != null) {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: signUpViewModel?.email ?? "")
+        .get();
+    if (snapshot.docs.isNotEmpty) {
+      DocumentSnapshot document = snapshot.docs[0];
+      Map<String, dynamic> userData = document.data()! as Map<String, dynamic>;
+      String? uid = userData['uid'];
+      String? email = userData['email'];
+      String? name = userData['name'];
+      String? nickname = userData['nickname'];
 
-            // SharedPreference에 저장
-            pref.setString('uid', uid!);
-            pref.setString('email', email!);
-            pref.setString('name', name!);
-            pref.setString('nickname', nickname!);
-            Navigator.pop(context);
-            // Navigator.push(context, MaterialPageRoute(
-            //   builder: (context) {
-            //     return ShoesTabBar();
-            //   },
-            // ));
-          } else {
-            pref.setString('uid', user.uid);
-            pref.setString('email', user.email!);
-            Navigator.push(context, MaterialPageRoute(
-              builder: (context) {
-                return const Signup();
-              },
-            ));
-          }
-        } else {}
-      },
-    );
+      // SharedPreference에 저장
+      pref.setString('uid', uid!);
+      pref.setString('email', email!);
+      pref.setString('name', name!);
+      pref.setString('nickname', nickname!);
+
+      Navigator.pop(context);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ShoesTabBar(),
+          ));
+    }
+
+    Navigator.pop(context);
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Signup(
+            signUpViewModel: signUpViewModel,
+          ),
+        ));
   }
 }
