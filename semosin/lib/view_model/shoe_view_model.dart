@@ -12,4 +12,11 @@ class ShoeViewModel {
     required this.shoePrice,
     required this.isLike,
   });
+
+  ShoeViewModel.fromJson(Map<String, dynamic> json)
+      : shoeImageName = json['images'][0].toString(),
+        shoeModelName = json['model'].toString(),
+        shoeBrandName = json['brand'].toString(),
+        isLike = false,
+        shoePrice = json['price'];
 }
