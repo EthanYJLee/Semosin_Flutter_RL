@@ -93,7 +93,7 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
   Widget predictCompleted() {
     return Column(
       children: [
-        Text('@@신발일 확률 58000%'),
+        Text(result),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -138,8 +138,16 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
   /// 수정내용 : flask service 클래스로 분리
   onUploadImage() async {
     final FlaskPredict predict = FlaskPredict();
-    result = await predict.predictImage(widget.image.path);
+    var flaskResult = await predict.predictImage(widget.image.path);
 
-    setState(() {});
+    if (flaskResult[1]) {
+      setState(() {
+        result = "입력하신 이미지가 상당히 잘못 되었습니다.";
+      });
+    } else {
+      setState(() {
+        result = flaskResult[0];
+      });
+    }
   }
 }

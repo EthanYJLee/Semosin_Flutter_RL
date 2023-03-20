@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class FlaskPredict {
-  Future<String> predictImage(String path) async {
+  Future<List> predictImage(String path) async {
     var request = http.MultipartRequest(
-        'POST', Uri.parse("http://localhost:5000/uploader"));
+        'POST', Uri.parse("http://localhost:5000/predict"));
 
     // XFile to File
     File selectedImage = File(path);
@@ -23,6 +23,6 @@ class FlaskPredict {
     http.Response response = await http.Response.fromStream(resp);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
 
-    return dataConvertedJSON['result'];
+    return [dataConvertedJSON['result'], dataConvertedJSON['error']];
   }
 }
