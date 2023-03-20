@@ -1,14 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:semosin/view/result.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
@@ -35,7 +30,7 @@ class _ImageUploadState extends State<ImageUpload> {
   String? _retrieveDataError;
 
   void _setImageFromFile(XFile? value) {
-    _imageFile = (value == null ? null : value);
+    _imageFile = value;
   }
 
   // --------------------------------- FRONT ---------------------------------
@@ -54,7 +49,7 @@ class _ImageUploadState extends State<ImageUpload> {
               if (_imageFile == null) {
                 // 선택한 사진이 없는 경우
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Container(
+                  content: SizedBox(
                       height: 50,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -154,6 +149,7 @@ class _ImageUploadState extends State<ImageUpload> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('이미지 선택'),
+            content: const Text('이미지를 선택하시겠습니까?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('취소'),
@@ -191,10 +187,11 @@ class _ImageUploadState extends State<ImageUpload> {
     if (retrieveError != null) {
       return retrieveError;
     }
+    // 이미지 파일 선ㅐ 되었을 때
     if (_imageFile != null) {
       return Semantics(
         label: 'selected_image',
-        child: Container(
+        child: SizedBox(
           height: 350,
           width: 350,
           child: GridView.builder(
