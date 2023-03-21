@@ -1,12 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:semosin/services/flask_predict.dart';
 
 class Result extends StatefulWidget {
   final XFile image;
@@ -21,15 +18,16 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
   late AnimationController controller;
   @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
 
     controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 3))
+        AnimationController(vsync: this, duration: const Duration(seconds: 3))
           ..addListener(() {
             setState(() {});
           });
     controller.repeat(reverse: true);
-    super.initState();
+
+    onUploadImage();
   }
 
   @override
@@ -48,7 +46,7 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Upload한 이미지 보여주기
-            Container(
+            SizedBox(
               height: 350,
               width: 350,
               child: GridView.builder(
@@ -76,7 +74,7 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
             ),
             // 예측한 신발의 모델 결과
             (result == '')
-                ? Container(
+                ? SizedBox(
                     width: 300,
                     child: LinearProgressIndicator(
                       value: controller.value,
@@ -89,46 +87,13 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
     );
   }
 
-  /// -------------------- FUNCTIONS --------------------
-  /// Desc : '모델 예측하기' 버튼 눌렀을 때 Image Flask 서버로 넘기기 + 예측
-  /// Date : 2023.03.18
-  /// Author : youngjin
-  onUploadImage() async {
-    var request = http.MultipartRequest(
-        'POST', Uri.parse("http://localhost:5000/uploader"));
-
-    // XFile to File
-    File _selectedImage;
-    _selectedImage = File(widget.image.path);
-
-    // multipart request
-    Map<String, String> headers = {"Content-type": "multipart/form-data"};
-    request.files.add(
-      http.MultipartFile('image', _selectedImage.readAsBytes().asStream(),
-          _selectedImage.lengthSync(),
-          filename: _selectedImage.path.split('/').last),
-    );
-
-    request.headers.addAll(headers);
-    var resp = await request.send();
-    http.Response response = await http.Response.fromStream(resp);
-
-    setState(() {
-      var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-      setState(() {
-        result = dataConvertedJSON['result'];
-      });
-      // _showDialog(context, result);
-    });
-  }
-
   /// Desc : 예측 끝나면 Indicator dispose 하고 결과값 출력
   /// Date : 2023.03.18
   /// Author : youngjin
   Widget predictCompleted() {
     return Column(
       children: [
-        Text('@@신발일 확률 58000%'),
+        Text(result),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -163,5 +128,26 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
         )
       ],
     );
+  }
+
+  /// -------------------- FUNCTIONS --------------------
+  /// Desc : '모델 예측하기' 버튼 눌렀을 때 Image Flask 서버로 넘기기 + 예측
+  /// Date : 2023.03.18
+  /// Author : youngjin
+  /// 수정이 : 권순형
+  /// 수정내용 : flask service 클래스로 분리
+  onUploadImage() async {
+    final FlaskPredict predict = FlaskPredict();
+    var flaskResult = await predict.predictImage(widget.image.path);
+
+    if (flaskResult[1]) {
+      setState(() {
+        result = "입력하신 이미지가 상당히 잘못 되었습니다.";
+      });
+    } else {
+      setState(() {
+        result = flaskResult[0];
+      });
+    }
   }
 }
