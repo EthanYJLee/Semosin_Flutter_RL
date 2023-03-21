@@ -37,21 +37,6 @@ class FireStoreSelect {
     return shoeViewModelList;
   }
 
-  Future<String> imageTest(imagePath) async {
-    // Points to the root reference
-    final storageRef = FirebaseStorage.instance.ref();
-
-    // Points to "images"
-    Reference? imagesRef = storageRef.child("신발 이미지");
-
-    // Points to "images/space.jpg"
-    final spaceRef = imagesRef.child(imagePath);
-
-    var downloadURL = await spaceRef.getDownloadURL();
-
-    return downloadURL;
-  }
-
   /*
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이호식
@@ -60,6 +45,8 @@ class FireStoreSelect {
   Future<User> selectUser() async {
     // shared preference 에서 사용자 정보값 가져오기
   }
+=======
+>>>>>>> 82b2250942b7393014dbe0f1706183f35eb30dbf
 
     return doc.docs.isNotEmpty;
   }
