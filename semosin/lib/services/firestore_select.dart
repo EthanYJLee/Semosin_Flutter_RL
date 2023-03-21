@@ -52,6 +52,25 @@ class FireStoreSelect {
     return downloadURL;
   }
 
+/*
+  /// 날짜 :2023.03.15
+  /// 작성,만든이 :이호식
+  /// 내용 : 위에꺼에서 where 만 붙은거 
+  /// */
+  Future<List<ShoeViewModel>> selectBrandShoes(String brand) async {
+    List<ShoeViewModel> shoeViewModelList = [];
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('shoes')
+        .where('brand', isEqualTo: brand)
+        .get();
+    for (var document in querySnapshot.docs) {
+      ShoeViewModel shoeViewModel =
+          ShoeViewModel.fromJson(document.data() as Map<String, dynamic>);
+      shoeViewModelList.add(shoeViewModel);
+    }
+    return shoeViewModelList;
+  }
   /*
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이호식
@@ -64,22 +83,6 @@ class FireStoreSelect {
     return doc.docs.isNotEmpty;
   }
   */
-
-  //   /// 날짜 :2023.03.15
-//   /// 작성자 : 권순형 , 이호식
-//   /// 만든이 :
-//   /// 내용 : firestore 에서 shoes data다 가지고 오기
-//   Future<List<Shoe>> selectShoes() async {
-//     //
-//   }
-
-//   /// 날짜 :2023.03.15
-//   /// 작성자 : 권순형 , 이호식
-//   /// 만든이 :
-//   /// 내용 : firestore 에서 user data다 가지고 오기
-//   Future<User> selectUser() async {
-//     // shared preference 에서 사용자 정보값 가져오기
-//   }
 
 //   /// 날짜 :2023.03.15
 //   /// 작성자 : 권순형 , 이호식
