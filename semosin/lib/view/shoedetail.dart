@@ -320,51 +320,55 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     IntrinsicHeight(
-                                      child: Row(
-                                        children: [
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          selectedSize == null
-                                              ? const Text("")
-                                              : const Text("Size:",
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                          TextButton(
-                                            onPressed: () {
-                                              showSizeBottomSheet(context,
-                                                  snapshot.data!.sizes!);
-                                            },
-                                            child: Text(
-                                                selectedSize ?? "사이즈 선택",
-                                                style: const TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ),
-                                          SizedBox(
-                                            width: 80,
-                                            child: availableQuantity == null
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 5, right: 5),
+                                        child: Row(
+                                          children: [
+                                            // const SizedBox(
+                                            //   width: 10,
+                                            // ),
+                                            selectedSize == null
                                                 ? const Text("")
-                                                : Text(
-                                                    '수량:  ${availableQuantity.toString()}',
-                                                    style: const TextStyle(
+                                                : const Text("Size:",
+                                                    style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                          ),
-                                          const VerticalDivider(
-                                            width: 40,
-                                            thickness: 2,
-                                            indent: 0,
-                                            endIndent: 0,
-                                          ),
-                                          countProduct(),
-                                        ],
+                                                            FontWeight.bold)),
+                                            TextButton(
+                                              onPressed: () {
+                                                showSizeBottomSheet(context,
+                                                    snapshot.data!.sizes!);
+                                              },
+                                              child: Text(
+                                                  selectedSize ?? "사이즈 선택",
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            SizedBox(
+                                              width: 80,
+                                              child: availableQuantity == null
+                                                  ? const Text("")
+                                                  : Text(
+                                                      '수량:  ${availableQuantity.toString()}',
+                                                      style: const TextStyle(
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                            ),
+                                            const VerticalDivider(
+                                              width: 40,
+                                              thickness: 2,
+                                              indent: 0,
+                                              endIndent: 0,
+                                            ),
+                                            countProduct(),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
