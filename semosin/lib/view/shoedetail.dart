@@ -125,9 +125,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
                   children: [
                     Text(
                       widget.modelName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: (MediaQuery.of(context).size.width / 20),
                       ),
                     ),
                   ],
