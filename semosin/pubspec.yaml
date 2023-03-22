@@ -46,6 +46,7 @@ dependencies:
   # 이미지 업로드
   image_picker: ^0.8.7
   intl: ^0.17.0
+  flutter_speed_dial: ^6.2.0
   
 
 dev_dependencies:

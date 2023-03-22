@@ -3,7 +3,7 @@ class ShoeViewModel {
   final String shoeModelName;
   final String shoeBrandName;
   final int likeNum;
-  final String shoePrice;
+  final int shoePrice;
 
   ShoeViewModel({
     required this.shoeBrandName,
