@@ -1,9 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:semosin/view/result.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+import '../widget/myappbar.dart';
 
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
@@ -30,89 +35,22 @@ class _ImageUploadState extends State<ImageUpload> {
   String? _retrieveDataError;
 
   void _setImageFromFile(XFile? value) {
-    _imageFile = value;
+    _imageFile = (value == null ? null : value);
   }
 
-  // --------------------------------- FRONT ---------------------------------
+  // --------------------------------- FRONT -----------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const MyAppBar(title: "이미지 선택"),
       body: Center(
         child: _handlePreview(),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          // --------------- 신발 모델 예측 버튼 ---------------
-          child: ElevatedButton(
-            onPressed: () {
-              if (_imageFile == null) {
-                // 선택한 사진이 없는 경우
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: SizedBox(
-                      height: 50,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            '이미지를 선택해주세요',
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      )),
-                  dismissDirection: DismissDirection.up,
-                  duration: const Duration(milliseconds: 500),
-                ));
-              } else {
-                // 선택한 사진이 있는 경우
-                // _saveSharedPreferences();
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Result(image: _imageFile!)));
-              }
-            },
-            style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    _imageFile != null ? Colors.blue : Colors.grey),
-            child: const Text(
-              '모델 예측하기',
-            ),
-          ),
-        ),
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Semantics(
-            label: 'image_gallery',
-            child: FloatingActionButton(
-              onPressed: () {
-                _onImageButtonPressed(ImageSource.gallery, context: context);
-              },
-              heroTag: 'Gallery',
-              tooltip: '갤러리에서 이미지 선택',
-              child: const Icon(Icons.photo),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                _onImageButtonPressed(ImageSource.camera, context: context);
-              },
-              heroTag: 'Camera',
-              tooltip: '카메라에서 이미지 촬영',
-              child: const Icon(Icons.camera_alt),
-            ),
-          ),
-        ],
-      ),
     );
   }
-  // ------------------------------------------------------------------ FRONT
+  // --------------------------------------------------------------------- FRONT
 
-  // --------------------------------- FUNCTIONS ---------------------------------
+  // --------------------------------- FUNCTIONS -------------------------------
   /// Desc : Floating Action Button 클릭 시 Photos / Camera에 접근
   /// Date : 2023.03.16
   /// youngjin
@@ -133,7 +71,8 @@ class _ImageUploadState extends State<ImageUpload> {
         });
       } catch (e) {
         setState(() {
-          _pickImageError = e;
+          // _pickImageError = e;
+          errorDialog();
         });
       }
     });
@@ -142,38 +81,142 @@ class _ImageUploadState extends State<ImageUpload> {
   /// Desc : Photos / Camera 접근 전 Alert Dialog
   /// Date : 2023.03.16
   /// Authot : youngjin
+  // Future<void> _showAccessDialog(
+  //     BuildContext context, ImageSizeCallback imageSize) async {
+  //   return showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text('이미지 선택'),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               child: const Text('취소'),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //             ),
+  //             TextButton(
+  //                 child: const Text('선택'),
+  //                 onPressed: () {
+  //                   // imageSize(128, 128, null);
+  //                   /// [수정] 우선 크게 보여주고 다음 화면에서 예측할 때 resize하는 것으로 변경
+  //                   /// Date : 2023.03.16
+  //                   imageSize(300, 300, null);
+  //                   Navigator.of(context).pop();
+  //                 }),
+  //           ],
+  //         );
+  //       });
+  // }
+
+  // 바로 갤러리로 이동할 수 있게 밑에 있는 코드로 바꿔줌
+
   Future<void> _showAccessDialog(
       BuildContext context, ImageSizeCallback imageSize) async {
-    return showDialog(
+    return imageSize(300, 300, null);
+  }
+
+// 선택한 이미지로 인해 오류 시 다이어로그 띄워주기
+  void errorDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("이미지 오류"),
+          content: const Text("다른 사진을 선택해주세요"),
+          actions: [
+            TextButton(
+              child: const Text("확인"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 이미지 선택 바텀시트
+  void imageBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        )),
         context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('이미지 선택'),
-            content: const Text('이미지를 선택하시겠습니까?'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('취소'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                  child: const Text('선택'),
+        builder: (context) {
+          return SizedBox(
+            height: 300,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 14, bottom: 14),
+                  child: Column(
+                    children: const [
+                      Text(
+                        "이미지 선택",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                      SizedBox(height: 3),
+                      Text(
+                        "이미지를 가져올 장소를 선택 해주세요",
+                        style: TextStyle(color: Colors.grey),
+                      )
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _onImageButtonPressed(ImageSource.gallery,
+                          context: context);
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(13.0),
+                      child: Text(
+                        "갤러리",
+                        style: TextStyle(color: Colors.black, fontSize: 24),
+                      ),
+                    )),
+                const Divider(height: 1),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _onImageButtonPressed(ImageSource.camera,
+                          context: context);
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(13.0),
+                      child: Text(
+                        "사진찍기",
+                        style: TextStyle(color: Colors.black, fontSize: 24),
+                      ),
+                    )),
+                const Divider(height: 1),
+                TextButton(
                   onPressed: () {
-                    // imageSize(128, 128, null);
-                    /// [수정] 우선 크게 보여주고 다음 화면에서 예측할 때 resize하는 것으로 변경
-                    /// Date : 2023.03.16
-                    imageSize(300, 300, null);
                     Navigator.of(context).pop();
-                  }),
-            ],
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(13.0),
+                    child: Text(
+                      "취소",
+                      style: TextStyle(color: Colors.red, fontSize: 24),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           );
         });
   }
 
-// ------------------------------------------------------------------ FUNCTIONS
+// ------------------------------------------------------------------- FUNCTIONS
 
-// --------------------------------- WIDGETS ---------------------------------
+// --------------------------------- WIDGETS -----------------------------------
   /// Desc : 선택한 이미지 보여주기 (Preview)
   /// Date : 2023.03.16
   /// Author : youngjin
@@ -184,54 +227,131 @@ class _ImageUploadState extends State<ImageUpload> {
   Widget _previewImage() {
     // 오류 있을 시 Error 출력
     final Text? retrieveError = _getRetrieveError();
+
     if (retrieveError != null) {
       return retrieveError;
     }
-    // 이미지 파일 선ㅐ 되었을 때
-    if (_imageFile != null) {
-      return Semantics(
-        label: 'selected_image',
-        child: SizedBox(
-          height: 350,
-          width: 350,
-          child: GridView.builder(
-            key: UniqueKey(),
-            scrollDirection: Axis.vertical,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1, // 1개의 행에 보여줄 item 개수
-              childAspectRatio: 1, // item 의 가로 1, 세로 1 의 비율 (1/1)
-              mainAxisSpacing: 10, // 수평 Padding
-              crossAxisSpacing: 10, // 수직 Padding
-            ),
-            itemBuilder: (BuildContext context, int index) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Semantics(
-                    label: 'selected_image',
-                    child: kIsWeb
-                        ? Image.network(_imageFile!.path)
-                        : Image.file(File(_imageFile!.path)),
-                  ),
-                ],
-              );
-            },
-            // 여러장 선택시 _imageFile(리스트)!.length
-            itemCount: 1,
-          ),
-        ),
-      );
-    } else if (_pickImageError != null) {
+
+    if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
         textAlign: TextAlign.center,
       );
-    } else {
-      return const Text(
-        '우측 버튼을 눌러 사진을 업로드해주세요',
-        textAlign: TextAlign.center,
-      );
     }
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              // _onImageButtonPressed(ImageSource.gallery, context: context);
+              imageBottomSheet(context);
+            },
+            // 이미지 ------------------------------------------------------------
+            child: Container(
+              height: 320,
+              width: 250,
+              decoration: BoxDecoration(
+                  border: _imageFile == null
+                      ? Border.all(
+                          color: const Color.fromARGB(129, 158, 158, 158),
+                          width: 1,
+                        )
+                      : Border.all(
+                          color: Colors.white10,
+                          width: 0,
+                        )),
+              child: Center(
+                child: _imageFile == null
+                    ? const Icon(
+                        Icons.add,
+                        size: 50,
+                        color: Color.fromARGB(129, 158, 158, 158),
+                      )
+                    : Semantics(
+                        label: 'selected_image',
+                        child: Image.file(
+                          File(_imageFile!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(40.0),
+            child: Column(
+              children: [
+                _imageFile == null
+                    ? const Text(
+                        "이미지를 선택해주세요",
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.camera_alt,
+                            color: Colors.grey,
+                          ),
+                          Text(
+                            "이미지 클릭시 변경가능",
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                const SizedBox(height: 70),
+                // 모델예측 버튼----------------------------------------------------
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          _imageFile != null ? Colors.black : Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      minimumSize: Size(300, 50)),
+                  onPressed: () {
+                    if (_imageFile == null) {
+                      // 선택한 사진이 없는 경우
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: SizedBox(
+                            height: 40,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text(
+                                  '이미지를 선택해주세요',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            )),
+                        dismissDirection: DismissDirection.up,
+                        duration: const Duration(milliseconds: 500),
+                      ));
+                    } else {
+                      // 선택한 사진이 있는 경우
+                      // _saveSharedPreferences();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  Result(image: _imageFile!)));
+                    }
+                  },
+                  child: const Text(
+                    '모델 예측하기',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Desc : 오류 발생 시 Text로 출력
