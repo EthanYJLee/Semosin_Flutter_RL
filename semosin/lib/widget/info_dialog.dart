@@ -77,7 +77,7 @@ class _ShowInfoDialogState extends State<ShowInfoDialog> {
                   width: MediaQuery.of(context).size.width * 0.2,
                   height: MediaQuery.of(context).size.height * 0.05,
                   child: const Text(
-                    '앱 이름',
+                    '  앱 이름',
                     style: TextStyle(
                       color: Colors.black45,
                     ),
@@ -105,7 +105,7 @@ class _ShowInfoDialogState extends State<ShowInfoDialog> {
                   width: MediaQuery.of(context).size.width * 0.2,
                   height: MediaQuery.of(context).size.height * 0.05,
                   child: const Text(
-                    '개발자',
+                    '  개발자',
                     style: TextStyle(
                       color: Colors.black45,
                     ),
@@ -133,7 +133,7 @@ class _ShowInfoDialogState extends State<ShowInfoDialog> {
                   width: MediaQuery.of(context).size.width * 0.2,
                   height: MediaQuery.of(context).size.height * 0.05,
                   child: const Text(
-                    '이메일',
+                    '  이메일',
                     style: TextStyle(
                       color: Colors.black45,
                     ),
@@ -161,7 +161,7 @@ class _ShowInfoDialogState extends State<ShowInfoDialog> {
                   width: MediaQuery.of(context).size.width * 0.2,
                   height: MediaQuery.of(context).size.height * 0.05,
                   child: const Text(
-                    '취업',
+                    '  취업',
                     style: TextStyle(
                       color: Colors.black45,
                     ),
