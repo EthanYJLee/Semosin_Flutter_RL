@@ -91,10 +91,9 @@ class _ShoesListState extends State<ShoesList> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ShoeDetail(
-                                            modelName: snapshot
-                                                .data![index].shoeModelName,
-                                            brandName: snapshot
-                                                .data![index].shoeBrandName)));
+                                              modelName: snapshot
+                                                  .data![index].shoeModelName,
+                                            )));
                                 print(snapshot.data![index].shoeImageName);
                               },
                               child: Column(
