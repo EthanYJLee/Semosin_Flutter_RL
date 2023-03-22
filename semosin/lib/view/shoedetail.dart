@@ -1,14 +1,13 @@
-import 'dart:ffi';
-
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:semosin/model/selected_shoe.dart';
 import 'package:semosin/services/shoes_info.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/popup_card.dart';
-import 'package:semosin/widget/shoe.dart';
+
+import '../services/firebase_delete.dart';
+import '../services/firebase_favorite.dart';
+import '../services/firestore_insert.dart';
 
 class ShoeDetail extends StatefulWidget {
   const ShoeDetail(
@@ -62,16 +61,15 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // 빈 이미지 ViewModel 생성
     imagePathViewModel = ImagePathViewModel(imagePath: []);
     isLoading = true;
+    checkFavorite();
   }
 
   @override
   void setState(VoidCallback fn) {
-    // TODO: implement setState
     if (mounted) {
       super.setState(fn);
     }
@@ -128,7 +126,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                       widget.modelName,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 28,
+                        fontSize: 20,
                       ),
                     ),
 
@@ -137,11 +135,23 @@ class _ShoeDetailState extends State<ShoeDetail> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: IconButton(
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             bookmark = !bookmark;
                           });
-                          print(bookmark);
+                          // print(bookmark);
+                          if (bookmark) {
+                            await FireStoreInsert().insertFavorite(
+                                widget.modelName,
+                                widget.brandName,
+                                imagePathViewModel.imagePath[0]);
+                            // 슈즈 라이크 카운트 +1 기능 추가
+                          } else {
+                            await FireStoreDelete()
+                                .deleteFavorite(widget.modelName);
+                            // 슈즈 라이크 카운트 -1 기능 추가
+                          }
+                          FireStoreFavorite().isFavorite(widget.modelName);
                         },
                         icon: Icon(
                           bookmark
@@ -896,5 +906,12 @@ class _ShoeDetailState extends State<ShoeDetail> {
         imagePathViewModel = ImagePathViewModel(imagePath: pathList);
       });
     }
+  }
+
+  Future<void> checkFavorite() async {
+    bool result = await FireStoreFavorite().isFavorite(widget.modelName);
+    setState(() {
+      bookmark = result;
+    });
   }
 }
