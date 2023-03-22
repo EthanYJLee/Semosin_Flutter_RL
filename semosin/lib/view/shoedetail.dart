@@ -427,7 +427,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                     const EdgeInsets.symmetric(horizontal: 14),
                                 child: SizedBox(
                                   width: 350,
-                                  height: 100,
+                                  height: 140,
                                   child: SingleChildScrollView(
                                     // 글자수가 sized 박스를 넘어갈수도 있기 때문에 스크롤뷰로 해놈
                                     child: Column(
@@ -516,13 +516,18 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         if (availableQuantity != null) {
                                           if (productCount >
                                               int.parse(availableQuantity!)) {
-                                            checkQuantities();
+                                            checkQuantities('잔여수량을 확인해주세요');
                                           }
                                         }
-                                        addToCart(
-                                            widget.modelName,
-                                            productCount,
-                                            int.parse(snapshot.data!.price));
+                                        if (selectedSize != null) {
+                                          addToCart(
+                                              widget.modelName,
+                                              productCount,
+                                              int.parse(snapshot.data!.price),
+                                              int.parse(selectedSize!));
+                                        } else {
+                                          checkQuantities('사이즈를 선택해주세요');
+                                        }
                                       },
                                       child: const Text("장바구니"),
                                     ),
@@ -545,11 +550,18 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         if (availableQuantity != null) {
                                           if (productCount >
                                               int.parse(availableQuantity!)) {
-                                            checkQuantities();
+                                            checkQuantities('잔여수량을 확인해주세요');
                                           }
                                         }
-                                        checkOut(widget.modelName, productCount,
-                                            int.parse(snapshot.data!.price));
+                                        if (selectedSize != null) {
+                                          checkOut(
+                                              widget.modelName,
+                                              productCount,
+                                              int.parse(snapshot.data!.price),
+                                              int.parse(selectedSize!));
+                                        } else {
+                                          checkQuantities('사이즈를 선택해주세요');
+                                        }
                                       },
                                       child: const Text("구매하기"),
                                     ),
@@ -683,16 +695,16 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 선택한 수량이 잔여 수량보다 많을 경우 Alert Dialog
   /// Date : 2023.03.22
   /// Author : youngjin
-  checkQuantities() {
+  checkQuantities(String comment) {
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text(
-              '수량 확인',
+              '상품 확인',
             ),
-            content: const Text(
-              '잔여 수량을 확인해주세요',
+            content: Text(
+              comment,
               textAlign: TextAlign.center,
             ),
             actions: [
@@ -813,7 +825,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 장바구니 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
-  void addToCart(String model, int count, int price) {
+  void addToCart(String model, int count, int price, int size) {
     if (selectedSize == null) {
       showDialog(
         context: context,
@@ -877,6 +889,23 @@ class _ShoeDetailState extends State<ShoeDetail> {
               ),
               onPressed: () {
                 // ------------------------------------------------
+                // FireStoreInsert fireStoreInsert = FireStoreInsert();
+                // fireStoreInsert.insertIntoCart(
+                //     model, imagePathViewModel.imagePath[0], size, price, count);
+                // Navigator.of(context).pop();
+                // showDialog(
+                //     context: context,
+                //     builder: (context) {
+                //       return AlertDialog(
+                //         title: const Text('상품이 장바구니에 담겼습니다'),
+                //         actions: [
+                //           TextButton(
+                //               onPressed: () {}, child: const Text('홈으로')),
+                //           TextButton(
+                //               onPressed: () {}, child: const Text('장바구니로 이동'))
+                //         ],
+                //       );
+                //     });
               },
             ),
           ],
@@ -888,7 +917,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 구매하기 버튼 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
-  void checkOut(String model, int count, int price) {
+  void checkOut(String model, int count, int price, int size) {
     if (selectedSize == null) {
       showDialog(
         context: context,
