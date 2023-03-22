@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:semosin/model/brand_list.dart';
 import 'package:semosin/services/firestore_select.dart';
-import 'package:semosin/view_model/shoe_view_model.dart';
 import 'package:semosin/view/shoedetail.dart';
+import 'package:semosin/view_model/shoe_view_model.dart';
 
 class ShoesList extends StatefulWidget {
   const ShoesList({super.key});
@@ -187,8 +187,11 @@ class _ShoesListState extends State<ShoesList>
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => ShoeDetail(
-                                              modelName: snapshot.data![index]
-                                                  .shoeModelName)));
+                                                modelName: snapshot
+                                                    .data![index].shoeModelName,
+                                                brandName: snapshot
+                                                    .data![index].shoeBrandName,
+                                              )));
                                 },
                                 child: Row(
                                   children: [

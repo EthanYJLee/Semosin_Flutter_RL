@@ -32,7 +32,7 @@ class SelectedShoe {
         model = json['model'].toString(),
         brand = json['brand'].toString(),
         price = json['price'].toString(),
-        material = ['material'].toString(),
+        material = json['material'].toString(),
         height = json['height'].toString(),
         colors = json['colors'].cast<String>(),
         sizes = json['sizes'].cast<String, int>(),
