@@ -2,7 +2,7 @@ class ShoeViewModel {
   late String shoeImageName;
   final String shoeModelName;
   final String shoeBrandName;
-  final bool isLike;
+  final int likeNum;
   final String shoePrice;
 
   ShoeViewModel({
@@ -10,13 +10,13 @@ class ShoeViewModel {
     required this.shoeModelName,
     required this.shoeImageName,
     required this.shoePrice,
-    required this.isLike,
+    required this.likeNum,
   });
 
   ShoeViewModel.fromJson(Map<String, dynamic> json)
       : shoeImageName = json['images'][0].toString(),
         shoeModelName = json['model'].toString(),
         shoeBrandName = json['brand'].toString(),
-        isLike = false,
+        likeNum = int.parse(json['like'].toString()),
         shoePrice = json['price'];
 }

@@ -21,8 +21,6 @@ typedef ImageSizeCallback = void Function(
 class _ImageUploadState extends State<ImageUpload> {
   // 선택한 이미지
   XFile? _imageFile;
-  // 선택한 이미지의 경로
-  late String _imagePath = '';
   // Image Picker
   final ImagePicker _picker = ImagePicker();
   // 이미지 선택 오류
@@ -31,6 +29,12 @@ class _ImageUploadState extends State<ImageUpload> {
 
   void _setImageFromFile(XFile? value) {
     _imageFile = value;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   // --------------------------------- FRONT ---------------------------------

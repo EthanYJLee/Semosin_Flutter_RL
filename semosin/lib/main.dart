@@ -27,12 +27,27 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        appBarTheme: const AppBarTheme(
+          color: Colors.black,
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.black,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+          ),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.black,
+          unselectedItemColor: Colors.white70,
+          selectedItemColor: Colors.white,
+        ),
       ),
       debugShowCheckedModeBanner: false,
       // 저장된 토큰 유무를 확인한 후 결과에 따라 존재한다면 Home으로, 없다면 로그인-회원가입으로 이동
-      home: StreamBuilder<bool>(
-        stream: isDataInSharedPreferece(),
+      home: FutureBuilder<bool>(
+        future: isDataInSharedPreferece(),
         builder: (context, userSnapshot) {
           if (userSnapshot.hasData) {
             if (userSnapshot.data!) {
@@ -52,7 +67,7 @@ class MyApp extends StatelessWidget {
   /// 작성자 : 권순형
   /// 만든이 : 권순형
   /// 내용 : autho Login 인지 아닌지 찾기
-  Stream<bool> isDataInSharedPreferece() async* {
+  Future<bool> isDataInSharedPreferece() async {
     final pref = await SharedPreferences.getInstance();
     final email = pref.getString('saemosinemail');
     final password = pref.getString("saemosinpassword");
@@ -64,9 +79,9 @@ class MyApp extends StatelessWidget {
         password.isNotEmpty &&
         autoLogin != null &&
         autoLogin == true) {
-      yield true;
+      return true;
     } else {
-      yield false;
+      return false;
     }
   }
 }
