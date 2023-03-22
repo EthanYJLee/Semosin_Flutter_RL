@@ -131,7 +131,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
                         fontSize: 28,
                       ),
                     ),
-                    // 관심상품 등록 및 해제  --------------------------------------------
+
+                    /// 관심상품 등록 및 해제  --------------------------------------------
+                    /// --------------------------------insertFavorite, deleteFavorite, isFavorite 들어갈 자리--------------------------------
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: IconButton(
