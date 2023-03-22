@@ -1,5 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/services/shoes_info.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
 import 'package:semosin/widget/card_dialog.dart';
@@ -129,38 +130,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                         fontSize: 20,
                       ),
                     ),
-
-                    /// 관심상품 등록 및 해제  --------------------------------------------
-                    /// --------------------------------insertFavorite, deleteFavorite, isFavorite 들어갈 자리--------------------------------
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            bookmark = !bookmark;
-                          });
-                          // print(bookmark);
-                          if (bookmark) {
-                            await FireStoreInsert().insertFavorite(
-                                widget.modelName,
-                                widget.brandName,
-                                imagePathViewModel.imagePath[0]);
-                            // 슈즈 라이크 카운트 +1 기능 추가
-                          } else {
-                            await FireStoreDelete()
-                                .deleteFavorite(widget.modelName);
-                            // 슈즈 라이크 카운트 -1 기능 추가
-                          }
-                          FireStoreFavorite().isFavorite(widget.modelName);
-                        },
-                        icon: Icon(
-                          bookmark
-                              ? Icons.bookmark_outlined
-                              : Icons.bookmark_outline,
-                          size: 44,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -206,10 +175,70 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                           return Container(
                                             child: Column(
                                               children: [
-                                                Card(
-                                                  child: Image.network(
-                                                      imagePathViewModel
-                                                          .imagePath[index]),
+                                                Stack(
+                                                  children: [
+                                                    Card(
+                                                      child: Image.network(
+                                                          imagePathViewModel
+                                                                  .imagePath[
+                                                              index]),
+                                                    ),
+                                                    Positioned(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 10),
+                                                        child: IconButton(
+                                                          onPressed: () async {
+                                                            setState(() {
+                                                              bookmark =
+                                                                  !bookmark;
+                                                            });
+                                                            // print(bookmark);
+                                                            FirestoreUpdate
+                                                                firestoreUpdate =
+                                                                FirestoreUpdate();
+                                                            if (bookmark) {
+                                                              await FireStoreInsert().insertFavorite(
+                                                                  widget
+                                                                      .modelName,
+                                                                  widget
+                                                                      .brandName,
+                                                                  imagePathViewModel
+                                                                      .imagePath[0]);
+                                                              // 슈즈 라이크 카운트 +1 기능 추가
+                                                              firestoreUpdate
+                                                                  .incrementLikes(
+                                                                      widget
+                                                                          .modelName);
+                                                            } else {
+                                                              await FireStoreDelete()
+                                                                  .deleteFavorite(
+                                                                      widget
+                                                                          .modelName);
+                                                              // 슈즈 라이크 카운트 -1 기능 추가
+                                                              firestoreUpdate
+                                                                  .decrementLikes(
+                                                                      widget
+                                                                          .modelName);
+                                                            }
+                                                            FireStoreFavorite()
+                                                                .isFavorite(widget
+                                                                    .modelName);
+                                                          },
+                                                          icon: Icon(
+                                                            bookmark
+                                                                ? Icons
+                                                                    .bookmark_outlined
+                                                                : Icons
+                                                                    .bookmark_outline,
+                                                            size: 44,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
                                               ],
                                             ),
