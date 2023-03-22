@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/services/firestore_select.dart';
+import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
 import 'package:semosin/widget/brand_list.dart';
 import 'package:semosin/view/shoedetail.dart';
-import 'package:semosin/widget/not_read.dart';
 
 class ShoesList extends StatefulWidget {
   const ShoesList({super.key});
@@ -88,12 +88,16 @@ class _ShoesListState extends State<ShoesList> {
                           child: InkWell(
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ShoeDetail(
-                                            modelName: snapshot
-                                                .data![index].shoeModelName)));
-                                print(snapshot.data![index].shoeImageName);
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CartView()
+                                      //  ShoeDetail(
+                                      //   modelName:
+                                      //       snapshot.data![index].shoeModelName,
+                                      // ),
+                                      ),
+                                );
+                                // print(snapshot.data![index].shoeImageName);
                               },
                               child: Column(
                                 children: [

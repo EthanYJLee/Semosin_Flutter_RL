@@ -14,9 +14,9 @@ class User {
   final String initdate;
   final String updatedate;
   final String deletedate;
-  final List<Order> orders;
-  final List<Cart> carts;
-  final List<String> favorites;
+  // final List<Order> orders;
+  // final List<Cart> carts;
+  // final List<String> favorites;
 
   User({
     required this.name,
@@ -31,9 +31,9 @@ class User {
     required this.initdate,
     required this.updatedate,
     required this.deletedate,
-    required this.orders,
-    required this.carts,
-    required this.favorites,
+    // required this.orders,
+    // required this.carts,
+    // required this.favorites,
   });
 
   User.fromJson(Map<String, dynamic> json)
@@ -45,11 +45,11 @@ class User {
         phone = json['phone'].toString(),
         address = json['address'].toString(),
         addressDetail = json['addressDetail'].toString(),
-        postcode = json['postcode'],
+        postcode = json['postcode'].toString(),
         initdate = json['initdate'].toString(),
         updatedate = json['updatedate'].toString(),
-        deletedate = json['deletedate'].toString(),
-        orders = json['orders'].map((e) => Order.fromJson(e)).toList(),
-        carts = json['carts'].map((e) => Cart.fromJson(e)).toList(),
-        favorites = json['favorites'].toList();
+        deletedate = json['deletedate'].toString();
+  // orders = json['orders'].map((e) => Order.fromJson(e)).toList(),
+  // carts = json['carts'].map((e) => Cart.fromJson(e)).toList(),
+  // favorites = json['favorites'].toList();
 }
