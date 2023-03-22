@@ -323,7 +323,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                       child: Row(
                                         children: [
                                           const SizedBox(
-                                            width: 20,
+                                            width: 10,
                                           ),
                                           selectedSize == null
                                               ? const Text("")
@@ -488,7 +488,8 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        checkOut();
+                                        checkOut(widget.modelName, productCount,
+                                            int.parse(snapshot.data!.price));
                                       },
                                       child: const Text("구매하기"),
                                     ),
@@ -560,7 +561,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
             child: FittedBox(
               child: FloatingActionButton(
                 elevation: 0,
-                heroTag: 'btn1',
+                heroTag: 'minus_one',
                 onPressed: () {
                   setState(() {
                     if (productCount > 1) {
@@ -590,7 +591,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
             child: FittedBox(
               child: FloatingActionButton(
                 elevation: 0,
-                heroTag: 'btn2',
+                heroTag: 'plus_one',
                 onPressed: () {
                   setState(() {
                     productCount++;
@@ -754,7 +755,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                   Text("제품명: $model"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [Text("수량:$count"), Text("총액:${count * price}")],
+                    children: [Text("수량:$count"), Text("총액:${count * price}원")],
                   ),
                 ],
               )),
@@ -774,7 +775,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                // ------------------------------------------------
               },
             ),
           ],
@@ -786,7 +787,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 구매하기 버튼 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
-  void checkOut() {
+  void checkOut(String model, int count, int price) {
     if (selectedSize == null) {
       showDialog(
         context: context,
@@ -816,7 +817,19 @@ class _ShoeDetailState extends State<ShoeDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("구매"),
-          content: const Text("해당제품을 구매하러 가시겠습니까?"),
+          content: Container(
+            height: 150,
+            child: Column(
+              children: [
+                const Text("해당제품을 구매하러 가시겠습니까?"),
+                Text("제품명: $model"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [Text("수량:$count"), Text("총액:${count * price}원")],
+                ),
+              ],
+            ),
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text(
@@ -833,7 +846,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                // ------------------------------------------------
               },
             ),
           ],
