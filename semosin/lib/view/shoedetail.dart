@@ -11,10 +11,12 @@ import 'package:semosin/widget/popup_card.dart';
 import 'package:semosin/widget/shoe.dart';
 
 class ShoeDetail extends StatefulWidget {
-  const ShoeDetail({super.key, required this.modelName});
+  const ShoeDetail(
+      {super.key, required this.modelName, required this.brandName});
 
   // click 시 모델 이름 받아오기
   final String modelName;
+  final String brandName;
 
   // image path 받아오기
 
@@ -129,7 +131,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
                         fontSize: 28,
                       ),
                     ),
-                    // 관심상품 등록 및 해제  --------------------------------------------
+
+                    /// 관심상품 등록 및 해제  --------------------------------------------
+                    /// --------------------------------insertFavorite, deleteFavorite, isFavorite 들어갈 자리--------------------------------
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: IconButton(
@@ -320,51 +324,55 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     IntrinsicHeight(
-                                      child: Row(
-                                        children: [
-                                          const SizedBox(
-                                            width: 20,
-                                          ),
-                                          selectedSize == null
-                                              ? const Text("")
-                                              : const Text("Size:",
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                          TextButton(
-                                            onPressed: () {
-                                              showSizeBottomSheet(context,
-                                                  snapshot.data!.sizes!);
-                                            },
-                                            child: Text(
-                                                selectedSize ?? "사이즈 선택",
-                                                style: const TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ),
-                                          SizedBox(
-                                            width: 80,
-                                            child: availableQuantity == null
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 5, right: 5),
+                                        child: Row(
+                                          children: [
+                                            // const SizedBox(
+                                            //   width: 10,
+                                            // ),
+                                            selectedSize == null
                                                 ? const Text("")
-                                                : Text(
-                                                    '수량:  ${availableQuantity.toString()}',
-                                                    style: const TextStyle(
+                                                : const Text("Size:",
+                                                    style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                          ),
-                                          const VerticalDivider(
-                                            width: 40,
-                                            thickness: 2,
-                                            indent: 0,
-                                            endIndent: 0,
-                                          ),
-                                          countProduct(),
-                                        ],
+                                                            FontWeight.bold)),
+                                            TextButton(
+                                              onPressed: () {
+                                                showSizeBottomSheet(context,
+                                                    snapshot.data!.sizes!);
+                                              },
+                                              child: Text(
+                                                  selectedSize ?? "사이즈 선택",
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            SizedBox(
+                                              width: 80,
+                                              child: availableQuantity == null
+                                                  ? const Text("")
+                                                  : Text(
+                                                      '수량:  ${availableQuantity.toString()}',
+                                                      style: const TextStyle(
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                            ),
+                                            const VerticalDivider(
+                                              width: 40,
+                                              thickness: 2,
+                                              indent: 0,
+                                              endIndent: 0,
+                                            ),
+                                            countProduct(),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -488,7 +496,8 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        checkOut();
+                                        checkOut(widget.modelName, productCount,
+                                            int.parse(snapshot.data!.price));
                                       },
                                       child: const Text("구매하기"),
                                     ),
@@ -516,40 +525,45 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  // 신발색상 선택 위젯
-  Widget buildColorButton(Color color) {
-    const double selectedSize = 30;
-    const double unselectedSize = 20;
-    String resultColor; // 선택한 색상을 문자로 출력하기 위해
-    resultColor = "black"; // 기본값
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedColor = color;
-          if (selectedColor == Colors.white) {
-            resultColor = "white";
-          } else if (selectedColor == Colors.black) {
-            resultColor = "black";
-          } else {
-            resultColor = "red";
-          }
-          print(resultColor);
-        });
-      },
-      child: Container(
-        width: selectedColor == color ? selectedSize : unselectedSize,
-        height: selectedColor == color ? selectedSize : unselectedSize,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-        ),
-        // child: selectedColor == color
-        //     ? const Icon(Icons.check, size: 20, color: Colors.grey)
-        //     : null,
-      ),
-    );
-  }
+  /// Desc : 신발색상 선택 위젯
+  /// Author : 이성연
+  /// Note : 색상 코드 통일 해결할 때까지 사용 보류
+  // Widget buildColorButton(Color color) {
+  //   const double selectedSize = 30;
+  //   const double unselectedSize = 20;
+  //   String resultColor; // 선택한 색상을 문자로 출력하기 위해
+  //   resultColor = "black"; // 기본값
+  //   return GestureDetector(
+  //     onTap: () {
+  //       setState(() {
+  //         selectedColor = color;
+  //         if (selectedColor == Colors.white) {
+  //           resultColor = "white";
+  //         } else if (selectedColor == Colors.black) {
+  //           resultColor = "black";
+  //         } else {
+  //           resultColor = "red";
+  //         }
+  //         print(resultColor);
+  //       });
+  //     },
+  //     child: Container(
+  //       width: selectedColor == color ? selectedSize : unselectedSize,
+  //       height: selectedColor == color ? selectedSize : unselectedSize,
+  //       decoration: BoxDecoration(
+  //         shape: BoxShape.circle,
+  //         color: color,
+  //       ),
+  //       // child: selectedColor == color
+  //       //     ? const Icon(Icons.check, size: 20, color: Colors.grey)
+  //       //     : null,
+  //     ),
+  //   );
+  // }
 
+  /// Desc : 신발 수량 +/- (FloatingActionButton)
+  /// Date : 2023.03.20
+  /// Author : youngjin
   Widget countProduct() {
     return Container(
       child: Row(
@@ -560,7 +574,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
             child: FittedBox(
               child: FloatingActionButton(
                 elevation: 0,
-                heroTag: 'btn1',
+                heroTag: 'minus_one',
                 onPressed: () {
                   setState(() {
                     if (productCount > 1) {
@@ -590,7 +604,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
             child: FittedBox(
               child: FloatingActionButton(
                 elevation: 0,
-                heroTag: 'btn2',
+                heroTag: 'plus_one',
                 onPressed: () {
                   setState(() {
                     productCount++;
@@ -609,6 +623,13 @@ class _ShoeDetailState extends State<ShoeDetail> {
       ),
     );
   }
+
+  /// Desc : 선택한 수량이 잔여 수량보다 많을 경우 Alert Dialog
+  /// Date : 2023.03.22
+  /// Author : youngjin
+  ///
+  ///
+
   // -----------------------------------------------------------------------------------------------------
 
   // ------------------------------------------------ FUNCTIONS ------------------------------------------------
@@ -754,7 +775,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                   Text("제품명: $model"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [Text("수량:$count"), Text("총액:${count * price}")],
+                    children: [Text("수량:$count"), Text("총액:${count * price}원")],
                   ),
                 ],
               )),
@@ -774,7 +795,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                // ------------------------------------------------
               },
             ),
           ],
@@ -786,7 +807,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 구매하기 버튼 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
-  void checkOut() {
+  void checkOut(String model, int count, int price) {
     if (selectedSize == null) {
       showDialog(
         context: context,
@@ -816,7 +837,19 @@ class _ShoeDetailState extends State<ShoeDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("구매"),
-          content: const Text("해당제품을 구매하러 가시겠습니까?"),
+          content: Container(
+            height: 150,
+            child: Column(
+              children: [
+                const Text("해당제품을 구매하러 가시겠습니까?"),
+                Text("제품명: $model"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [Text("수량:$count"), Text("총액:${count * price}원")],
+                ),
+              ],
+            ),
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text(
@@ -833,7 +866,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                // ------------------------------------------------
               },
             ),
           ],

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PopupCard extends StatelessWidget {
+  /// Desc : ShoeDetail에서 상품 상세정보 (제조사, 제조국, 색상, 소재, 굽높이 보여주는 Popup Card)
+  /// Date : 2023.03.20
+  /// Author : youngjin
   const PopupCard({
     Key? key,
     required this.maker,

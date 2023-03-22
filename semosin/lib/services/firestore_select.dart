@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:semosin/model/cart.dart';
+import 'package:semosin/model/favorites.dart';
+import 'package:semosin/model/user.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FireStoreSelect {
   /// 날짜 :2023.03.15
@@ -98,7 +102,7 @@ class FireStoreSelect {
   /*
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이호식
-  /// 만든이 :
+  /// 만든이 : 호식
   /// 내용 : firestore 에서 user data다 가지고 오기
   Future<User> selectUser() async {
     // shared preference 에서 사용자 정보값 가져오기
@@ -108,6 +112,31 @@ class FireStoreSelect {
   }
   */
 
+  Future<User> getUserInfo() async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    Map<String, dynamic> data =
+        querySnapshot.docs[0].data() as Map<String, dynamic>;
+
+    User userInfo = User.fromJson(data);
+    User _user = User(
+        name: userInfo.name,
+        uid: userInfo.uid,
+        email: userInfo.email,
+        nickname: userInfo.nickname,
+        sex: userInfo.sex,
+        phone: userInfo.phone,
+        address: userInfo.address,
+        addressDetail: userInfo.addressDetail,
+        postcode: userInfo.postcode);
+    return _user;
+  }
 //   /// 날짜 :2023.03.15
 //   /// 작성자 : 권순형 , 이호식
 //   /// 만든이 :
@@ -119,4 +148,43 @@ class FireStoreSelect {
 //     // 로 해서 새로운 ShoeViewModel로 만들어서 이걸 리턴해 주면 된다.
 //   }
 
-}
+  Future<List<Favorites>> selectFavoriteShoes() async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+
+    List<Favorites> favoritesList = [];
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(email)
+        .collection('favorites')
+        .get();
+
+    for (var document in querySnapshot.docs) {
+      Favorites favorites =
+          Favorites.fromJson(document.data() as Map<String, dynamic>);
+      favoritesList.add(favorites);
+    }
+    return favoritesList;
+  }
+
+  /// 날짜 :2023.03.22
+  /// 작성자 : 이호식
+  /// 내용 : users의 cart 불러오기
+  Future<List<Cart>> selectCart() async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+    List<Cart> cartList = [];
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(email)
+        .collection('carts')
+        .get();
+    for (var document in querySnapshot.docs) {
+      Cart cart = Cart.fromJson(document.data() as Map<String, dynamic>);
+      cartList.add(cart);
+    }
+    return cartList;
+  } //select cart end
+
+}//FireStoreSelect End
