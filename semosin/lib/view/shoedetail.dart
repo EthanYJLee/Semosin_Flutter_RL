@@ -299,7 +299,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                           const EdgeInsets.only(left: 20.0),
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                            CrossAxisAlignment.center,
                                         children: [
                                           Text(
                                             snapshot.data!.brand,
@@ -495,6 +495,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                               const SizedBox(
                                 height: 30,
                               ),
+                              // 장바구니, 구매하기 버튼 ------------------------------------------------------
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -512,6 +513,12 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
+                                        if (availableQuantity != null) {
+                                          if (productCount >
+                                              int.parse(availableQuantity!)) {
+                                            checkQuantities();
+                                          }
+                                        }
                                         addToCart(
                                             widget.modelName,
                                             productCount,
@@ -535,6 +542,12 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
+                                        if (availableQuantity != null) {
+                                          if (productCount >
+                                              int.parse(availableQuantity!)) {
+                                            checkQuantities();
+                                          }
+                                        }
                                         checkOut(widget.modelName, productCount,
                                             int.parse(snapshot.data!.price));
                                       },
@@ -663,15 +676,39 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  /// Desc : 선택한 수량이 잔여 수량보다 많을 경우 Alert Dialog
-  /// Date : 2023.03.22
-  /// Author : youngjin
-  ///
-  ///
-
   // -----------------------------------------------------------------------------------------------------
 
   // ------------------------------------------------ FUNCTIONS ------------------------------------------------
+
+  /// Desc : 선택한 수량이 잔여 수량보다 많을 경우 Alert Dialog
+  /// Date : 2023.03.22
+  /// Author : youngjin
+  checkQuantities() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              '수량 확인',
+            ),
+            content: const Text(
+              '잔여 수량을 확인해주세요',
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    '확인',
+                    style: TextStyle(color: Colors.black),
+                  ))
+            ],
+          );
+        });
+  }
+
   /// Desc : 사이즈 선택 Modal Bottom Sheet
   /// Date : 2023.03.20
   /// Author : 이성연, 이영진
@@ -807,15 +844,20 @@ class _ShoeDetailState extends State<ShoeDetail> {
         return AlertDialog(
           title: const Text("장바구니"),
           content: Container(
-              height: 150,
+              height: 120,
+              width: 150,
               child: Column(
                 children: [
-                  const Text("해당제품을 장바구니에 담으시겠습니까?"),
-                  Text("제품명: $model"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [Text("수량:$count"), Text("총액:${count * price}원")],
+                  const Text(
+                    "해당제품을 장바구니에 \n담으시겠습니까?",
+                    textAlign: TextAlign.center,
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(model),
+                  Text("수량:$count"),
+                  Text("총액:${count * price}원"),
                 ],
               )),
           actions: <Widget>[
@@ -877,15 +919,20 @@ class _ShoeDetailState extends State<ShoeDetail> {
         return AlertDialog(
           title: const Text("구매"),
           content: Container(
-            height: 150,
+            height: 120,
+            width: 150,
             child: Column(
               children: [
-                const Text("해당제품을 구매하러 가시겠습니까?"),
-                Text("제품명: $model"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [Text("수량:$count"), Text("총액:${count * price}원")],
+                const Text(
+                  "해당제품을 구매하러 가시겠습니까?",
+                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(model),
+                Text("수량:$count"),
+                Text("총액:${count * price}원"),
               ],
             ),
           ),
