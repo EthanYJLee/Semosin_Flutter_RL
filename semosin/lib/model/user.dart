@@ -11,12 +11,11 @@ class User {
   final String address;
   final String addressDetail;
   final String postcode;
-  final String initdate;
-  final String updatedate;
-  final String deletedate;
-  final List<Order> orders;
-  final List<Cart> carts;
-  final List<String> favorites;
+  // final String initdate;
+  // final String updatedate;
+  // final String deletedate;
+  // final List<Order> orders;
+  // final List<Cart> carts;
 
   User({
     required this.name,
@@ -28,28 +27,26 @@ class User {
     required this.address,
     required this.addressDetail,
     required this.postcode,
-    required this.initdate,
-    required this.updatedate,
-    required this.deletedate,
-    required this.orders,
-    required this.carts,
-    required this.favorites,
+    // required this.initdate,
+    // required this.updatedate,
+    // required this.deletedate,
+    // required this.orders,
+    // required this.carts,
   });
 
-  User.fromJson(Map<String, dynamic> json)
-      : name = json['name'].toString(),
-        uid = json['uid'].toString(),
-        email = json['uid'].toString(),
-        nickname = json['nickname'].toString(),
-        sex = json['sex'].toString(),
-        phone = json['phone'].toString(),
-        address = json['address'].toString(),
-        addressDetail = json['addressDetail'].toString(),
-        postcode = json['postcode'],
-        initdate = json['initdate'].toString(),
-        updatedate = json['updatedate'].toString(),
-        deletedate = json['deletedate'].toString(),
-        orders = json['orders'].map((e) => Order.fromJson(e)).toList(),
-        carts = json['carts'].map((e) => Cart.fromJson(e)).toList(),
-        favorites = json['favorites'].toList();
+  User.fromJson(Map<String, dynamic> json) //* = db에 있는 것
+      : name = json['name'].toString(), //*
+        uid = json['uid'].toString(), //*
+        email = json['email'].toString(), //*
+        nickname = json['nickname'].toString(), //*
+        sex = json['sex'].toString(), //*
+        phone = json['phone'].toString(), //*
+        address = json['address'].toString(), //*
+        addressDetail = json['addressDetail'].toString(), //*
+        postcode = json['postcode']; //*
+  // initdate = json['initdate'].toString(),
+  // updatedate = json['updatedate'].toString(),
+  // deletedate = json['deletedate'].toString(),
+  // orders = json['orders'].map((e) => Order.fromJson(e)).toList(),
+  // carts = json['carts'].map((e) => Cart.fromJson(e)).toList();
 }

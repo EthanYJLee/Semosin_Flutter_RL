@@ -182,129 +182,124 @@ class _ShoesListState extends State<ShoesList>
                           child: Card(
                             color: Colors.white,
                             child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ShoeDetail(
-                                                modelName: snapshot
-                                                    .data![index].shoeModelName,
-                                                brandName: snapshot
-                                                    .data![index].shoeBrandName,
-                                              )));
-                                },
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.4,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                              0.4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(15.0),
-                                        child: Image.network(snapshot
-                                            .data![index].shoeImageName),
-                                      ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ShoeDetail(
+                                              modelName: snapshot
+                                                  .data![index].shoeModelName,
+                                              brandName: snapshot
+                                                  .data![index].shoeBrandName,
+                                            )));
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    height:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Image.network(
+                                          snapshot.data![index].shoeImageName),
                                     ),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.538,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                              0.4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Row(
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.538,
+                                    height:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              SizedBox(
+                                                width: 50,
+                                                height: 30,
+                                                child: Image.asset(
+                                                  imagePath,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  snapshot.data![index]
+                                                      .shoeModelName,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.blueGrey[900],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.end,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 SizedBox(
-                                                  width: 50,
-                                                  height: 30,
-                                                  child: Image.asset(
-                                                    imagePath,
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    snapshot.data![index]
-                                                        .shoeModelName,
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color:
-                                                          Colors.blueGrey[900],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  SizedBox(
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(
-                                                          CupertinoIcons
-                                                              .heart_fill,
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        CupertinoIcons
+                                                            .heart_fill,
+                                                        color: Colors.red[400],
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                        snapshot.data![index]
+                                                            .likeNum
+                                                            .toString(),
+                                                        style: TextStyle(
                                                           color:
                                                               Colors.red[400],
                                                         ),
-                                                        const SizedBox(
-                                                          width: 5,
-                                                        ),
-                                                        Text(
-                                                          snapshot.data![index]
-                                                              .likeNum
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            color:
-                                                                Colors.red[400],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Text(
-                                                    '${formatCurrency.format(int.parse(snapshot.data![index].shoePrice))}원',
-                                                    style: const TextStyle(
-                                                      color: Colors.black45,
-                                                      fontSize: 15,
-                                                    ),
+                                                ),
+                                                Text(
+                                                  '${formatCurrency.format(int.parse(snapshot.data![index].shoePrice))}원',
+                                                  style: const TextStyle(
+                                                    color: Colors.black45,
+                                                    fontSize: 15,
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                )),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         );
                       },
