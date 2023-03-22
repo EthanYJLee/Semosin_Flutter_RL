@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/view/favorite_list.dart';
+import 'package:semosin/view/userinfopage.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -114,6 +116,11 @@ class _MyPageState extends State<MyPage> {
             splashFactory: NoSplash.splashFactory,
           ),
           onPressed: () {
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) {
+                return UserInfoPage();
+              },
+            ));
             print('btnInfoUpdate onTap');
           },
           child: const Text(
