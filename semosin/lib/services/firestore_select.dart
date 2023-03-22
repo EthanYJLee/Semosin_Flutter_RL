@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:semosin/model/favorites.dart';
+import 'package:semosin/model/user.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FireStoreSelect {
   /// 날짜 :2023.03.15
@@ -103,5 +106,42 @@ class FireStoreSelect {
         .get();
 
     return doc.docs.isNotEmpty;
+  }
+
+  Future<User> getUserInfo() async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    Map<String, dynamic> data =
+        querySnapshot.docs[0].data() as Map<String, dynamic>;
+
+    User userInfo = User.fromJson(data);
+
+    return userInfo;
+  }
+
+  Future<List<Favorites>> selectFavoriteShoes() async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+
+    List<Favorites> favoritesList = [];
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(email)
+        .collection('favorites')
+        .get();
+
+    for (var document in querySnapshot.docs) {
+      Favorites favorites =
+          Favorites.fromJson(document.data() as Map<String, dynamic>);
+      favoritesList.add(favorites);
+    }
+    return favoritesList;
   }
 }

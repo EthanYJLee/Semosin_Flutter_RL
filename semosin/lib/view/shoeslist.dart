@@ -92,7 +92,9 @@ class _ShoesListState extends State<ShoesList> {
                                     MaterialPageRoute(
                                         builder: (context) => ShoeDetail(
                                             modelName: snapshot
-                                                .data![index].shoeModelName)));
+                                                .data![index].shoeModelName,
+                                            brandName: snapshot
+                                                .data![index].shoeBrandName)));
                                 print(snapshot.data![index].shoeImageName);
                               },
                               child: Column(
@@ -182,7 +184,6 @@ class _ShoesListState extends State<ShoesList> {
   //     .toList();
   // return list;
   // } //  selectShoesAndLike END
-
 }
 
 // Future<List<ShoeViewModel>> selectShoes() async {
