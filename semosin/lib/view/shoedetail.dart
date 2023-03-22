@@ -11,10 +11,12 @@ import 'package:semosin/widget/popup_card.dart';
 import 'package:semosin/widget/shoe.dart';
 
 class ShoeDetail extends StatefulWidget {
-  const ShoeDetail({super.key, required this.modelName});
+  const ShoeDetail(
+      {super.key, required this.modelName, required this.brandName});
 
   // click 시 모델 이름 받아오기
   final String modelName;
+  final String brandName;
 
   // image path 받아오기
 
@@ -521,40 +523,45 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  // 신발색상 선택 위젯
-  Widget buildColorButton(Color color) {
-    const double selectedSize = 30;
-    const double unselectedSize = 20;
-    String resultColor; // 선택한 색상을 문자로 출력하기 위해
-    resultColor = "black"; // 기본값
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedColor = color;
-          if (selectedColor == Colors.white) {
-            resultColor = "white";
-          } else if (selectedColor == Colors.black) {
-            resultColor = "black";
-          } else {
-            resultColor = "red";
-          }
-          print(resultColor);
-        });
-      },
-      child: Container(
-        width: selectedColor == color ? selectedSize : unselectedSize,
-        height: selectedColor == color ? selectedSize : unselectedSize,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-        ),
-        // child: selectedColor == color
-        //     ? const Icon(Icons.check, size: 20, color: Colors.grey)
-        //     : null,
-      ),
-    );
-  }
+  /// Desc : 신발색상 선택 위젯
+  /// Author : 이성연
+  /// Note : 색상 코드 통일 해결할 때까지 사용 보류
+  // Widget buildColorButton(Color color) {
+  //   const double selectedSize = 30;
+  //   const double unselectedSize = 20;
+  //   String resultColor; // 선택한 색상을 문자로 출력하기 위해
+  //   resultColor = "black"; // 기본값
+  //   return GestureDetector(
+  //     onTap: () {
+  //       setState(() {
+  //         selectedColor = color;
+  //         if (selectedColor == Colors.white) {
+  //           resultColor = "white";
+  //         } else if (selectedColor == Colors.black) {
+  //           resultColor = "black";
+  //         } else {
+  //           resultColor = "red";
+  //         }
+  //         print(resultColor);
+  //       });
+  //     },
+  //     child: Container(
+  //       width: selectedColor == color ? selectedSize : unselectedSize,
+  //       height: selectedColor == color ? selectedSize : unselectedSize,
+  //       decoration: BoxDecoration(
+  //         shape: BoxShape.circle,
+  //         color: color,
+  //       ),
+  //       // child: selectedColor == color
+  //       //     ? const Icon(Icons.check, size: 20, color: Colors.grey)
+  //       //     : null,
+  //     ),
+  //   );
+  // }
 
+  /// Desc : 신발 수량 +/- (FloatingActionButton)
+  /// Date : 2023.03.20
+  /// Author : youngjin
   Widget countProduct() {
     return Container(
       child: Row(
@@ -614,6 +621,13 @@ class _ShoeDetailState extends State<ShoeDetail> {
       ),
     );
   }
+
+  /// Desc : 선택한 수량이 잔여 수량보다 많을 경우 Alert Dialog
+  /// Date : 2023.03.22
+  /// Author : youngjin
+  ///
+  ///
+
   // -----------------------------------------------------------------------------------------------------
 
   // ------------------------------------------------ FUNCTIONS ------------------------------------------------

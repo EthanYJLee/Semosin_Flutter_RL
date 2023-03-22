@@ -39,8 +39,10 @@ class _ShoesListState extends State<ShoesList> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              ShoeDetail(modelName: '그랜드 코트 베이스 2.0')));
+                          builder: (context) => ShoeDetail(
+                                modelName: '그랜드 코트 베이스 2.0',
+                                brandName: '아디다스',
+                              )));
                 },
                 child: const Text('상세보기')),
           ],
