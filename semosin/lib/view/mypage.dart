@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/view/favorite_list.dart';
+import 'package:semosin/view/order_status.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -27,11 +28,6 @@ class _MyPageState extends State<MyPage> {
           btnInfoUpdate(),
           orderStatusBoard(),
           bottomList(),
-          TextButton(
-              onPressed: () {
-                FireStoreSelect().selectFavoriteShoes();
-              },
-              child: const Text('Test'))
         ],
       ),
     );
@@ -132,7 +128,14 @@ class _MyPageState extends State<MyPage> {
   Widget orderStatusBoard() {
     return GestureDetector(
       onTap: () {
-        print('orderStatusBoard onTap');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return const OrderStatus();
+            },
+          ),
+        );
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -262,7 +265,14 @@ class _MyPageState extends State<MyPage> {
           ),
           GestureDetector(
             onTap: () {
-              print('주문확인 onTap');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const OrderStatus();
+                  },
+                ),
+              );
             },
             child: const SizedBox(
               height: 50,

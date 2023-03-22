@@ -5,8 +5,8 @@ class FireStoreFavorite {
   /// 날짜 :2023.03.21
   /// 작성자 : 신오수
   /// 만든이 : 신오수
-  /// 내용 : model 이름 firestore user favorites에 넣기
-  /// shoedetail 갈때 
+  /// 내용 : user favorites에 넣기
+  /// shoedetail 갈때
   Future<bool> isFavorite(modelName) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');

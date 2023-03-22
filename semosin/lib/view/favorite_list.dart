@@ -30,43 +30,52 @@ class _FavoriteListState extends State<FavoriteList> {
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                crossAxisSpacing: 2,
-                mainAxisSpacing: 2,
+                crossAxisSpacing: 0,
+                mainAxisSpacing: 20,
               ),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                return Stack(
-                  children: [
-                    Image.network(
-                      snapshot.data![index].shoeImageName,
-                    ),
-                    Positioned(
-                      child: IconButton(
-                        onPressed: () {
-                          //
-                        },
-                        icon: const Icon(
-                          CupertinoIcons.heart_fill,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      right: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                return Card(
+                  child: Column(
+                    children: [
+                      Stack(
                         children: [
-                          Text(snapshot.data![index].shoeBrandName),
-                          Text(
-                            snapshot.data![index].shoeModelName,
-                            style: const TextStyle(
-                              fontSize: 10,
+                          Image.network(
+                            snapshot.data![index].shoeImageName,
+                          ),
+                          Positioned(
+                            child: IconButton(
+                              onPressed: () {
+                                //
+                              },
+                              icon: const Icon(
+                                CupertinoIcons.heart_fill,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 3,
+                            right: 3,
+                            child: Image.asset(
+                              snapshot.data![index].shoeBrandName == '아디다스'
+                                  ? './images/converted_adidas.png'
+                                  : snapshot.data![index].shoeBrandName == '나이키'
+                                      ? './images/converted_nike.png'
+                                      : snapshot.data![index].shoeBrandName ==
+                                              '컨버스'
+                                          ? './images/converted_converse.png'
+                                          : './images/googlelogo.png',
+                              width: 30,
+                              height: 30,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      Text(
+                        snapshot.data![index].shoeModelName,
+                      ),
+                    ],
+                  ),
                 );
               },
             );
