@@ -45,14 +45,12 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyAppBar(title: "제품예측"),
+      appBar: const MyAppBar(title: "이미지 결과"),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Upload한 이미지 보여주기
-            const SizedBox(
-              height: 100,
-            ),
             SizedBox(
               height: 320,
               width: 250,
