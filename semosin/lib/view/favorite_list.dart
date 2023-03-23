@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:semosin/services/firebase_delete.dart';
 import 'package:semosin/services/firestore_select.dart';
+import 'package:semosin/view/shoedetail.dart';
 
 class FavoriteList extends StatefulWidget {
   const FavoriteList({super.key});
@@ -11,70 +13,406 @@ class FavoriteList extends StatefulWidget {
 
 class _FavoriteListState extends State<FavoriteList> {
   late FireStoreSelect fireStoreSelect;
+
+  late List brandButtonGroup;
+
+  final List<String> valueList = <String>['담은순', '낮은 가격순', '높은 가격순'];
+  late String dropdownValue;
+
+  final String all = '전체';
+  final String nike = '나이키';
+  final String adidas = '아디다스';
+  final String converse = '컨버스';
+
+  String selectedBrandValue = '전체';
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fireStoreSelect = FireStoreSelect();
-    fireStoreSelect.selectFavoriteShoes();
+
+    brandButtonGroup = [true, false, false, false];
+
+    dropdownValue = valueList.first;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: FutureBuilder(
-        future: fireStoreSelect.selectFavoriteShoes(),
+      body: Column(
+        children: [
+          topGroup(),
+          favoritesList(),
+        ],
+      ),
+    );
+  }
+
+  // Widget Start ----------------------
+
+  Widget topGroup() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(55, 35),
+                  maximumSize: const Size(55, 35),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    side: BorderSide(
+                      width: 2,
+                      color: brandButtonGroup[0] == true
+                          ? Colors.black
+                          : Colors.grey,
+                    ),
+                  ),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    brandButtonGroup = [true, false, false, false];
+                    selectedBrandValue = all;
+                  });
+                },
+                child: Text(
+                  all,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: brandButtonGroup[0] == true
+                        ? Colors.black
+                        : Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(55, 35),
+                  maximumSize: const Size(55, 35),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    side: BorderSide(
+                      width: 2,
+                      color: brandButtonGroup[1] == true
+                          ? Colors.black
+                          : Colors.grey,
+                    ),
+                  ),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    brandButtonGroup = [false, true, false, false];
+                    selectedBrandValue = nike;
+                  });
+                },
+                child: Text(
+                  nike,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: brandButtonGroup[1] == true
+                        ? Colors.black
+                        : Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(55, 35),
+                  maximumSize: const Size(55, 35),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    side: BorderSide(
+                      width: 2,
+                      color: brandButtonGroup[2] == true
+                          ? Colors.black
+                          : Colors.grey,
+                    ),
+                  ),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    brandButtonGroup = [false, false, true, false];
+                    selectedBrandValue = adidas;
+                  });
+                },
+                child: Text(
+                  adidas,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: brandButtonGroup[2] == true
+                        ? Colors.black
+                        : Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(55, 35),
+                  maximumSize: const Size(55, 35),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    side: BorderSide(
+                      width: 2,
+                      color: brandButtonGroup[3] == true
+                          ? Colors.black
+                          : Colors.grey,
+                    ),
+                  ),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    brandButtonGroup = [false, false, false, true];
+                    selectedBrandValue = converse;
+                  });
+                },
+                child: Text(
+                  converse,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: brandButtonGroup[3] == true
+                        ? Colors.black
+                        : Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(left: 10),
+              // decoration: BoxDecoration(
+              //   borderRadius: BorderRadius.circular(10),
+              //   border: Border.all(
+              //     width: 2,
+              //     color: Colors.grey,
+              //   ),
+              // ),
+              width: 93,
+              height: 35,
+              child: DropdownButton<String>(
+                alignment: Alignment.centerRight,
+                value: dropdownValue,
+                icon: const Icon(
+                  CupertinoIcons.chevron_down,
+                ),
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+                underline: Container(),
+                onChanged: (String? value) {
+                  setState(() {
+                    dropdownValue = value!;
+                    print(dropdownValue);
+                  });
+                },
+                items: valueList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget favoritesList() {
+    return SizedBox(
+      height: 670,
+      child: FutureBuilder(
+        future: fireStoreSelect.selectFavoriteShoes(selectedBrandValue),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 2,
-                mainAxisSpacing: 2,
+                mainAxisExtent: 260,
+                crossAxisCount: 2,
+                // mainAxisExtent: 200,
+                // crossAxisCount: 3,
+                crossAxisSpacing: 0,
+                mainAxisSpacing: 0,
               ),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                return Stack(
-                  children: [
-                    Image.network(
-                      snapshot.data![index].shoeImageName,
-                    ),
-                    Positioned(
-                      child: IconButton(
-                        onPressed: () {
-                          //
+                return GestureDetector(
+                  onTap: () {
+                    // Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return ShoeDetail(
+                              modelName: snapshot.data![index].shoeModelName,
+                              brandName: snapshot.data![index].shoeBrandName);
                         },
-                        icon: const Icon(
-                          CupertinoIcons.heart_fill,
-                        ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      right: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(snapshot.data![index].shoeBrandName),
-                          Text(
-                            snapshot.data![index].shoeModelName,
-                            style: const TextStyle(
-                              fontSize: 10,
+                    );
+                  },
+                  child: Card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Image.network(
+                              snapshot.data![index].shoeImageName,
                             ),
+                            Positioned(
+                              child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    unlikeDialog(
+                                        snapshot.data![index].shoeModelName);
+                                  });
+                                },
+                                icon: const Icon(CupertinoIcons.heart_fill),
+                              ),
+                            ),
+                            Positioned(
+                              top: 3,
+                              right: 3,
+                              child: Image.asset(
+                                snapshot.data![index].shoeBrandName == '아디다스'
+                                    ? './images/converted_adidas.png'
+                                    : snapshot.data![index].shoeBrandName ==
+                                            '나이키'
+                                        ? './images/converted_nike.png'
+                                        : snapshot.data![index].shoeBrandName ==
+                                                '컨버스'
+                                            ? './images/converted_converse.png'
+                                            : './images/googlelogo.png',
+                                width: 30,
+                                height: 30,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 3, 5, 2),
+                          child: Text(
+                            snapshot.data![index].shoeBrandName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                        ],
-                      ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 5.0),
+                          child: Text(
+                            snapshot.data![index].shoeModelName,
+                            style: const TextStyle(),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 );
               },
             );
           } else {
-            return const CupertinoActivityIndicator();
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CupertinoActivityIndicator(),
+                ],
+              ),
+            );
           }
         },
       ),
     );
   }
+
+  unlikeDialog(modelName) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            '좋아요를 취소 하시겠습니까?',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                '아니요',
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  Navigator.pop(context);
+                  FireStoreDelete().deleteFavorite(modelName);
+                  unlikeSnackbar();
+                });
+              },
+              child: const Text(
+                '네',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  unlikeSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 1),
+        content: Text(
+          '삭제 되었습니다.',
+        ),
+      ),
+    );
+  }
+
+  // Widget End ------------------------
+
+  // Function Start --------------------
+
+  favoriteDelete(modelName) async {
+    await FireStoreDelete().deleteFavorite(modelName);
+  }
+
+  // Function End ----------------------
 }

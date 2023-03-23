@@ -322,17 +322,27 @@ class FireStoreSelect {
     return userInfo;
   }
 
-  Future<List<Favorites>> selectFavoriteShoes() async {
+  Future<List<Favorites>> selectFavoriteShoes(brand) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
 
     List<Favorites> favoritesList = [];
+    QuerySnapshot querySnapshot;
 
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(email)
-        .collection('favorites')
-        .get();
+    if (brand == '전체') {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('favorites')
+          .get();
+    } else {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('favorites')
+          .where('brand', isEqualTo: brand)
+          .get();
+    }
 
     for (var document in querySnapshot.docs) {
       Favorites favorites =
