@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/view/favorite_list.dart';
 import 'package:semosin/view/order_status.dart';
+import 'package:semosin/view/userinfopage.dart';
 import 'package:semosin/view/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -95,6 +96,11 @@ class _MyPageState extends State<MyPage> {
             splashFactory: NoSplash.splashFactory,
           ),
           onPressed: () {
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) {
+                return UserInfoPage();
+              },
+            ));
             print('btnInfoUpdate onTap');
           },
           child: const Text(

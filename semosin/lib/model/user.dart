@@ -1,6 +1,3 @@
-import 'package:semosin/model/cart.dart';
-import 'package:semosin/model/order.dart';
-
 class User {
   final String name;
   final String uid;
@@ -17,6 +14,7 @@ class User {
   // final List<Order> orders;
   // final List<Cart> carts;
   // final List<String> favorites;
+  final String password;
 
   User({
     required this.name,
@@ -33,6 +31,7 @@ class User {
     // required this.deletedate,
     // required this.orders,
     // required this.carts,
+    required this.password,
   });
 
   User.fromJson(Map<String, dynamic> json) //* = db에 있는 것
@@ -44,10 +43,11 @@ class User {
         phone = json['phone'].toString(), //*
         address = json['address'].toString(), //*
         addressDetail = json['addressDetail'].toString(), //*
-        postcode = json['postcode']; //*
-  // initdate = json['initdate'].toString(),
-  // updatedate = json['updatedate'].toString(),
-  // deletedate = json['deletedate'].toString(),
-  // orders = json['orders'].map((e) => Order.fromJson(e)).toList(),
-  // carts = json['carts'].map((e) => Cart.fromJson(e)).toList();
+        postcode = json['postcode'], //*
+        // initdate = json['initdate'].toString(),
+        // updatedate = json['updatedate'].toString(),
+        // deletedate = json['deletedate'].toString(),
+        // orders = json['orders'].map((e) => Order.fromJson(e)).toList(),
+        // carts = json['carts'].map((e) => Cart.fromJson(e)).toList();
+        password = json['password'].toString();
 }
