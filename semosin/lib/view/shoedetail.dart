@@ -2,6 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/services/shoes_info.dart';
+import 'package:semosin/view/pay_view.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/popup_card.dart';
@@ -195,7 +196,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                                               bookmark =
                                                                   !bookmark;
                                                             });
-                                                            // print(bookmark);
                                                             FirestoreUpdate
                                                                 firestoreUpdate =
                                                                 FirestoreUpdate();
@@ -212,6 +212,32 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                                                   .incrementLikes(
                                                                       widget
                                                                           .modelName);
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
+                                                                content: Column(
+                                                                  children: const [
+                                                                    SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                        child:
+                                                                            Text(
+                                                                          '북마크에 추가되었습니다',
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        )),
+                                                                  ],
+                                                                ),
+                                                                dismissDirection:
+                                                                    DismissDirection
+                                                                        .up,
+                                                                duration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            500),
+                                                              ));
                                                             } else {
                                                               await FireStoreDelete()
                                                                   .deleteFavorite(
@@ -982,6 +1008,8 @@ class _ShoeDetailState extends State<ShoeDetail> {
               ),
               onPressed: () {
                 // ------------------------------------------------
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => PayView()));
               },
             ),
           ],
