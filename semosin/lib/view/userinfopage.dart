@@ -25,7 +25,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
   late String userPostCode;
   User? user;
 
-  late TextEditingController currentpwTextController;
   late TextEditingController pwTextController;
   late TextEditingController checkpwTextController;
   late TextEditingController addressTextController;
@@ -44,7 +43,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
     userAddress = "";
     userDetailAddress = "";
     userPostCode = "";
-    currentpwTextController = TextEditingController();
     pwTextController = TextEditingController();
     checkpwTextController = TextEditingController();
     addressTextController = TextEditingController();
@@ -81,20 +79,21 @@ class _UserInfoPageState extends State<UserInfoPage> {
 //        mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
-                height: 30,
+                height: 40,
               ),
               profile(),
               const SizedBox(
-                height: 30,
+                height: 40,
               ),
               ChangeProfile(),
               const SizedBox(
-                height: 30,
+                height: 40,
               ),
               ChangPassword(),
               const SizedBox(
-                height: 30,
+                height: 40,
               ),
+/*
               Column(
                 children: [
                   TextButton(
@@ -112,6 +111,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   ),
                 ],
               ),
+*/
             ],
           ),
         ],
@@ -279,13 +279,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
                         fontSize: 18,
                       ),
                     ),
-                    Text(
-                      '*' * '${userPasswd = snapshot.data!.password}'.length,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        // fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    // Text(
+                    //   '' * '${userPasswd = snapshot.data!.password}'.length,
+                    // ),
                   ],
                 ),
                 Column(
@@ -322,35 +318,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-// child widget
-  /// 날짜 : 2023.03.20
-  /// 작성자 : 이상혁
-  /// 만든이 : 이상혁
-  /// 내용 : 회원정보에 표시할 사용자 정보를 읽어옴. (FireAuth에서 현재 사용자의 정보를 읽어옴)
-  ///      (FireAuth에서 읽어온 사용자의 email로 FireStore의 사용자 정보를 읽어옴.)
-  /// 비고 : initState에서 호출되도록 함.
-  Future<void> readPasswordData() async {
-    FirebaseAuth.instance.authStateChanges().listen(
-      (User? user) {
-        if (user != null) {
-          final usercol =
-              FirebaseFirestore.instance.collection("users").doc(user.email);
-          usercol.get().then(
-                (value) => {
-                  setState(
-                    () {
-                      userPasswd = value['password'];
-                      print("userPassword" + userPasswd);
-                      print("userEmail" + userEmail);
-                    },
-                  ),
-                },
-              );
-        }
-      },
-    );
-  }
-
   /// Desc : 패스워드 변경 Alert Dialog
   /// Date : 2023.03.21
   /// Modified : sanghyuk
@@ -363,10 +330,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
           return AlertDialog(
             title: const Text('패스워드 변경'),
             content: const Text('패스워드를 변경하시겠습니까?'),
-            actions: <Widget>[
-              // 현재비밀번호 tf
-              textFormField(currentpwTextController, null, false,
-                  TextInputType.text, true, 'Current Password', null, null),
+            actions: [
               // 비밀번호 tf
               textFormField(pwTextController, null, false, TextInputType.text,
                   true, 'New Password', null, null),
@@ -379,26 +343,39 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   TextButton(
                     child: const Text('확인'),
                     onPressed: () {
-                      print("userPassword:" + userPasswd);
-                      print("currentpwTextController.text" +
-                          currentpwTextController.text);
-                      if ((userPasswd == currentpwTextController.text) &
-                          (pwTextController.text ==
-                              checkpwTextController.text)) {
-                        print('userPasswd:' + userPasswd);
-                        print('currentpwTextController:' +
-                            currentpwTextController.text);
-                        print('pwTextController:' + pwTextController.text);
-                        print('checkpwTextController:' +
-                            checkpwTextController.text);
+                      if (validatePassword(pwTextController.text)) {
+                        if ((pwTextController.text ==
+                            checkpwTextController.text)) {
+                          print('pwTextController:' + pwTextController.text);
+                          print('checkpwTextController:' +
+                              checkpwTextController.text);
 
-                        userInfoUpdate.changePassword(pwTextController.text);
-                        Navigator.of(context).pop();
+                          userInfoUpdate.changePassword(pwTextController.text);
+                          inputPassword(pwTextController.text);
+                          Navigator.of(context).pop();
+                          pwTextController.text = "";
+                          checkpwTextController.text = "";
+                          SharedPreferences.getInstance().then((value) {
+                            final pref = value;
+                            pref.remove("saemosin-auto-login-status");
+
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const MyApp()));
+                          });
+                        } else {
+                          print('Password Change Failed');
+                          _ErrorPasswordDialog(
+                              context, "비밀번호가 동일하지 않거나 현재비밀번호와 다릅니다!");
+                          Navigator.of(context).pop();
+                        }
                       } else {
-                        print('Password Change Failed');
-                        // Password 실패에 따른 알람창 필요함.
-                        Navigator.of(context).pop();
+                        print("정규식이 맞지 않습니다. False");
+                        _ErrorPasswordDialog(context,
+                            "비밀번호는대/소문자 각 1자이상, 특수문자를 사용하여 8자이상으로 적어주세요!");
                       }
+                      ;
                     },
                   ),
                   TextButton(
@@ -470,8 +447,8 @@ class _UserInfoPageState extends State<UserInfoPage> {
           builder: (_) => KpostalView(),
         ));
     setState(() {
-      print(result.address);
-      print(result.postCode);
+      // print(result.address);
+      // print(result.postCode);
       userAddress = result.address;
       userPostCode = result.postCode;
     });
@@ -531,7 +508,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   Future<void> deleteUser() async {
     // DeleteDate 추가
     userInfoUpdate.updateDeletedate();
-    // // Firebase 로그아웃
+    // Firebase 로그아웃
     //await FirebaseAuth.instance.signOut();
     //await _googleSignIn.signOut();
     SharedPreferences.getInstance().then((value) {
@@ -545,5 +522,34 @@ class _UserInfoPageState extends State<UserInfoPage> {
 
   getUserInfo() async {
     FireStoreSelect().getUserInfo();
+  }
+
+  bool validatePassword(String value) {
+    return RegExp(
+            r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+        .hasMatch(value);
+  }
+
+  Future<void> _ErrorPasswordDialog(
+    BuildContext context,
+    String message,
+  ) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(message),
+        );
+      },
+    );
+  }
+
+  Future<void> inputPassword(String newpassword) async {
+    final pref = await SharedPreferences.getInstance();
+    final prefPw = pref.getString("saemosinpassword") ?? "0";
+    if (newpassword != prefPw) {
+      pref.setString("saemosinpassword", newpassword);
+    }
   }
 }
