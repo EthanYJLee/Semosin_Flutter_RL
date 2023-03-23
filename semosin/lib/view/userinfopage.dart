@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:semosin/services/firestore_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,14 +80,26 @@ class _UserInfoPageState extends State<UserInfoPage> {
           Column(
 //        mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(
+                height: 30,
+              ),
               profile(),
-              ChangProfile(),
+              const SizedBox(
+                height: 30,
+              ),
+              ChangeProfile(),
+              const SizedBox(
+                height: 30,
+              ),
               ChangPassword(),
+              const SizedBox(
+                height: 30,
+              ),
               Column(
                 children: [
                   TextButton(
                     onPressed: () {
-                      //
+                      deleteUser();
                     },
                     child: const Text(
                       '탈퇴하기',
@@ -109,81 +120,39 @@ class _UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget Start ----------------------
-  Widget ChangProfile() {
+  Widget profile() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder(
         future: userInfo.getUserInfo(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListTile(
-              title: Column(
+            return Row(
+              children: [
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Divider(thickness: 1, height: 1, color: Colors.grey),
-                    const Text(
-                      'Address',
-                      style: TextStyle(
-                        fontSize: 15,
-                        // fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
+                    Text('Name'),
                     Text(
-                      '${snapshot.data!.address}',
+                      '${snapshot.data!.name} 님',
                       style: const TextStyle(
                         fontSize: 18,
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
-                    //Divider(thickness: 1, height: 1, color: Colors.grey),
-                    const Text(
-                      'Detail Address :',
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
-                    ),
+                    Divider(thickness: 1, height: 1, color: Colors.grey),
+                    Text('Email'),
                     Text(
-                      '${snapshot.data!.addressDetail}',
+                      '${snapshot.data!.email}',
                       style: const TextStyle(
                         fontSize: 18,
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
-                    //Divider(thickness: 1, height: 1, color: Colors.grey),
-                    const Text(
-                      'Post Code :',
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
-                    ),
-                    Text(
-                      '${snapshot.data!.postcode}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        // fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Divider(thickness: 1, height: 1, color: Colors.grey),
-                  ]),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      takeAddress();
-                    },
-                    child: const Text(
-                      '변경',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                    Divider(thickness: 1, height: 1, color: Colors.grey),
+                  ],
+                ),
+              ],
             );
           } else {
             return ListTile(
@@ -199,38 +168,82 @@ class _UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  // Widget Start ----------------------
-  Widget profile() {
+  Widget ChangeProfile() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder(
         future: userInfo.getUserInfo(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Name'),
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Divider(thickness: 1, height: 1, color: Colors.grey),
+                  const Text(
+                    'Address',
+                    style: TextStyle(
+                      fontSize: 15,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
                   Text(
-                    '${snapshot.data!.name} 님',
+                    '${snapshot.data!.address}',
                     style: const TextStyle(
                       fontSize: 18,
                       // fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Divider(thickness: 1, height: 1, color: Colors.grey),
-                  Text('Email'),
+                  //Divider(thickness: 1, height: 1, color: Colors.grey),
+                  const Text(
+                    'Detail Address :',
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
                   Text(
-                    '${snapshot.data!.email}',
+                    '${snapshot.data!.addressDetail}',
                     style: const TextStyle(
                       fontSize: 18,
                       // fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Divider(thickness: 1, height: 1, color: Colors.grey),
-                ],
-              ),
+                  //Divider(thickness: 1, height: 1, color: Colors.grey),
+                  const Text(
+                    'Post Code :',
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    '${snapshot.data!.postcode}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(thickness: 1, height: 1, color: Colors.grey),
+                ]),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        takeAddress();
+                      },
+                      child: const Text(
+                        '변경',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             );
           } else {
             return ListTile(
@@ -254,45 +267,46 @@ class _UserInfoPageState extends State<UserInfoPage> {
         future: userInfo.getUserInfo(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Divider(thickness: 1, height: 1, color: Colors.grey),
-                  const Text(
-                    'Password',
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                  Text(
-                    '*' * '${snapshot.data!.password}'.length,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      // fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Divider(thickness: 1, height: 1, color: Colors.grey),
-                ],
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      _showAccessDialog(context);
-                    },
-                    child: const Text(
-                      '변경',
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Password',
                       style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    Text(
+                      '*' * '${userPasswd = snapshot.data!.password}'.length,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        // fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _showPasswordChangeDialog(context);
+                      },
+                      child: const Text(
+                        '변경',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             );
           } else {
             return ListTile(
@@ -315,68 +329,32 @@ class _UserInfoPageState extends State<UserInfoPage> {
   /// 내용 : 회원정보에 표시할 사용자 정보를 읽어옴. (FireAuth에서 현재 사용자의 정보를 읽어옴)
   ///      (FireAuth에서 읽어온 사용자의 email로 FireStore의 사용자 정보를 읽어옴.)
   /// 비고 : initState에서 호출되도록 함.
-  // Future<void> readUserData() async {
-  //   FirebaseAuth.instance.authStateChanges().listen(
-  //     (User? user) {
-  //       if (user != null) {
-  //         final usercol =
-  //             FirebaseFirestore.instance.collection("users").doc(user.email);
-  //         usercol.get().then(
-  //               (value) => {
-  //                 setState(
-  //                   () {
-  //                     userName = value['name'];
-  //                     userEmail = value['email'];
-  //                     userAddress = value['address'];
-  //                     userDetailAddress = value['addressDetail'];
-  //                     userPasswd = value['password'];
-  //                     userPostCode = value['postcode'];
-
-  //                     print("userName" + userName);
-  //                     print("userEmail" + userEmail);
-  //                   },
-  //                 ),
-  //               },
-  //             );
-  //       }
-  //     },
-  //   );
-  // }
-
-  /// 날짜 : 2023.03.21
-  /// 작성자 : 이상혁
-  /// 만든이 : 이상혁
-  /// 내용 : 패스워드 변경을 위해서 Firestore의 패스워드를 수정하는 매소드
-  /// 비고 :
-  // Future<void> changePassword(String password) async {
-
-  //   FirebaseAuth.instance.authStateChanges().listen(
-  //     (User? user) {
-  //       if (user != null) {
-  //         final usercol =
-  //             FirebaseFirestore.instance.collection("users").doc(user.email);
-  //         print(user.email);
-  //         print(password);
-  //         usercol.update({"password": password});
-  //         usercol.get().then(
-  //               (value) => {
-  //                 setState(
-  //                   () {
-  //                     userPasswd = value['password'];
-  //                     print('바뀐패스워드:' + userPasswd);
-  //                   },
-  //                 ),
-  //               },
-  //             );
-  //       }
-  //     },
-  //   );
-  // }
+  Future<void> readPasswordData() async {
+    FirebaseAuth.instance.authStateChanges().listen(
+      (User? user) {
+        if (user != null) {
+          final usercol =
+              FirebaseFirestore.instance.collection("users").doc(user.email);
+          usercol.get().then(
+                (value) => {
+                  setState(
+                    () {
+                      userPasswd = value['password'];
+                      print("userPassword" + userPasswd);
+                      print("userEmail" + userEmail);
+                    },
+                  ),
+                },
+              );
+        }
+      },
+    );
+  }
 
   /// Desc : 패스워드 변경 Alert Dialog
   /// Date : 2023.03.21
   /// Modified : sanghyuk
-  Future<void> _showAccessDialog(
+  Future<void> _showPasswordChangeDialog(
     BuildContext context,
   ) async {
     return showDialog(
@@ -401,11 +379,10 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   TextButton(
                     child: const Text('확인'),
                     onPressed: () {
-                      //userPasswd = userInfo.getUserInfo();
+                      print("userPassword:" + userPasswd);
                       print("currentpwTextController.text" +
                           currentpwTextController.text);
-                      if (
-                          //(userPasswd == currentpwTextController.text) &
+                      if ((userPasswd == currentpwTextController.text) &
                           (pwTextController.text ==
                               checkpwTextController.text)) {
                         print('userPasswd:' + userPasswd);
@@ -554,7 +531,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
   Future<void> deleteUser() async {
     // DeleteDate 추가
     userInfoUpdate.updateDeletedate();
-
     // // Firebase 로그아웃
     //await FirebaseAuth.instance.signOut();
     //await _googleSignIn.signOut();
