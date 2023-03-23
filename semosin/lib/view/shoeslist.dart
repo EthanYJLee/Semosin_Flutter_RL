@@ -586,7 +586,7 @@ class _ShoesListState extends State<ShoesList> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return ShowInfoDialog();
+        return const ShowInfoDialog();
       },
     );
   }
