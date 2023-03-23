@@ -121,21 +121,21 @@ class _CartViewState extends State<CartView> {
                       /// make :hosik
                       /// 아직 사용할지 말지 확정 아님 필요하게 되면 쓸 배열 하나 생성
                       print('lengh = ${snapshot.data!.length}');
-                      for (int i = 0; i < snapshot.data!.length; i++) {
-                        if (lenghtList.length != snapshot.data!.length ||
-                            snapshot.data![i].cartStatus == true) {
-                          lenghtList.add(1);
-                        } else {
-                          lenghtList.add(0);
-                        }
-                        // if (snapshot.data![index].cartStatus) {
-                        //   lenghtList.add(0);
-                        // } else {
-                        //   lenghtList.add(1);
-                        // }
-                        // lenghtList.add(1);
-                        print(lenghtList);
-                      }
+                      // for (int i = 0; i < snapshot.data!.length; i++) {
+                      //   if (lenghtList.length != snapshot.data!.length ||
+                      //       snapshot.data![i].cartStatus == true) {
+                      //     lenghtList.add(1);
+                      //   } else {
+                      //     lenghtList.add(0);
+                      //   }
+                      // if (snapshot.data![index].cartStatus) {
+                      //   lenghtList.add(0);
+                      // } else {
+                      //   lenghtList.add(1);
+                      // }
+                      // lenghtList.add(1);
+                      print(lenghtList);
+                      // }
                       return Card(
                         child: Row(
                           // -------- check box------
