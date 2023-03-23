@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/view/favorite_list.dart';
 import 'package:semosin/view/order_status.dart';
+import 'package:semosin/view/welcome.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -13,10 +16,12 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   FireStoreSelect userInfo = FireStoreSelect();
+  late SharedPreferences pref;
 
   @override
   void initState() {
     super.initState();
+    sharedPreference();
   }
 
   @override
@@ -42,10 +47,6 @@ class _MyPageState extends State<MyPage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListTile(
-              // shape: RoundedRectangleBorder(
-              //   side: const BorderSide(color: Colors.black, width: 0.5),
-              //   borderRadius: BorderRadius.circular(5),
-              // ),
               leading: const CircleAvatar(
                 radius: 25,
                 backgroundImage: AssetImage('./images/googlelogo.png'),
@@ -58,29 +59,13 @@ class _MyPageState extends State<MyPage> {
                     '${snapshot.data!.name} 님',
                     style: const TextStyle(
                       fontSize: 18,
-                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
               subtitle: Text(
                 snapshot.data!.email,
-                style: const TextStyle(
-                    // fontSize: 15,
-                    // fontWeight: FontWeight.bold,
-                    ),
-              ),
-              trailing: TextButton(
-                onPressed: () {
-                  //
-                },
-                child: const Text(
-                  '로그아웃',
-                  style: TextStyle(
-                    color: Colors.red,
-                    // fontWeight: FontWeight.bold,
-                  ),
-                ),
+                style: const TextStyle(),
               ),
             );
           } else {
@@ -101,8 +86,8 @@ class _MyPageState extends State<MyPage> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        width: 300,
-        height: 35,
+        width: MediaQuery.of(context).size.width * 0.7,
+        height: MediaQuery.of(context).size.width * 0.09,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20), color: Colors.black12),
         child: TextButton(
@@ -141,7 +126,7 @@ class _MyPageState extends State<MyPage> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Container(
-            width: 95,
+            width: MediaQuery.of(context).size.width * 0.24,
             decoration: BoxDecoration(border: Border.all(width: 0.1)),
             child: const ListTile(
               textColor: Colors.black,
@@ -156,7 +141,7 @@ class _MyPageState extends State<MyPage> {
             ),
           ),
           Container(
-            width: 95,
+            width: MediaQuery.of(context).size.width * 0.24,
             decoration: BoxDecoration(border: Border.all(width: 0.1)),
             child: const ListTile(
               textColor: Colors.black,
@@ -171,7 +156,7 @@ class _MyPageState extends State<MyPage> {
             ),
           ),
           Container(
-            width: 95,
+            width: MediaQuery.of(context).size.width * 0.24,
             decoration: BoxDecoration(border: Border.all(width: 0.1)),
             child: const ListTile(
               textColor: Colors.black,
@@ -187,7 +172,7 @@ class _MyPageState extends State<MyPage> {
           ),
           CircleAvatar(
             backgroundColor: Colors.white12,
-            maxRadius: 35,
+            maxRadius: MediaQuery.of(context).size.width * 0.07,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -223,9 +208,9 @@ class _MyPageState extends State<MyPage> {
                 },
               ));
             },
-            child: const SizedBox(
-              height: 50,
-              child: ListTile(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.width * 0.14,
+              child: const ListTile(
                 shape: Border(
                   top: BorderSide(width: 0.2),
                   bottom: BorderSide(width: 0.2),
@@ -245,9 +230,9 @@ class _MyPageState extends State<MyPage> {
             onTap: () {
               print('고객센터 onTap');
             },
-            child: const SizedBox(
-              height: 50,
-              child: ListTile(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.width * 0.14,
+              child: const ListTile(
                 shape: Border(
                   bottom: BorderSide(width: 0.2),
                 ),
@@ -274,9 +259,9 @@ class _MyPageState extends State<MyPage> {
                 ),
               );
             },
-            child: const SizedBox(
-              height: 50,
-              child: ListTile(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.width * 0.14,
+              child: const ListTile(
                 shape: Border(
                   bottom: BorderSide(width: 0.2),
                 ),
@@ -302,6 +287,11 @@ class _MyPageState extends State<MyPage> {
 
   getUserInfo() async {
     FireStoreSelect().getUserInfo();
+  }
+
+  sharedPreference() async {
+    pref = await SharedPreferences.getInstance();
+    // String? email = pref.getString('saemosinemail');
   }
 
   // Function End ------------------------

@@ -322,7 +322,8 @@ class FireStoreSelect {
     return userInfo;
   }
 
-  Future<List<Favorites>> selectFavoriteShoes(brand) async {
+  Future<List<Favorites>> selectFavoriteShoes(
+      brand, sortValue, isDescending) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
 
@@ -334,6 +335,7 @@ class FireStoreSelect {
           .collection('users')
           .doc(email)
           .collection('favorites')
+          .orderBy(sortValue, descending: isDescending)
           .get();
     } else {
       querySnapshot = await FirebaseFirestore.instance
@@ -341,6 +343,7 @@ class FireStoreSelect {
           .doc(email)
           .collection('favorites')
           .where('brand', isEqualTo: brand)
+          .orderBy(sortValue, descending: isDescending)
           .get();
     }
 

@@ -10,12 +10,17 @@ import '../services/firebase_favorite.dart';
 import '../services/firestore_insert.dart';
 
 class ShoeDetail extends StatefulWidget {
-  const ShoeDetail(
-      {super.key, required this.modelName, required this.brandName});
+  const ShoeDetail({
+    super.key,
+    required this.modelName,
+    required this.brandName,
+    required this.price,
+  });
 
   // click 시 모델 이름 받아오기
   final String modelName;
   final String brandName;
+  final int price;
 
   // image path 받아오기
 
@@ -141,10 +146,18 @@ class _ShoeDetailState extends State<ShoeDetail> {
                           });
                           // print(bookmark);
                           if (bookmark) {
+                            // await FireStoreInsert().insertFavorite(
+                            //   widget.modelName,
+                            //   widget.brandName,
+                            //   imagePathViewModel.imagePath[0],
+                            //   widget.price,
+                            // );
                             await FireStoreInsert().insertFavorite(
-                                widget.modelName,
-                                widget.brandName,
-                                imagePathViewModel.imagePath[0]);
+                              widget.modelName,
+                              widget.brandName,
+                              imagePathViewModel.imagePath[0],
+                              widget.price,
+                            );
                             // 슈즈 라이크 카운트 +1 기능 추가
                           } else {
                             await FireStoreDelete()
