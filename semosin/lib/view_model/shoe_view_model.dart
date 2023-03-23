@@ -3,7 +3,7 @@ class ShoeViewModel {
   final String shoeModelName;
   final String shoeBrandName;
   final int likeNum;
-  final String shoePrice;
+  final int shoePrice;
 
   ShoeViewModel({
     required this.shoeBrandName,
@@ -18,5 +18,5 @@ class ShoeViewModel {
         shoeModelName = json['model'].toString(),
         shoeBrandName = json['brand'].toString(),
         likeNum = int.parse(json['like'].toString()),
-        shoePrice = json['price'];
+        shoePrice = int.parse(json['price'].toString());
 }

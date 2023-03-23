@@ -284,7 +284,8 @@ class _ShoesListState extends State<ShoesList>
                                                   ),
                                                 ),
                                                 Text(
-                                                  '${formatCurrency.format(int.parse(snapshot.data![index].shoePrice))}원',
+                                                  '${formatCurrency.format(snapshot.data![index].shoePrice)}원',
+                                                  // '${formatCurrency.format(int.parse(snapshot.data![index].shoePrice))}원',
                                                   style: const TextStyle(
                                                     color: Colors.black45,
                                                     fontSize: 15,

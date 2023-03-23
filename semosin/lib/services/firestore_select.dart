@@ -175,13 +175,16 @@ class FireStoreSelect {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
     List<Cart> cartList = [];
+
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(email)
         .collection('carts')
         .get();
     for (var document in querySnapshot.docs) {
-      Cart cart = Cart.fromJson(document.data() as Map<String, dynamic>);
+      Map<String, dynamic> map = document.data() as Map<String, dynamic>;
+      map['documentId'] = document.id;
+      Cart cart = Cart.fromJson(map);
       cartList.add(cart);
     }
     return cartList;
