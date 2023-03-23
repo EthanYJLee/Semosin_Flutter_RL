@@ -310,6 +310,7 @@ class FireStoreSelect {
     User userInfo = User.fromJson(data);
     User _user = User(
         name: userInfo.name,
+        password: userInfo.password,
         uid: userInfo.uid,
         email: userInfo.email,
         nickname: userInfo.nickname,
