@@ -1,6 +1,8 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/services/shoes_info.dart';
+import 'package:semosin/view/pay_view.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/popup_card.dart';
@@ -10,12 +12,17 @@ import '../services/firebase_favorite.dart';
 import '../services/firestore_insert.dart';
 
 class ShoeDetail extends StatefulWidget {
-  const ShoeDetail(
-      {super.key, required this.modelName, required this.brandName});
+  const ShoeDetail({
+    super.key,
+    required this.modelName,
+    required this.brandName,
+    required this.price,
+  });
 
   // click 시 모델 이름 받아오기
   final String modelName;
   final String brandName;
+  final int price;
 
   // image path 받아오기
 
@@ -124,43 +131,55 @@ class _ShoeDetailState extends State<ShoeDetail> {
                   children: [
                     Text(
                       widget.modelName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: MediaQuery.of(context).size.width / 20,
                       ),
                     ),
 
                     /// 관심상품 등록 및 해제  --------------------------------------------
+                    /// [수정] 이미지 카드 안에서 Stack으로 북마크 설정/해제할 수 있도록 변경
+                    /// 수정일 : 2023.03.23
+                    /// 작성자 : 신오수
+                    /// 수정자 : 이영진
                     /// --------------------------------insertFavorite, deleteFavorite, isFavorite 들어갈 자리--------------------------------
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            bookmark = !bookmark;
-                          });
-                          // print(bookmark);
-                          if (bookmark) {
-                            await FireStoreInsert().insertFavorite(
-                                widget.modelName,
-                                widget.brandName,
-                                imagePathViewModel.imagePath[0]);
-                            // 슈즈 라이크 카운트 +1 기능 추가
-                          } else {
-                            await FireStoreDelete()
-                                .deleteFavorite(widget.modelName);
-                            // 슈즈 라이크 카운트 -1 기능 추가
-                          }
-                          FireStoreFavorite().isFavorite(widget.modelName);
-                        },
-                        icon: Icon(
-                          bookmark
-                              ? Icons.bookmark_outlined
-                              : Icons.bookmark_outline,
-                          size: 44,
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(bottom: 10),
+                    //   child: IconButton(
+                    //     onPressed: () async {
+                    //       setState(() {
+                    //         bookmark = !bookmark;
+                    //       });
+                    //       // print(bookmark);
+                    //       if (bookmark) {
+                    //         // await FireStoreInsert().insertFavorite(
+                    //         //   widget.modelName,
+                    //         //   widget.brandName,
+                    //         //   imagePathViewModel.imagePath[0],
+                    //         //   widget.price,
+                    //         // );
+                    //         await FireStoreInsert().insertFavorite(
+                    //           widget.modelName,
+                    //           widget.brandName,
+                    //           imagePathViewModel.imagePath[0],
+                    //           widget.price,
+                    //         );
+                    //         // 슈즈 라이크 카운트 +1 기능 추가
+                    //       } else {
+                    //         await FireStoreDelete()
+                    //             .deleteFavorite(widget.modelName);
+                    //         // 슈즈 라이크 카운트 -1 기능 추가
+                    //       }
+                    //       FireStoreFavorite().isFavorite(widget.modelName);
+                    //     },
+                    //     icon: Icon(
+                    //       bookmark
+                    //           ? Icons.bookmark_outlined
+                    //           : Icons.bookmark_outline,
+                    //       size: 44,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -206,10 +225,98 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                           return Container(
                                             child: Column(
                                               children: [
-                                                Card(
-                                                  child: Image.network(
-                                                      imagePathViewModel
-                                                          .imagePath[index]),
+                                                Stack(
+                                                  children: [
+                                                    Card(
+                                                      child: Image.network(
+                                                          imagePathViewModel
+                                                                  .imagePath[
+                                                              index]),
+                                                    ),
+                                                    Positioned(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 10),
+                                                        child: IconButton(
+                                                          onPressed: () async {
+                                                            setState(() {
+                                                              bookmark =
+                                                                  !bookmark;
+                                                            });
+                                                            FirestoreUpdate
+                                                                firestoreUpdate =
+                                                                FirestoreUpdate();
+                                                            if (bookmark) {
+                                                              await FireStoreInsert()
+                                                                  .insertFavorite(
+                                                                widget
+                                                                    .modelName,
+                                                                widget
+                                                                    .brandName,
+                                                                imagePathViewModel
+                                                                    .imagePath[0],
+                                                                widget.price,
+                                                              );
+                                                              // 슈즈 라이크 카운트 +1 기능 추가
+                                                              firestoreUpdate
+                                                                  .incrementLikes(
+                                                                      widget
+                                                                          .modelName);
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
+                                                                content: Column(
+                                                                  children: const [
+                                                                    SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                        child:
+                                                                            Text(
+                                                                          '북마크에 추가되었습니다',
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        )),
+                                                                  ],
+                                                                ),
+                                                                dismissDirection:
+                                                                    DismissDirection
+                                                                        .up,
+                                                                duration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            500),
+                                                              ));
+                                                            } else {
+                                                              await FireStoreDelete()
+                                                                  .deleteFavorite(
+                                                                      widget
+                                                                          .modelName);
+                                                              // 슈즈 라이크 카운트 -1 기능 추가
+                                                              firestoreUpdate
+                                                                  .decrementLikes(
+                                                                      widget
+                                                                          .modelName);
+                                                            }
+                                                            FireStoreFavorite()
+                                                                .isFavorite(widget
+                                                                    .modelName);
+                                                          },
+                                                          icon: Icon(
+                                                            bookmark
+                                                                ? Icons
+                                                                    .bookmark_outlined
+                                                                : Icons
+                                                                    .bookmark_outline,
+                                                            size: 44,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
                                               ],
                                             ),
@@ -270,7 +377,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                           const EdgeInsets.only(left: 20.0),
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                            CrossAxisAlignment.center,
                                         children: [
                                           Text(
                                             snapshot.data!.brand,
@@ -398,7 +505,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                     const EdgeInsets.symmetric(horizontal: 14),
                                 child: SizedBox(
                                   width: 350,
-                                  height: 100,
+                                  height: 140,
                                   child: SingleChildScrollView(
                                     // 글자수가 sized 박스를 넘어갈수도 있기 때문에 스크롤뷰로 해놈
                                     child: Column(
@@ -466,6 +573,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                               const SizedBox(
                                 height: 30,
                               ),
+                              // 장바구니, 구매하기 버튼 ------------------------------------------------------
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -483,10 +591,21 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        addToCart(
-                                            widget.modelName,
-                                            productCount,
-                                            int.parse(snapshot.data!.price));
+                                        if (availableQuantity != null) {
+                                          if (productCount >
+                                              int.parse(availableQuantity!)) {
+                                            checkQuantities('잔여수량을 확인해주세요');
+                                          }
+                                        }
+                                        if (selectedSize != null) {
+                                          addToCart(
+                                              widget.modelName,
+                                              productCount,
+                                              int.parse(snapshot.data!.price),
+                                              int.parse(selectedSize!));
+                                        } else {
+                                          checkQuantities('사이즈를 선택해주세요');
+                                        }
                                       },
                                       child: const Text("장바구니"),
                                     ),
@@ -506,8 +625,21 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        checkOut(widget.modelName, productCount,
-                                            int.parse(snapshot.data!.price));
+                                        if (availableQuantity != null) {
+                                          if (productCount >
+                                              int.parse(availableQuantity!)) {
+                                            checkQuantities('잔여수량을 확인해주세요');
+                                          }
+                                        }
+                                        if (selectedSize != null) {
+                                          checkOut(
+                                              widget.modelName,
+                                              productCount,
+                                              int.parse(snapshot.data!.price),
+                                              int.parse(selectedSize!));
+                                        } else {
+                                          checkQuantities('사이즈를 선택해주세요');
+                                        }
                                       },
                                       child: const Text("구매하기"),
                                     ),
@@ -634,15 +766,39 @@ class _ShoeDetailState extends State<ShoeDetail> {
     );
   }
 
-  /// Desc : 선택한 수량이 잔여 수량보다 많을 경우 Alert Dialog
-  /// Date : 2023.03.22
-  /// Author : youngjin
-  ///
-  ///
-
   // -----------------------------------------------------------------------------------------------------
 
   // ------------------------------------------------ FUNCTIONS ------------------------------------------------
+
+  /// Desc : 선택한 수량이 잔여 수량보다 많을 경우 Alert Dialog
+  /// Date : 2023.03.22
+  /// Author : youngjin
+  checkQuantities(String comment) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              '상품 확인',
+            ),
+            content: Text(
+              comment,
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    '확인',
+                    style: TextStyle(color: Colors.black),
+                  ))
+            ],
+          );
+        });
+  }
+
   /// Desc : 사이즈 선택 Modal Bottom Sheet
   /// Date : 2023.03.20
   /// Author : 이성연, 이영진
@@ -747,7 +903,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 장바구니 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
-  void addToCart(String model, int count, int price) {
+  void addToCart(String model, int count, int price, int size) {
     if (selectedSize == null) {
       showDialog(
         context: context,
@@ -778,15 +934,20 @@ class _ShoeDetailState extends State<ShoeDetail> {
         return AlertDialog(
           title: const Text("장바구니"),
           content: Container(
-              height: 150,
+              height: 120,
+              width: 150,
               child: Column(
                 children: [
-                  const Text("해당제품을 장바구니에 담으시겠습니까?"),
-                  Text("제품명: $model"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [Text("수량:$count"), Text("총액:${count * price}원")],
+                  const Text(
+                    "해당제품을 장바구니에 \n담으시겠습니까?",
+                    textAlign: TextAlign.center,
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(model),
+                  Text("수량:$count"),
+                  Text("총액:${count * price}원"),
                 ],
               )),
           actions: <Widget>[
@@ -806,6 +967,23 @@ class _ShoeDetailState extends State<ShoeDetail> {
               ),
               onPressed: () {
                 // ------------------------------------------------
+                // FireStoreInsert fireStoreInsert = FireStoreInsert();
+                // fireStoreInsert.insertIntoCart(
+                //     model, imagePathViewModel.imagePath[0], size, price, count);
+                // Navigator.of(context).pop();
+                // showDialog(
+                //     context: context,
+                //     builder: (context) {
+                //       return AlertDialog(
+                //         title: const Text('상품이 장바구니에 담겼습니다'),
+                //         actions: [
+                //           TextButton(
+                //               onPressed: () {}, child: const Text('홈으로')),
+                //           TextButton(
+                //               onPressed: () {}, child: const Text('장바구니로 이동'))
+                //         ],
+                //       );
+                //     });
               },
             ),
           ],
@@ -817,7 +995,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 구매하기 버튼 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
-  void checkOut(String model, int count, int price) {
+  void checkOut(String model, int count, int price, int size) {
     if (selectedSize == null) {
       showDialog(
         context: context,
@@ -848,15 +1026,20 @@ class _ShoeDetailState extends State<ShoeDetail> {
         return AlertDialog(
           title: const Text("구매"),
           content: Container(
-            height: 150,
+            height: 120,
+            width: 150,
             child: Column(
               children: [
-                const Text("해당제품을 구매하러 가시겠습니까?"),
-                Text("제품명: $model"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [Text("수량:$count"), Text("총액:${count * price}원")],
+                const Text(
+                  "해당제품을 구매하러 가시겠습니까?",
+                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(model),
+                Text("수량:$count"),
+                Text("총액:${count * price}원"),
               ],
             ),
           ),
@@ -877,6 +1060,8 @@ class _ShoeDetailState extends State<ShoeDetail> {
               ),
               onPressed: () {
                 // ------------------------------------------------
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => PayView()));
               },
             ),
           ],

@@ -6,7 +6,7 @@ class FireStoreInsert {
   /// 작성자 : 권순형
   /// 만든이 :
   /// 내용 : model 이름 firestore user favorites에 넣기
-  insertFavorite(modelName, brandName, image) async {
+  insertFavorite(modelName, brandName, image, price) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
 
@@ -19,6 +19,8 @@ class FireStoreInsert {
       'model': modelName,
       'brand': brandName,
       'image': image,
+      'price': price,
+      'initdate': DateTime.now().toString().substring(0, 19),
     });
   }
 }

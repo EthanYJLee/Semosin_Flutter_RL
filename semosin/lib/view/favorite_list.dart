@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:semosin/services/firebase_delete.dart';
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/view/shoedetail.dart';
@@ -14,10 +15,15 @@ class FavoriteList extends StatefulWidget {
 class _FavoriteListState extends State<FavoriteList> {
   late FireStoreSelect fireStoreSelect;
 
+  final formatCurrency =
+      NumberFormat.simpleCurrency(locale: "ko_KR", name: "", decimalDigits: 0);
+
   late List brandButtonGroup;
 
-  final List<String> valueList = <String>['담은순', '낮은 가격순', '높은 가격순'];
+  final List<String> valueList = <String>['담은순', '높은 가격순', '낮은 가격순'];
   late String dropdownValue;
+  late String selectedSortValue;
+  late bool isDescending;
 
   final String all = '전체';
   final String nike = '나이키';
@@ -34,14 +40,28 @@ class _FavoriteListState extends State<FavoriteList> {
     brandButtonGroup = [true, false, false, false];
 
     dropdownValue = valueList.first;
+    selectedSortValue = 'initdate';
+    isDescending = true;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        elevation: 0,
+      ),
       body: Column(
         children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text(
+              '관심있는 상품',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           topGroup(),
           favoritesList(),
         ],
@@ -62,8 +82,14 @@ class _FavoriteListState extends State<FavoriteList> {
               padding: const EdgeInsets.only(left: 8.0),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  minimumSize: const Size(55, 35),
-                  maximumSize: const Size(55, 35),
+                  minimumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
+                  maximumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10),
@@ -99,8 +125,14 @@ class _FavoriteListState extends State<FavoriteList> {
               padding: const EdgeInsets.only(left: 8.0),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  minimumSize: const Size(55, 35),
-                  maximumSize: const Size(55, 35),
+                  minimumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
+                  maximumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10),
@@ -136,8 +168,14 @@ class _FavoriteListState extends State<FavoriteList> {
               padding: const EdgeInsets.only(left: 8.0),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  minimumSize: const Size(55, 35),
-                  maximumSize: const Size(55, 35),
+                  minimumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
+                  maximumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10),
@@ -173,8 +211,14 @@ class _FavoriteListState extends State<FavoriteList> {
               padding: const EdgeInsets.only(left: 8.0),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  minimumSize: const Size(55, 35),
-                  maximumSize: const Size(55, 35),
+                  minimumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
+                  maximumSize: Size(
+                    MediaQuery.of(context).size.width * 0.15,
+                    MediaQuery.of(context).size.width * 0.088,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10),
@@ -208,15 +252,8 @@ class _FavoriteListState extends State<FavoriteList> {
             ),
             Container(
               margin: const EdgeInsets.only(left: 10),
-              // decoration: BoxDecoration(
-              //   borderRadius: BorderRadius.circular(10),
-              //   border: Border.all(
-              //     width: 2,
-              //     color: Colors.grey,
-              //   ),
-              // ),
-              width: 93,
-              height: 35,
+              width: MediaQuery.of(context).size.width * 0.24,
+              height: MediaQuery.of(context).size.width * 0.088,
               child: DropdownButton<String>(
                 alignment: Alignment.centerRight,
                 value: dropdownValue,
@@ -230,7 +267,16 @@ class _FavoriteListState extends State<FavoriteList> {
                 onChanged: (String? value) {
                   setState(() {
                     dropdownValue = value!;
-                    print(dropdownValue);
+                    if (dropdownValue == '담은순') {
+                      selectedSortValue = 'initdate';
+                      isDescending = true;
+                    } else if (dropdownValue == '높은 가격순') {
+                      selectedSortValue = 'price';
+                      isDescending = true;
+                    } else {
+                      selectedSortValue = 'price';
+                      isDescending = false;
+                    }
                   });
                 },
                 items: valueList.map<DropdownMenuItem<String>>((String value) {
@@ -251,17 +297,19 @@ class _FavoriteListState extends State<FavoriteList> {
 
   Widget favoritesList() {
     return SizedBox(
-      height: 670,
+      height: MediaQuery.of(context).size.width * 1.62,
       child: FutureBuilder(
-        future: fireStoreSelect.selectFavoriteShoes(selectedBrandValue),
+        future: fireStoreSelect.selectFavoriteShoes(
+          selectedBrandValue,
+          selectedSortValue,
+          isDescending,
+        ),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                mainAxisExtent: 260,
+                mainAxisExtent: 278,
                 crossAxisCount: 2,
-                // mainAxisExtent: 200,
-                // crossAxisCount: 3,
                 crossAxisSpacing: 0,
                 mainAxisSpacing: 0,
               ),
@@ -275,8 +323,10 @@ class _FavoriteListState extends State<FavoriteList> {
                       MaterialPageRoute(
                         builder: (context) {
                           return ShoeDetail(
-                              modelName: snapshot.data![index].shoeModelName,
-                              brandName: snapshot.data![index].shoeBrandName);
+                            modelName: snapshot.data![index].shoeModelName,
+                            brandName: snapshot.data![index].shoeBrandName,
+                            price: snapshot.data![index].price,
+                          );
                         },
                       ),
                     );
@@ -298,7 +348,10 @@ class _FavoriteListState extends State<FavoriteList> {
                                         snapshot.data![index].shoeModelName);
                                   });
                                 },
-                                icon: const Icon(CupertinoIcons.heart_fill),
+                                icon: const Icon(
+                                  CupertinoIcons.heart_fill,
+                                  color: Colors.red,
+                                ),
                               ),
                             ),
                             Positioned(
@@ -314,8 +367,8 @@ class _FavoriteListState extends State<FavoriteList> {
                                                 '컨버스'
                                             ? './images/converted_converse.png'
                                             : './images/googlelogo.png',
-                                width: 30,
-                                height: 30,
+                                width: MediaQuery.of(context).size.width * 0.1,
+                                height: MediaQuery.of(context).size.width * 0.1,
                               ),
                             ),
                           ],
@@ -324,14 +377,30 @@ class _FavoriteListState extends State<FavoriteList> {
                           padding: const EdgeInsets.fromLTRB(5, 3, 5, 2),
                           child: Text(
                             snapshot.data![index].shoeBrandName,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 5.0),
                           child: Text(
                             snapshot.data![index].shoeModelName,
-                            style: const TextStyle(),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              // fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 2, 0, 0),
+                          child: Text(
+                            '${formatCurrency.format(snapshot.data![index].price)}원',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -409,10 +478,6 @@ class _FavoriteListState extends State<FavoriteList> {
   // Widget End ------------------------
 
   // Function Start --------------------
-
-  favoriteDelete(modelName) async {
-    await FireStoreDelete().deleteFavorite(modelName);
-  }
 
   // Function End ----------------------
 }
