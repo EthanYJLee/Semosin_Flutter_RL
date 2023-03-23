@@ -388,7 +388,7 @@ class _ShoesListState extends State<ShoesList> with TickerProviderStateMixin {
                             const Padding(
                               padding: EdgeInsets.all(15.0),
                               child: Text(
-                                '해당 브랜드 데이터가 준비 중입니다.',
+                                '해당 브랜드 상품이 준비 중입니다.',
                                 style: TextStyle(color: Colors.black45),
                               ),
                             ),
