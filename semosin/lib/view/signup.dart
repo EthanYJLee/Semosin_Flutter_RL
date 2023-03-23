@@ -23,6 +23,8 @@ class Signup extends StatefulWidget {
 /// 내용 : sign up 화면
 class _SignupState extends State<Signup> {
   late TextEditingController emailTextController;
+  late TextEditingController pwTextController;
+  late TextEditingController pwConfirmTextController;
   late TextEditingController nameTextController;
   late TextEditingController nicknameTextController;
   late TextEditingController phoneTextController;
@@ -32,6 +34,9 @@ class _SignupState extends State<Signup> {
 
   // 성별
   late String sex;
+
+  // pw 관련
+  late bool pwReadOnly;
 
   // --- Text Field Focus 관련
   late FocusNode nameFocusNode;
@@ -63,6 +68,8 @@ class _SignupState extends State<Signup> {
     super.initState();
 
     emailTextController = TextEditingController();
+    pwTextController = TextEditingController();
+    pwConfirmTextController = TextEditingController();
     nameTextController = TextEditingController();
     nicknameTextController = TextEditingController();
     phoneTextController = TextEditingController();
@@ -73,6 +80,11 @@ class _SignupState extends State<Signup> {
     sex = '';
 
     emailTextController.text = widget.signUpViewModel?.email ?? "";
+    pwTextController.text = widget.signUpViewModel?.pw ?? "";
+    pwConfirmTextController.text = widget.signUpViewModel?.pw ?? "";
+
+    pwReadOnly = widget.signUpViewModel?.pw != "" ? true : false;
+
     phoneTextController.text = '010';
 
     // --- Text Field Focus 관련
@@ -105,15 +117,21 @@ class _SignupState extends State<Signup> {
               children: [
                 // email - tf (disabled)
                 textFormField(emailTextController, null, true,
-                    TextInputType.emailAddress, 'email', null, null),
+                    TextInputType.emailAddress, 'email', null, null, false),
+                //pw
+                textFormField(pwTextController, null, pwReadOnly,
+                    TextInputType.visiblePassword, 'pw', null, null, true),
+                // pw confirm
+                textFormField(pwConfirmTextController, null, pwReadOnly,
+                    TextInputType.emailAddress, 'pw 확인', null, null, true),
                 // name - tf
                 textFormField(nameTextController, nameFocusNode, false,
-                    TextInputType.text, 'name', null, null),
+                    TextInputType.text, 'name', null, null, false),
                 // nameCheckText - Text
                 checkText(nameCheckText, nameCheckColor),
                 // nickname - tf : nicknameDuplicationCheck()
                 textFormField(nicknameTextController, nicknameFocusNode, false,
-                    TextInputType.text, 'nickname', null, null),
+                    TextInputType.text, 'nickname', null, null, false),
                 // nicknameCheckText - Text
                 checkText(nicknameCheckText, nicknameCheckColor),
                 // sex - radio button
@@ -165,7 +183,7 @@ class _SignupState extends State<Signup> {
                 ),
                 // phone - tf
                 textFormField(phoneTextController, phoneFocusNode, false,
-                    TextInputType.number, 'phone', phoneFormatter, null),
+                    TextInputType.number, 'phone', phoneFormatter, null, false),
                 checkText(phoneCheckText, phoneCheckColor),
                 // postcode - tf(disabled) - api
                 Row(
@@ -173,7 +191,7 @@ class _SignupState extends State<Signup> {
                     SizedBox(
                       width: 285,
                       child: textFormField(postcodeTextController, null, true,
-                          TextInputType.number, 'postcode', null, null),
+                          TextInputType.number, 'postcode', null, null, false),
                     ),
                     SizedBox(
                       width: 100,
@@ -199,7 +217,7 @@ class _SignupState extends State<Signup> {
                 ),
                 // address1- tf(disabled) - api
                 textFormField(addressTextController, null, true,
-                    TextInputType.text, 'address', null, null),
+                    TextInputType.text, 'address', null, null, false),
                 // address detail - tf
                 textFormField(
                     addressDetailTextController,
@@ -208,7 +226,8 @@ class _SignupState extends State<Signup> {
                     TextInputType.text,
                     'address detail',
                     null,
-                    null),
+                    null,
+                    false),
                 checkText(addressDetailCheckText, addressDetailCheckColor),
                 // 회원가입 버튼 : insertUserInfo()
                 signupButton(),
@@ -228,7 +247,7 @@ class _SignupState extends State<Signup> {
   /// 만든이 : 신오수
   /// 내용 : sign up에 사용되는 textField
   textFormField(controller, focusNode, readOnly, keyboardType, label,
-      inputFormatters, onChanged) {
+      inputFormatters, onChanged, isObscure) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
@@ -236,6 +255,7 @@ class _SignupState extends State<Signup> {
         focusNode: focusNode,
         readOnly: readOnly,
         keyboardType: keyboardType,
+        obscureText: isObscure,
         decoration: InputDecoration(
           label: Text(label),
           enabledBorder: const OutlineInputBorder(

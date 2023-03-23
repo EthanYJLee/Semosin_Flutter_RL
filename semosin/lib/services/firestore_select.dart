@@ -6,16 +6,19 @@ import 'package:semosin/view_model/shoe_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FireStoreSelect {
+  // ------------------------------------------------------------------------------------
+  // 신발 정보 select 관련
   /// 날짜 :2023.03.15
   /// 작성자 : 권순형 , 이호식
   /// 만든이 :
   /// 내용 : firestore 에서 shoes data다 가지고 오기
-  Future<List<ShoeViewModel>> selectAllShoes(int start, int end) async {
+  Future<List<ShoeViewModel>> selectAllShoes(
+      String sortValue, int start, int end) async {
     List<ShoeViewModel> shoeViewModelList = [];
 
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('shoes')
-        .orderBy('brand')
+        .orderBy(sortValue)
         .get();
 
     int i = 0;
@@ -35,19 +38,63 @@ class FireStoreSelect {
     return shoeViewModelList;
   }
 
-/*
   /// 날짜 :2023.03.15
-  /// 작성,만든이 :이호식
-  /// 내용 : 위에꺼에서 where 만 붙은거 
-  /// */
-  Future<List<ShoeViewModel>> selectBrandShoes(
-      String brand, int start, int end) async {
+  /// 작성자 : 권순형 , 이호식
+  /// 만든이 :
+  /// 내용 : firestore 에서 shoes data다 가지고 오기
+  Future<List<ShoeViewModel>> selectAllTextShoes(
+      String searchText, String sortValue, int start, int end) async {
     List<ShoeViewModel> shoeViewModelList = [];
 
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('shoes')
-        .where("brand", isEqualTo: brand)
+        .orderBy(sortValue)
         .get();
+
+    int i = 0;
+    int j = 0;
+    for (var document in querySnapshot.docs) {
+      if (document.get("model").toString().contains(searchText)) {
+        i++;
+        if (i >= start && i < end) {
+          ShoeViewModel shoeViewModel =
+              ShoeViewModel.fromJson(document.data() as Map<String, dynamic>);
+          shoeViewModelList.add(shoeViewModel);
+
+          var url = await FirebaseStorage.instance
+              .ref()
+              .child('신발 이미지')
+              .child(shoeViewModel.shoeImageName.substring(8))
+              .getDownloadURL();
+          String urlString = url.toString();
+          shoeViewModelList[j].shoeImageName = urlString;
+          j++;
+        }
+      }
+    }
+    return shoeViewModelList;
+  }
+
+  /// 날짜 :2023.03.15
+  /// 작성,만든이 :이호식
+  /// 내용 : 위에꺼에서 where 만 붙은거
+  Future<List<ShoeViewModel>> selectBrandShoes(
+      String brand, String sortValue, int start, int end) async {
+    List<ShoeViewModel> shoeViewModelList = [];
+    late QuerySnapshot querySnapshot;
+    if (sortValue == 'brand') {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('shoes')
+          .where("brand", isEqualTo: brand)
+          .get();
+    } else {
+      // 복합 쿼리 해야됨
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('shoes')
+          .orderBy(sortValue)
+          .where("brand", isEqualTo: brand)
+          .get();
+    }
 
     int i = 0;
     for (var document in querySnapshot.docs.getRange(start, end)) {
@@ -67,24 +114,160 @@ class FireStoreSelect {
     return shoeViewModelList;
   }
 
-  /// 날짜 : 2023.03.21
-  /// 작성자 : 권순형
-  /// 설명 : 데이터 길이 가져오기
-  Future<int> getBrandDataLength(String brandName) async {
-    late QuerySnapshot querySnapshot;
+  /// 날짜 :2023.03.22
+  /// 작성,만든이 : 권순형
+  /// 내용 : 특정 단어가 들어간 모델만 가져오기
+  Future<List<ShoeViewModel>> selectBrandTextShoes(String brand,
+      String searchText, String sortValue, int start, int end) async {
+    List<ShoeViewModel> shoeViewModelList = [];
 
-    if (brandName == 'all') {
-      querySnapshot =
-          await FirebaseFirestore.instance.collection('shoes').get();
-    } else {
+    late QuerySnapshot querySnapshot;
+    if (sortValue == 'brand') {
       querySnapshot = await FirebaseFirestore.instance
           .collection('shoes')
-          .where('brand', isEqualTo: brandName)
+          .where("brand", isEqualTo: brand)
+          .get();
+    } else {
+      // 복합 쿼리 해야됨
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('shoes')
+          .orderBy(sortValue)
+          .where("brand", isEqualTo: brand)
           .get();
     }
 
-    return querySnapshot.docs.length;
+    int i = 0;
+    int j = 0;
+
+    for (var document in querySnapshot.docs) {
+      if (document.get("model").toString().contains(searchText)) {
+        i++;
+        if (i >= start && i < end) {
+          ShoeViewModel shoeViewModel =
+              ShoeViewModel.fromJson(document.data() as Map<String, dynamic>);
+          shoeViewModelList.add(shoeViewModel);
+
+          var url = await FirebaseStorage.instance
+              .ref()
+              .child('신발 이미지')
+              .child(shoeViewModel.shoeImageName.substring(8))
+              .getDownloadURL();
+          String urlString = url.toString();
+          shoeViewModelList[j].shoeImageName = urlString;
+          j++;
+        }
+      }
+    }
+    return shoeViewModelList;
   }
+
+  /// 날짜 :2023.03.22
+  /// 작성,만든이 : 권순형
+  /// 내용 : tf 값과 버튼 누른 상태에 맞는 데이터 가져오기
+  Future<List<ShoeViewModel>> selectSpecificBrandShoes(String brand,
+      String searchText, String sortValue, int start, int end) async {
+    List<ShoeViewModel> shoeViewModelList = [];
+
+    if (searchText == "") {
+      shoeViewModelList = await selectBrandShoes(brand, sortValue, start, end);
+    } else {
+      shoeViewModelList =
+          await selectBrandTextShoes(brand, searchText, sortValue, start, end);
+    }
+
+    return shoeViewModelList;
+  }
+
+  /// 날짜 :2023.03.22
+  /// 작성,만든이 : 권순형
+  /// 내용 : 전체 데이터 중에 tf 값에 맞는 데이터 가져오기
+  Future<List<ShoeViewModel>> selectSpecificAllShoes(
+      String searchText, String sortValue, int start, int end) async {
+    List<ShoeViewModel> shoeViewModelList = [];
+
+    if (searchText == "") {
+      shoeViewModelList = await selectAllShoes(sortValue, start, end);
+    } else {
+      shoeViewModelList =
+          await selectAllTextShoes(searchText, sortValue, start, end);
+    }
+
+    return shoeViewModelList;
+  }
+  // ------------------------------------------------------------------------------------
+
+  // ------------------------------------------------------------------------------------
+  // 신발 데이터 길이 관련
+  /// 날짜 : 2023.03.21
+  /// 수정날짜 : 2023.03.22
+  /// 작성자 : 권순형
+  /// 설명 : 데이터 길이 가져오기
+  /// 수정 : 버튼 눌렀을 때, 텍스트 입력했을 때로 경우의 수 다 나눔
+  Future<int> getBrandDataLength(String brandName, String searchText) async {
+    late QuerySnapshot querySnapshot;
+    int result = 0;
+
+    if (searchText == "") {
+      if (brandName == 'all') {
+        querySnapshot =
+            await FirebaseFirestore.instance.collection('shoes').get();
+      } else {
+        querySnapshot = await FirebaseFirestore.instance
+            .collection('shoes')
+            .where('brand', isEqualTo: brandName)
+            .get();
+      }
+
+      result = querySnapshot.docs.length;
+    } else {
+      if (brandName == 'all') {
+        result = await getTextLength(searchText);
+      } else {
+        result = await getBrandTextLength(brandName, searchText);
+      }
+    }
+
+    return result;
+  }
+
+  /// 날짜 : 2023.03.22
+  /// 작성자 : 권순형
+  /// 설명 : 브랜드 선택하고 text 선택했을 때의 길이
+  Future<int> getBrandTextLength(String brandName, String searchText) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('shoes')
+        .where("brand", isEqualTo: brandName)
+        .get();
+
+    int i = 0;
+
+    for (var document in querySnapshot.docs) {
+      if (document.get("model").toString().contains(searchText)) {
+        i++;
+      }
+    }
+
+    return i;
+  }
+
+  /// 날짜 : 2023.03.22
+  /// 작성자 : 권순형
+  /// 설명 : text 입력했을 때의 길이
+  Future<int> getTextLength(String searchText) async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('shoes').get();
+
+    int i = 0;
+
+    for (var document in querySnapshot.docs) {
+      if (document.get("model").toString().contains(searchText)) {
+        i++;
+      }
+    }
+
+    return i;
+  }
+  // ------------------------------------------------------------------------------------
 
   /// 날짜 : 2023.03.18
   /// 작성자 : 권순형
@@ -139,17 +322,30 @@ class FireStoreSelect {
     return userInfo;
   }
 
-  Future<List<Favorites>> selectFavoriteShoes() async {
+  Future<List<Favorites>> selectFavoriteShoes(
+      brand, sortValue, isDescending) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
 
     List<Favorites> favoritesList = [];
+    QuerySnapshot querySnapshot;
 
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(email)
-        .collection('favorites')
-        .get();
+    if (brand == '전체') {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('favorites')
+          .orderBy(sortValue, descending: isDescending)
+          .get();
+    } else {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('favorites')
+          .where('brand', isEqualTo: brand)
+          .orderBy(sortValue, descending: isDescending)
+          .get();
+    }
 
     for (var document in querySnapshot.docs) {
       Favorites favorites =

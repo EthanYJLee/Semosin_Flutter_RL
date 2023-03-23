@@ -42,6 +42,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
       appBar: AppBar(), // 없음
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // 신발 이미지
             // 타이틀 Sign Up
@@ -54,8 +55,8 @@ class _EmailSignUpState extends State<EmailSignUp> {
             // 비밀번호 확인 tf
             textFormField(checkpwTextController, null, false,
                 TextInputType.text, true, 'check password', null, null),
-
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 sendEmailButton(),
                 nextButton(),
@@ -63,7 +64,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
                 //                2. email인증 버튼으로 바뀜
                 // 회원가입 버튼 : fireAuthEmailAuth check() 후 SignUp page 이동
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -126,7 +127,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
-              width: 180,
+              width: MediaQuery.of(context).size.width * 0.4,
               height: 58,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
@@ -159,7 +160,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
         : Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
-              width: 180,
+              width: MediaQuery.of(context).size.width * 0.4,
               height: 58,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
@@ -188,7 +189,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
-              width: 180,
+              width: MediaQuery.of(context).size.width * 0.4,
               height: 58,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
@@ -222,7 +223,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
         : Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
-              width: 180,
+              width: MediaQuery.of(context).size.width * 0.4,
               height: 58,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
