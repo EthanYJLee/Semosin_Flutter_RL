@@ -133,49 +133,53 @@ class _ShoeDetailState extends State<ShoeDetail> {
                       widget.modelName,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: MediaQuery.of(context).size.width / 20,
                       ),
                     ),
 
                     /// 관심상품 등록 및 해제  --------------------------------------------
+                    /// [수정] 이미지 카드 안에서 Stack으로 북마크 설정/해제할 수 있도록 변경
+                    /// 수정일 : 2023.03.23
+                    /// 작성자 : 신오수
+                    /// 수정자 : 이영진
                     /// --------------------------------insertFavorite, deleteFavorite, isFavorite 들어갈 자리--------------------------------
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            bookmark = !bookmark;
-                          });
-                          // print(bookmark);
-                          if (bookmark) {
-                            // await FireStoreInsert().insertFavorite(
-                            //   widget.modelName,
-                            //   widget.brandName,
-                            //   imagePathViewModel.imagePath[0],
-                            //   widget.price,
-                            // );
-                            await FireStoreInsert().insertFavorite(
-                              widget.modelName,
-                              widget.brandName,
-                              imagePathViewModel.imagePath[0],
-                              widget.price,
-                            );
-                            // 슈즈 라이크 카운트 +1 기능 추가
-                          } else {
-                            await FireStoreDelete()
-                                .deleteFavorite(widget.modelName);
-                            // 슈즈 라이크 카운트 -1 기능 추가
-                          }
-                          FireStoreFavorite().isFavorite(widget.modelName);
-                        },
-                        icon: Icon(
-                          bookmark
-                              ? Icons.bookmark_outlined
-                              : Icons.bookmark_outline,
-                          size: 44,
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(bottom: 10),
+                    //   child: IconButton(
+                    //     onPressed: () async {
+                    //       setState(() {
+                    //         bookmark = !bookmark;
+                    //       });
+                    //       // print(bookmark);
+                    //       if (bookmark) {
+                    //         // await FireStoreInsert().insertFavorite(
+                    //         //   widget.modelName,
+                    //         //   widget.brandName,
+                    //         //   imagePathViewModel.imagePath[0],
+                    //         //   widget.price,
+                    //         // );
+                    //         await FireStoreInsert().insertFavorite(
+                    //           widget.modelName,
+                    //           widget.brandName,
+                    //           imagePathViewModel.imagePath[0],
+                    //           widget.price,
+                    //         );
+                    //         // 슈즈 라이크 카운트 +1 기능 추가
+                    //       } else {
+                    //         await FireStoreDelete()
+                    //             .deleteFavorite(widget.modelName);
+                    //         // 슈즈 라이크 카운트 -1 기능 추가
+                    //       }
+                    //       FireStoreFavorite().isFavorite(widget.modelName);
+                    //     },
+                    //     icon: Icon(
+                    //       bookmark
+                    //           ? Icons.bookmark_outlined
+                    //           : Icons.bookmark_outline,
+                    //       size: 44,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -245,13 +249,16 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                                                 firestoreUpdate =
                                                                 FirestoreUpdate();
                                                             if (bookmark) {
-                                                              await FireStoreInsert().insertFavorite(
-                                                                  widget
-                                                                      .modelName,
-                                                                  widget
-                                                                      .brandName,
-                                                                  imagePathViewModel
-                                                                      .imagePath[0]);
+                                                              await FireStoreInsert()
+                                                                  .insertFavorite(
+                                                                widget
+                                                                    .modelName,
+                                                                widget
+                                                                    .brandName,
+                                                                imagePathViewModel
+                                                                    .imagePath[0],
+                                                                widget.price,
+                                                              );
                                                               // 슈즈 라이크 카운트 +1 기능 추가
                                                               firestoreUpdate
                                                                   .incrementLikes(
