@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// 날짜 :2023.03.15
+/// 작성자 : 이호식
+/// 만든이 : 이호식
+/// 내용 : main list 에서 불러올 brand list
 class ImageCarditem {
   String image;
   String brandName;

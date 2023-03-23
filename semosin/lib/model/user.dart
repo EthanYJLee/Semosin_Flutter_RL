@@ -16,6 +16,7 @@ class User {
   // final String deletedate;
   // final List<Order> orders;
   // final List<Cart> carts;
+  // final List<String> favorites;
 
   User({
     required this.name,

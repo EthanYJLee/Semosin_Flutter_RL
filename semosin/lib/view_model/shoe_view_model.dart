@@ -18,5 +18,5 @@ class ShoeViewModel {
         shoeModelName = json['model'].toString(),
         shoeBrandName = json['brand'].toString(),
         likeNum = int.parse(json['like'].toString()),
-        shoePrice = json['price'];
+        shoePrice = int.parse(json['price'].toString());
 }
