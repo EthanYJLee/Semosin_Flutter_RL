@@ -26,6 +26,8 @@ typedef ImageSizeCallback = void Function(
 class _ImageUploadState extends State<ImageUpload> {
   // 선택한 이미지
   XFile? _imageFile;
+  // 선택한 이미지의 경로
+  late String _imagePath = '';
   // Image Picker
   final ImagePicker _picker = ImagePicker();
   // 이미지 선택 오류
@@ -33,22 +35,28 @@ class _ImageUploadState extends State<ImageUpload> {
   String? _retrieveDataError;
 
   void _setImageFromFile(XFile? value) {
-    _imageFile = (value == null ? null : value);
+    _imageFile = (value);
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
-  // --------------------------------- FRONT ---------------------------------
+  // --------------------------------- FRONT -----------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyAppBar(title: "이미지 선택"),
       body: Center(
-        child: _handlePreview(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(30.0),
+              child: Text(
+                "이미지 선택",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 30),
+            _handlePreview(),
+          ],
+        ),
       ),
     );
   }
