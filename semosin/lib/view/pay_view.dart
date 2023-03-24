@@ -31,7 +31,7 @@ class _PayViewState extends State<PayView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      height: MediaQuery.of(context).size.height / 7,
+                      height: MediaQuery.of(context).size.height / 5,
                       width: MediaQuery.of(context).size.width / 1.2,
                       child: Card(
                         color: Colors.white,
@@ -43,7 +43,6 @@ class _PayViewState extends State<PayView> {
                                 postcode: snapshot.data!.postcode,
                                 address: snapshot.data!.address,
                                 addressDetail: snapshot.data!.addressDetail,
-                                phone: snapshot.data!.phone,
                               );
                             })).then((_) {
                               // 주소 수정하고 돌아오면 Future함수 재실행
@@ -77,6 +76,9 @@ class _PayViewState extends State<PayView> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -86,7 +88,7 @@ class _PayViewState extends State<PayView> {
                                       SizedBox(
                                         width: 250,
                                         child: Text(
-                                          '${snapshot.data!.address}, ${snapshot.data!.addressDetail}',
+                                          '${snapshot.data!.address}, \n${snapshot.data!.addressDetail}',
                                           style: const TextStyle(fontSize: 16),
                                           textAlign: TextAlign.left,
                                         ),
@@ -94,11 +96,11 @@ class _PayViewState extends State<PayView> {
                                       SizedBox(
                                         width: 250,
                                         child: Text(
-                                          '휴대폰: ${snapshot.data!.phone}',
+                                          '우편번호: ${snapshot.data!.postcode}',
                                           style: const TextStyle(fontSize: 16),
                                           textAlign: TextAlign.left,
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                   const Icon(Icons.arrow_forward_ios_rounded)
@@ -121,36 +123,18 @@ class _PayViewState extends State<PayView> {
                                 child: Row(
                                   children: const [
                                     Text(
-                                      '배송 요청사항',
+                                      '배송시 요청사항',
                                       style: TextStyle(fontSize: 20),
                                     ),
                                   ],
                                 ),
                               ),
-                              // deliveryRequest == ''
-                              // ? Container(
-                              //     height: 40,
-                              //     width: 100,
-                              //     decoration: BoxDecoration(
-                              //         border: Border.all(width: 1),
-                              //         borderRadius:
-                              //             BorderRadius.circular(10)),
-                              //     child: IconButton(
-                              //         onPressed: () {
-                              //           Navigator.of(context).push(
-                              //               CardDialog(builder: (context) {
-                              //             return DeliveryRequestCard();
-                              //           }));
-                              //         },
-                              //         icon: const Icon(
-                              //           Icons.add,
-                              //         )),
-                              //   )
-                              //     : Text(deliveryRequest)
+                              // 배송시 요청사항 --------------------------------------------------------
                               FutureBuilder(
                                 future: firestorePay.getDeliveryRequest(),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
+                                    // 1. 입력한 요청사항이 빈 칸이면 ('') 추가 버튼 보여주기
                                     if (snapshot.data == '') {
                                       return Container(
                                         height: 40,
@@ -164,7 +148,7 @@ class _PayViewState extends State<PayView> {
                                               Navigator.of(context).push(
                                                   CardDialog(
                                                       builder: (context) {
-                                                return DeliveryRequestCard();
+                                                return const DeliveryRequestCard();
                                               })).then((_) {
                                                 setState(() {
                                                   firestorePay
@@ -177,6 +161,7 @@ class _PayViewState extends State<PayView> {
                                             )),
                                       );
                                     } else {
+                                      // 2. 입력한 요청사항이 있다면 요청사항 보여주기
                                       return Container(
                                         width:
                                             MediaQuery.of(context).size.width /
@@ -190,7 +175,8 @@ class _PayViewState extends State<PayView> {
                                                   left: 10),
                                               child: Text(
                                                 snapshot.data!,
-                                                style: TextStyle(fontSize: 20),
+                                                style: const TextStyle(
+                                                    fontSize: 16),
                                               ),
                                             ),
                                             IconButton(
@@ -198,7 +184,7 @@ class _PayViewState extends State<PayView> {
                                                   Navigator.of(context).push(
                                                       CardDialog(
                                                           builder: (context) {
-                                                    return DeliveryRequestCard();
+                                                    return const DeliveryRequestCard();
                                                   })).then((_) {
                                                     setState(() {
                                                       firestorePay
@@ -214,6 +200,7 @@ class _PayViewState extends State<PayView> {
                                       );
                                     }
                                   } else {
+                                    // 3. 요청사항 필드가 아예 없어도 추가버튼 보여주기
                                     return Container(
                                       height: 40,
                                       width: 100,
@@ -225,7 +212,7 @@ class _PayViewState extends State<PayView> {
                                           onPressed: () {
                                             Navigator.of(context).push(
                                                 CardDialog(builder: (context) {
-                                              return DeliveryRequestCard();
+                                              return const DeliveryRequestCard();
                                             }));
                                           },
                                           icon: const Icon(
@@ -234,7 +221,7 @@ class _PayViewState extends State<PayView> {
                                     );
                                   }
                                 },
-                              )
+                              ) // 배송시 요청사항 END --------------------------------------------------------
                             ],
                           ),
                         ),
@@ -273,7 +260,7 @@ class _PayViewState extends State<PayView> {
                             child: Column(
                               children: [
                                 Row(
-                                  children: [
+                                  children: const [
                                     Text(
                                       '최종 결제 금액',
                                       style: TextStyle(fontSize: 20),
@@ -284,12 +271,12 @@ class _PayViewState extends State<PayView> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Text(
+                                    const Text(
                                       '이미지',
                                       style: TextStyle(fontSize: 30),
                                     ),
                                     Column(
-                                      children: [
+                                      children: const [
                                         Text('상품명'),
                                         Text('가격'),
                                         Text('주문수량')
@@ -297,7 +284,7 @@ class _PayViewState extends State<PayView> {
                                     )
                                   ],
                                 ),
-                                Text('총 결제 금액')
+                                const Text('총 결제 금액')
                               ],
                             ),
                           ),

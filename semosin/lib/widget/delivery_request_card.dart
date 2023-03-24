@@ -61,13 +61,14 @@ class _DeliveryRequestCardState extends State<DeliveryRequestCard> {
                       //   decoration: InputDecoration(helperText: '요청사항을 입력해주세요'),
                       // ),
                       _dropdownArea(),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       ElevatedButton(
                           onPressed: () {
                             if (requestController.text == '선택 안 함' ||
                                 requestController.text == '') {
+                              firestorePay.addDeliveryRequest('');
                               Navigator.of(context).pop();
                             } else {
                               // ----------------

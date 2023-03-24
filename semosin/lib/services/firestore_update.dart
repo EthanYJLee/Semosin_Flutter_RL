@@ -111,8 +111,11 @@ class FirestoreUpdate {
         );
   }
 
-  changeDeliveryInfo(String address, String detailAddress, String postCode,
-      String phone) async {
+  changeDeliveryInfo(
+    String address,
+    String detailAddress,
+    String postCode,
+  ) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
     final db = FirebaseFirestore.instance;
@@ -125,7 +128,6 @@ class FirestoreUpdate {
       "address": address,
       "addressDetail": detailAddress,
       "postcode": postCode,
-      "phone": phone
     });
   }
 }

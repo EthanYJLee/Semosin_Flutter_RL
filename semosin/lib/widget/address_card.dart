@@ -8,16 +8,15 @@ class AddressCard extends StatefulWidget {
   /// Desc : 구매하기 View에서 배송지 눌렀을 때 나오는 Popup Card (배송지 수정 기능)
   /// Date : 2023.03.22
   /// Author : youngjin
-  const AddressCard(
-      {super.key,
-      required this.postcode,
-      required this.address,
-      required this.addressDetail,
-      required this.phone});
+  const AddressCard({
+    super.key,
+    required this.postcode,
+    required this.address,
+    required this.addressDetail,
+  });
   final String postcode;
   final String address;
   final String addressDetail;
-  final String phone;
 
   @override
   State<AddressCard> createState() => _AddressCardState();
@@ -41,7 +40,6 @@ class _AddressCardState extends State<AddressCard> {
     postcodeController.text = widget.postcode;
     addressController.text = widget.address;
     addressDetailController.text = widget.addressDetail;
-    phoneController.text = widget.phone;
   }
 
   @override
@@ -107,24 +105,28 @@ class _AddressCardState extends State<AddressCard> {
                           decoration:
                               const InputDecoration(helperText: '상세주소를 입력해주세요'),
                         ),
-                        TextField(
-                          controller: phoneController,
-                          decoration: const InputDecoration(
-                              helperText: '휴대폰 번호를 입력해주세요'),
-                        ),
                         const SizedBox(
                           height: 20,
                         ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              firestoreUpdate.changeDeliveryInfo(
-                                  addressController.text.toString(),
-                                  addressDetailController.text.toString(),
-                                  postcodeController.text.toString(),
-                                  phoneController.text.toString());
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('수정'))
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('닫기')),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  firestoreUpdate.changeDeliveryInfo(
+                                      addressController.text.toString(),
+                                      addressDetailController.text.toString(),
+                                      postcodeController.text.toString());
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('수정')),
+                          ],
+                        )
                       ],
                     ),
                   ),
