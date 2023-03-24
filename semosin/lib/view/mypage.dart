@@ -301,7 +301,7 @@ class _MyPageState extends State<MyPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('회원정보 변경'),
+            title: const Text('회원정보 수정'),
             content: const Text('패스워드를 입력하세요'),
             actions: [
               // 현재비밀번호 tf
@@ -312,25 +312,35 @@ class _MyPageState extends State<MyPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    child: const Text('확인'),
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
                     onPressed: () {
                       final prefPw = pref.getString("saemosinpassword") ?? "0";
                       if (passwordTextController.text == prefPw) {
                         passwordTextController.text = "";
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) {
-                            return UserInfoPage();
+                            return const UserInfoPage();
                           },
                         ));
                       } else {
-                        print('Password Change Failed');
-                        _ErrorPasswordDialog(context, "비밀번호가 다릅니다!");
-                        Navigator.of(context).pop();
+                        //print('Password Change Failed');
+                        _errorPasswordDialog(context, "비밀번호가 틀렸습니다!");
+                        //Navigator.of(context).pop();
                       }
                     },
                   ),
                   TextButton(
-                      child: const Text('취소'),
+                      child: const Text(
+                        '취소',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.of(context).pop();
                       }),
@@ -386,7 +396,7 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  Future<void> _ErrorPasswordDialog(
+  Future<void> _errorPasswordDialog(
     BuildContext context,
     String message,
   ) async {
@@ -396,6 +406,19 @@ class _MyPageState extends State<MyPage> {
         return AlertDialog(
           title: const Text('알림'),
           content: Text(message),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context, "OK");
+                  },
+                ),
+              ],
+            ),
+          ],
         );
       },
     );

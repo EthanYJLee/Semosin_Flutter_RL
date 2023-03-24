@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:semosin/services/firestore_update.dart';
+import 'package:semosin/view/tabbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
@@ -76,7 +76,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
             ),
           ),
           Column(
-//        mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
                 height: 40,
@@ -85,33 +84,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
               const SizedBox(
                 height: 40,
               ),
-              ChangeProfile(),
+              changeProfile(),
               const SizedBox(
                 height: 40,
               ),
-              ChangPassword(),
+              changPassword(),
               const SizedBox(
                 height: 40,
               ),
-/*
-              Column(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      deleteUser();
-                    },
-                    child: const Text(
-                      '탈퇴하기',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-*/
             ],
           ),
         ],
@@ -132,24 +112,20 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Name'),
+                    const Text('Name'),
                     Text(
                       '${snapshot.data!.name} 님',
                       style: const TextStyle(
                         fontSize: 18,
-                        // fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Divider(thickness: 1, height: 1, color: Colors.grey),
-                    Text('Email'),
+                    const Text('Email'),
                     Text(
                       '${snapshot.data!.email}',
                       style: const TextStyle(
                         fontSize: 18,
-                        // fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Divider(thickness: 1, height: 1, color: Colors.grey),
                   ],
                 ),
               ],
@@ -168,7 +144,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget ChangeProfile() {
+  Widget changeProfile() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder(
@@ -229,8 +205,10 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         takeAddress();
+
+                        // 네트워크 쓰는거 때문에 예외 처리 해야 될듯
                       },
                       child: const Text(
                         '변경',
@@ -260,7 +238,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget Start ----------------------
-  Widget ChangPassword() {
+  Widget changPassword() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder(
@@ -272,16 +250,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
+                  children: const [
+                    Text(
                       'Password',
                       style: TextStyle(
                         fontSize: 18,
                       ),
                     ),
-                    // Text(
-                    //   '' * '${userPasswd = snapshot.data!.password}'.length,
-                    // ),
                   ],
                 ),
                 Column(
@@ -341,45 +316,38 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    child: const Text('확인'),
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
                     onPressed: () {
                       if (validatePassword(pwTextController.text)) {
                         if ((pwTextController.text ==
                             checkpwTextController.text)) {
-                          print('pwTextController:' + pwTextController.text);
-                          print('checkpwTextController:' +
-                              checkpwTextController.text);
-
                           userInfoUpdate.changePassword(pwTextController.text);
                           inputPassword(pwTextController.text);
-                          Navigator.of(context).pop();
+                          _completeDialog(context, '암호변경이 완료되었습니다.');
                           pwTextController.text = "";
                           checkpwTextController.text = "";
-                          SharedPreferences.getInstance().then((value) {
-                            final pref = value;
-                            pref.remove("saemosin-auto-login-status");
-
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const MyApp()));
-                          });
                         } else {
-                          print('Password Change Failed');
-                          _ErrorPasswordDialog(
+                          _errorPasswordDialog(
                               context, "비밀번호가 동일하지 않거나 현재비밀번호와 다릅니다!");
-                          Navigator.of(context).pop();
                         }
                       } else {
-                        print("정규식이 맞지 않습니다. False");
-                        _ErrorPasswordDialog(context,
-                            "비밀번호는대/소문자 각 1자이상, 특수문자를 사용하여 8자이상으로 적어주세요!");
+                        _errorPasswordDialog(
+                            context, "비밀번호는 8자이상 영문 대소문자, 숫자 및 특수문자를 사용해주세요!");
                       }
-                      ;
                     },
                   ),
                   TextButton(
-                      child: const Text('취소'),
+                      child: const Text(
+                        '취소',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.of(context).pop();
                       }),
@@ -441,18 +409,20 @@ class _UserInfoPageState extends State<UserInfoPage> {
   /// 내용 : Kpostal openAPI 이용하여 주소 정보 가져오기
   /// 수정사항 : 예외 처리
   Future<void> takeAddress() async {
-    Kpostal result = await Navigator.push(
+    Kpostal? result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => KpostalView(),
         ));
     setState(() {
-      // print(result.address);
-      // print(result.postCode);
-      userAddress = result.address;
-      userPostCode = result.postCode;
+      if (result != null) {
+        userAddress = result.address;
+        addressTextController.text = userAddress;
+        userPostCode = result.postCode;
+        postCodeTextController.text = userPostCode;
+        _showDetailAddressDialog(context);
+      }
     });
-    _showDetailAddressDialog(context);
   }
 
   /// 날짜 : 2023.03.21
@@ -477,16 +447,27 @@ class _UserInfoPageState extends State<UserInfoPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  child: const Text('확인'),
+                  child: const Text(
+                    '확인',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
                   onPressed: () {
                     userDetailAddress = detailAddressTextController.text;
                     userInfoUpdate.changeAddress(
                         userAddress, userDetailAddress, userPostCode);
-                    Navigator.of(context).pop();
+                    // 모든페이지 제거 후 특정페이지로 이동
+                    _completeDialog(context, "주소변경이 완료되었습니다.");
                   },
                 ),
                 TextButton(
-                    child: const Text('취소'),
+                    child: const Text(
+                      '취소',
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     }),
@@ -504,33 +485,44 @@ class _UserInfoPageState extends State<UserInfoPage> {
   /// 내용 : FireAuth User Delete
   /// 비고 : Firestore 에서 User 정보에 deleteDate를 추가
   /// 수정 : deleteDate를 업데이트 하는 메소드를 서비스로 옮김.
-  ///       deleteDate가 있으면 로그인이 안되도록 추가가 필요함.
-  Future<void> deleteUser() async {
-    // DeleteDate 추가
-    userInfoUpdate.updateDeletedate();
-    // Firebase 로그아웃
-    //await FirebaseAuth.instance.signOut();
-    //await _googleSignIn.signOut();
-    SharedPreferences.getInstance().then((value) {
-      final pref = value;
-      pref.remove("saemosin-auto-login-status");
+  ///       deleteDate가 있으면 로그인이 안되도록 추가가 필요함. -> 사용하지 않기로함.
+  // Future<void> deleteUser() async {
+  //   // DeleteDate 추가
+  //   userInfoUpdate.updateDeletedate();
+  //   // Firebase 로그아웃
+  //   //await FirebaseAuth.instance.signOut();
+  //   //await _googleSignIn.signOut();
+  //   SharedPreferences.getInstance().then((value) {
+  //     final pref = value;
+  //     pref.remove("saemosin-auto-login-status");
 
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const MyApp()));
-    });
-  }
+  //     Navigator.pushReplacement(
+  //         context, MaterialPageRoute(builder: (_) => const MyApp()));
+  //   });
+  // }
 
   getUserInfo() async {
     FireStoreSelect().getUserInfo();
   }
 
+  /// 날짜 : 2023.03.24
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 내용 : 비밀번호를 위한 정규식
+  /// 비고 : Firestore 에서 User 정보에 deleteDate를 추가
+  /// 수정 :
   bool validatePassword(String value) {
     return RegExp(
             r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
         .hasMatch(value);
   }
 
-  Future<void> _ErrorPasswordDialog(
+  /// 날짜 : 2023.03.24
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 내용 : 패스워드 관련 오류 메시지 출력
+  /// 비고 :
+  Future<void> _errorPasswordDialog(
     BuildContext context,
     String message,
   ) async {
@@ -540,6 +532,56 @@ class _UserInfoPageState extends State<UserInfoPage> {
         return AlertDialog(
           title: const Text('알림'),
           content: Text(message),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context, "OK");
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// 날짜 : 2023.03.24
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 내용 : 완료 메시지 다이알로그
+  /// 비고 :
+  Future<void> _completeDialog(
+    BuildContext context,
+    String message,
+  ) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(message),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ShoesTabBar()),
+                        (route) => false);
+                  },
+                ),
+              ],
+            ),
+          ],
         );
       },
     );
