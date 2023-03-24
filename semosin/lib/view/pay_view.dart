@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:semosin/model/user.dart';
+import 'package:semosin/services/firestore_pay.dart';
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/widget/address_card.dart';
 import 'package:semosin/widget/card_dialog.dart';
@@ -16,7 +17,7 @@ class PayView extends StatefulWidget {
 
 class _PayViewState extends State<PayView> {
   FireStoreSelect fireStoreSelect = FireStoreSelect();
-  late String deliveryRequest = '';
+  FirestorePay firestorePay = FirestorePay();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,11 +40,17 @@ class _PayViewState extends State<PayView> {
                             Navigator.of(context)
                                 .push(CardDialog(builder: (context) {
                               return AddressCard(
+                                postcode: snapshot.data!.postcode,
                                 address: snapshot.data!.address,
                                 addressDetail: snapshot.data!.addressDetail,
                                 phone: snapshot.data!.phone,
                               );
-                            }));
+                            })).then((_) {
+                              // 주소 수정하고 돌아오면 Future함수 재실행
+                              setState(() {
+                                fireStoreSelect.getUserInfo();
+                              });
+                            });
                           },
                           child: Column(
                             children: [
@@ -112,20 +119,106 @@ class _PayViewState extends State<PayView> {
                               Padding(
                                 padding: const EdgeInsets.all(10),
                                 child: Row(
-                                  children: [
-                                    const Text(
-                                      '배송요청사항',
+                                  children: const [
+                                    Text(
+                                      '배송 요청사항',
                                       style: TextStyle(fontSize: 20),
                                     ),
                                   ],
                                 ),
                               ),
-                              deliveryRequest == ''
-                                  ? Container(
+                              // deliveryRequest == ''
+                              // ? Container(
+                              //     height: 40,
+                              //     width: 100,
+                              //     decoration: BoxDecoration(
+                              //         border: Border.all(width: 1),
+                              //         borderRadius:
+                              //             BorderRadius.circular(10)),
+                              //     child: IconButton(
+                              //         onPressed: () {
+                              //           Navigator.of(context).push(
+                              //               CardDialog(builder: (context) {
+                              //             return DeliveryRequestCard();
+                              //           }));
+                              //         },
+                              //         icon: const Icon(
+                              //           Icons.add,
+                              //         )),
+                              //   )
+                              //     : Text(deliveryRequest)
+                              FutureBuilder(
+                                future: firestorePay.getDeliveryRequest(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data == '') {
+                                      return Container(
+                                        height: 40,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: IconButton(
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                  CardDialog(
+                                                      builder: (context) {
+                                                return DeliveryRequestCard();
+                                              })).then((_) {
+                                                setState(() {
+                                                  firestorePay
+                                                      .getDeliveryRequest();
+                                                });
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.add,
+                                            )),
+                                      );
+                                    } else {
+                                      return Container(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                1.2,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10),
+                                              child: Text(
+                                                snapshot.data!,
+                                                style: TextStyle(fontSize: 20),
+                                              ),
+                                            ),
+                                            IconButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).push(
+                                                      CardDialog(
+                                                          builder: (context) {
+                                                    return DeliveryRequestCard();
+                                                  })).then((_) {
+                                                    setState(() {
+                                                      firestorePay
+                                                          .getDeliveryRequest();
+                                                    });
+                                                  });
+                                                },
+                                                icon: const Icon(
+                                                  Icons.settings,
+                                                )),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    return Container(
                                       height: 40,
                                       width: 100,
                                       decoration: BoxDecoration(
-                                          border: Border.all(),
+                                          border: Border.all(width: 1),
                                           borderRadius:
                                               BorderRadius.circular(10)),
                                       child: IconButton(
@@ -135,9 +228,13 @@ class _PayViewState extends State<PayView> {
                                               return DeliveryRequestCard();
                                             }));
                                           },
-                                          icon: const Icon(Icons.add)),
-                                    )
-                                  : Text(deliveryRequest)
+                                          icon: const Icon(
+                                            Icons.add,
+                                          )),
+                                    );
+                                  }
+                                },
+                              )
                             ],
                           ),
                         ),
