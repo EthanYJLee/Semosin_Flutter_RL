@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:semosin/model/shoe.dart';
+import 'package:semosin/services/firestore_select.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String datetime = DateTime.now().toString();
@@ -29,11 +31,14 @@ class FireStoreInsert {
   /// 날짜 :2023.03.22
   /// 만든이 : 이호식
   /// 내용 : Firebase Carts Insert
-  insertCart(cartStatus, modelName, brandName, size, amount, price, color,
-      shoesimage) async {
+  insertCart(
+      cartStatus, modelName, brandName, size, amount, price, shoesimage) async {
     final pref = await SharedPreferences.getInstance();
+    String testSize = size.toString();
     String? email = pref.getString('saemosinemail');
-    // String totalPrice = (int.parse(price) * int.parse(amount)).toString();
+    FireStoreSelect getShoesAmount = FireStoreSelect();
+    Shoe map = await getShoesAmount.selectModelNameData(modelName);
+    int shoesAmount = int.parse(map.sizes[testSize].toString());
     FirebaseFirestore.instance
         .collection('users')
         .doc(email)
@@ -48,12 +53,12 @@ class FireStoreInsert {
       'initDate': datetime.substring(0, 10),
       'price': price,
       'image': shoesimage,
-      'color': color
+      'shoesAmount': shoesAmount,
     });
   } //insertCart END
 
   updateCart(documentId, cartStatus, modelName, brandName, size, amount, price,
-      color, shoesimage) async {
+      shoesimage, shoesAmount) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
     FirebaseFirestore.instance
@@ -63,14 +68,28 @@ class FireStoreInsert {
         .doc(documentId)
         .set({
       'cartStatus': cartStatus,
-      'selectedSize': 44444,
+      'selectedSize': size,
       'brandName': brandName,
       'modelName': modelName,
       'amount': amount,
       'initDate': datetime.substring(0, 10),
       'price': price,
       'image': shoesimage,
-      'color': color
+      'shoesAmount': shoesAmount,
+    });
+  } //updateCart END
+
+//just update cartsate
+  stateCart(documentId, cartStatus) async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(email)
+        .collection('carts')
+        .doc(documentId)
+        .update({
+      'cartStatus': cartStatus,
     });
   } //updateCart END
 }

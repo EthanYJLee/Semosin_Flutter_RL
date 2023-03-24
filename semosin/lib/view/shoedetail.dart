@@ -2,6 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/services/shoes_info.dart';
+import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view/pay_view.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
 import 'package:semosin/widget/card_dialog.dart';
@@ -214,7 +215,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         onPageChanged: (value) {
                                           setState(() {
                                             selectedImageIndex = value;
-                                            print(selectedImageIndex);
                                           });
                                         },
                                         itemCount:
@@ -333,7 +333,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
                                     return GestureDetector(
                                       onTap: () {
-                                        print(index);
                                         setState(() {
                                           selectedImageIndex = index;
                                           if (pageController.hasClients) {
@@ -862,7 +861,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                         setState(() {
                           selectedSize = size.toString();
                           availableQuantity = quantity.toString();
-                          print(availableQuantity);
                         });
                         Navigator.of(context).pop();
                       },
@@ -903,6 +901,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 장바구니 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
+  ///   - Modify & Addtion
+  ///   - 2023.03.24
+  ///   - Hosik
   void addToCart(String model, int count, int price, int size) {
     if (selectedSize == null) {
       showDialog(
@@ -967,23 +968,32 @@ class _ShoeDetailState extends State<ShoeDetail> {
               ),
               onPressed: () {
                 // ------------------------------------------------
-                // FireStoreInsert fireStoreInsert = FireStoreInsert();
-                // fireStoreInsert.insertIntoCart(
-                //     model, imagePathViewModel.imagePath[0], size, price, count);
-                // Navigator.of(context).pop();
-                // showDialog(
-                //     context: context,
-                //     builder: (context) {
-                //       return AlertDialog(
-                //         title: const Text('상품이 장바구니에 담겼습니다'),
-                //         actions: [
-                //           TextButton(
-                //               onPressed: () {}, child: const Text('홈으로')),
-                //           TextButton(
-                //               onPressed: () {}, child: const Text('장바구니로 이동'))
-                //         ],
-                //       );
-                //     });
+                insertCart(true, model, widget.brandName, size, count, price,
+                    imagePathViewModel.imagePath[0]);
+                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('상품이 장바구니에 담겼습니다'),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('홈으로')),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const CartView()));
+                              },
+                              child: const Text('장바구니로 이동'))
+                        ],
+                      );
+                    });
               },
             ),
           ],
@@ -1060,6 +1070,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
               ),
               onPressed: () {
                 // ------------------------------------------------
+                Navigator.of(context).pop();
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) => PayView()));
               },
@@ -1091,12 +1102,21 @@ class _ShoeDetailState extends State<ShoeDetail> {
         imagePathViewModel = ImagePathViewModel(imagePath: pathList);
       });
     }
-  }
+  } // getImageURL END
 
   Future<void> checkFavorite() async {
     bool result = await FireStoreFavorite().isFavorite(widget.modelName);
     setState(() {
       bookmark = result;
     });
+  } // checkFavorite END
+
+// Hosik Add
+// Firebase DB Insert
+  Future<void> insertCart(
+      cartStatus, modelName, brandName, size, amount, price, shoesimage) async {
+    FireStoreInsert fireStoreInsert = FireStoreInsert();
+    fireStoreInsert.insertCart(
+        cartStatus, modelName, brandName, size, amount, price, shoesimage);
   }
 }
