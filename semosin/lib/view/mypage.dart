@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/view/favorite_list.dart';
 import 'package:semosin/view/order_status.dart';
 import 'package:semosin/view/userinfopage.dart';
-import 'package:semosin/view/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPage extends StatefulWidget {
