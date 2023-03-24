@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:kpostal/kpostal.dart';
+import 'package:semosin/services/firestore_pay.dart';
 import 'package:semosin/services/firestore_update.dart';
 
 enum WhichAddress { mine, another }
@@ -92,31 +93,35 @@ class _AddressCardState extends State<AddressCard> {
                             style: TextStyle(fontSize: 20),
                           ),
                         ),
-                        SegmentedButton(
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.grey)),
-                          segments: const <ButtonSegment<WhichAddress>>[
-                            ButtonSegment<WhichAddress>(
-                                value: WhichAddress.mine,
-                                label: Text(
-                                  '내 주소',
-                                  style: TextStyle(color: Colors.black),
-                                )),
-                            ButtonSegment<WhichAddress>(
-                                value: WhichAddress.another,
-                                label: Text(
-                                  '다른 주소',
-                                  style: TextStyle(color: Colors.black),
-                                ))
-                          ],
-                          selected: <WhichAddress>{choice},
-                          onSelectionChanged: (Set<WhichAddress> newChoice) {
-                            setState(() {
-                              // 버튼 누를 때 마다 controller 초기화해주기
-                              choice = newChoice.first;
-                            });
-                          },
+                        SizedBox(
+                          width: 200,
+                          child: SegmentedButton(
+                            style: ButtonStyle(
+                                elevation: const MaterialStatePropertyAll(2),
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.grey)),
+                            segments: const <ButtonSegment<WhichAddress>>[
+                              ButtonSegment<WhichAddress>(
+                                  value: WhichAddress.mine,
+                                  label: Text(
+                                    '내 주소',
+                                    style: TextStyle(color: Colors.black),
+                                  )),
+                              ButtonSegment<WhichAddress>(
+                                  value: WhichAddress.another,
+                                  label: Text(
+                                    '다른 주소',
+                                    style: TextStyle(color: Colors.black),
+                                  ))
+                            ],
+                            selected: <WhichAddress>{choice},
+                            onSelectionChanged: (Set<WhichAddress> newChoice) {
+                              setState(() {
+                                // 버튼 누를 때 마다 controller 초기화해주기
+                                choice = newChoice.first;
+                              });
+                            },
+                          ),
                         ),
                         choice == WhichAddress.mine
                             ? myAddressWidget()
@@ -150,10 +155,17 @@ class _AddressCardState extends State<AddressCard> {
     // 주소를 검색했을 경우
     if (result != null) {
       kpostal = result;
-      setState(() {
-        postcodeController.text = kpostal.postCode;
-        addressController.text = kpostal.address;
-      });
+      if (choice == WhichAddress.mine) {
+        setState(() {
+          postcodeController.text = kpostal.postCode;
+          addressController.text = kpostal.address;
+        });
+      } else {
+        setState(() {
+          newPostcodeController.text = kpostal.postCode;
+          newAddressController.text = kpostal.address;
+        });
+      }
       // 주소 검색하지 않고 뒤로가기 탭했을 경우
     } else {
       // Nothing Happens
@@ -288,7 +300,31 @@ class _AddressCardState extends State<AddressCard> {
         const SizedBox(
           height: 20,
         ),
-        ElevatedButton(onPressed: () {}, child: const Text('추가하기'))
+        ElevatedButton(
+            onPressed: () {
+              FirestorePay firestorePay = FirestorePay();
+              firestorePay.addShippingAddress(
+                  newNameController.text,
+                  newPostcodeController.text,
+                  newAddressController.text,
+                  newAddressDetailController.text);
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Column(
+                  children: const [
+                    SizedBox(
+                        height: 15,
+                        child: Text(
+                          '배송지목록에 추가되었습니다',
+                          textAlign: TextAlign.center,
+                        )),
+                  ],
+                ),
+                dismissDirection: DismissDirection.up,
+                duration: const Duration(milliseconds: 500),
+              ));
+            },
+            child: const Text('추가하기'))
       ],
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:semosin/model/user.dart';
 import 'package:semosin/services/firestore_pay.dart';
 import 'package:semosin/services/firestore_select.dart';
+import 'package:semosin/view/shipping_address_listview.dart';
 import 'package:semosin/widget/address_card.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/delivery_request_card.dart';
@@ -31,7 +32,7 @@ class _PayViewState extends State<PayView> {
             children: [
               deliveryAddressWidget(),
               Container(
-                  height: MediaQuery.of(context).size.height / 7,
+                  height: MediaQuery.of(context).size.height / 6.7,
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Card(
                     elevation: 5,
@@ -63,7 +64,7 @@ class _PayViewState extends State<PayView> {
                     ),
                   )),
               Container(
-                  height: MediaQuery.of(context).size.height / 7,
+                  height: MediaQuery.of(context).size.height / 6.7,
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Card(
                     elevation: 5,
@@ -158,12 +159,16 @@ class _PayViewState extends State<PayView> {
                       ),
                     ),
                   )),
-              ElevatedButton(
-                  onPressed: () {
-                    // --------------------------------------------------------
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                  child: const Text('결제하기'))
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      // --------------------------------------------------------
+                    },
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                    child: const Text('결제하기')),
+              )
             ],
           ),
         ));
@@ -216,7 +221,17 @@ class _PayViewState extends State<PayView> {
                                       ],
                                     ),
                                     InkWell(
-                                      onTap: () {},
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ShippingAddressListview()))
+                                            .then((_) {
+                                          setState(() {
+                                            fireStoreSelect.getUserInfo();
+                                          });
+                                        });
+                                      },
                                       child: Row(
                                         children: const [
                                           Text('배송지 목록'),
@@ -236,9 +251,6 @@ class _PayViewState extends State<PayView> {
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10,
                         ),
                         InkWell(
                           onTap: () {
@@ -323,9 +335,6 @@ class _PayViewState extends State<PayView> {
                   child: SizedBox(
                     height: 40,
                     width: 100,
-                    // decoration: BoxDecoration(
-                    //     border: Border.all(width: 1),
-                    //     borderRadius: BorderRadius.circular(10)),
                     child: IconButton(
                         onPressed: () {
                           Navigator.of(context)
