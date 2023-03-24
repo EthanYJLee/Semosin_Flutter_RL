@@ -268,6 +268,37 @@ class FireStoreSelect {
 
     return i;
   }
+
+  /// 날짜 : 2023.03.24
+  /// 작성자 : 권순형
+  /// 만든이 : 신오수
+  /// 설명 : favorites 데이터 길이 가져오기
+  Future<int> getFavoritesDataLength(String brand) async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+
+    late QuerySnapshot querySnapshot;
+    int result = 0;
+
+    if (brand == '전체') {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('favorites')
+          .get();
+    } else {
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('favorites')
+          .where('brand', isEqualTo: brand)
+          .get();
+    }
+
+    result = querySnapshot.docs.length;
+
+    return result;
+  }
   // ------------------------------------------------------------------------------------
 
   /// 날짜 : 2023.03.18
@@ -332,6 +363,9 @@ class FireStoreSelect {
 //     // 로 해서 새로운 ShoeViewModel로 만들어서 이걸 리턴해 주면 된다.
 //   }
 
+  /// 날짜 :2023.03.22
+  /// 작성자 : 신오수
+  /// 내용 : users의 favorites 불러오기
   Future<List<Favorites>> selectFavoriteShoes(
       brand, sortValue, isDescending) async {
     final pref = await SharedPreferences.getInstance();
@@ -386,5 +420,4 @@ class FireStoreSelect {
     }
     return cartList;
   } //select cart end
-
 }//FireStoreSelect End

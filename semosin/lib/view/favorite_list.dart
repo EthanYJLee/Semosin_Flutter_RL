@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -18,8 +20,6 @@ class _FavoriteListState extends State<FavoriteList> {
   final formatCurrency =
       NumberFormat.simpleCurrency(locale: "ko_KR", name: "", decimalDigits: 0);
 
-  late List brandButtonGroup;
-
   final List<String> valueList = <String>['담은순', '높은 가격순', '낮은 가격순'];
   late String dropdownValue;
   late String selectedSortValue;
@@ -32,16 +32,18 @@ class _FavoriteListState extends State<FavoriteList> {
 
   String selectedBrandValue = '전체';
 
+  int dataLength = 0;
+
   @override
   void initState() {
     super.initState();
     fireStoreSelect = FireStoreSelect();
 
-    brandButtonGroup = [true, false, false, false];
-
     dropdownValue = valueList.first;
     selectedSortValue = 'initdate';
     isDescending = true;
+
+    getFavoritesDataLength();
   }
 
   @override
@@ -52,12 +54,12 @@ class _FavoriteListState extends State<FavoriteList> {
       ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
             child: Text(
               '관심있는 상품',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: MediaQuery.of(context).size.width * 0.055,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -78,178 +80,10 @@ class _FavoriteListState extends State<FavoriteList> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  minimumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  maximumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                    side: BorderSide(
-                      width: 2,
-                      color: brandButtonGroup[0] == true
-                          ? Colors.black
-                          : Colors.grey,
-                    ),
-                  ),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  setState(() {
-                    brandButtonGroup = [true, false, false, false];
-                    selectedBrandValue = all;
-                  });
-                },
-                child: Text(
-                  all,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: brandButtonGroup[0] == true
-                        ? Colors.black
-                        : Colors.grey,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  minimumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  maximumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                    side: BorderSide(
-                      width: 2,
-                      color: brandButtonGroup[1] == true
-                          ? Colors.black
-                          : Colors.grey,
-                    ),
-                  ),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  setState(() {
-                    brandButtonGroup = [false, true, false, false];
-                    selectedBrandValue = nike;
-                  });
-                },
-                child: Text(
-                  nike,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: brandButtonGroup[1] == true
-                        ? Colors.black
-                        : Colors.grey,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  minimumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  maximumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                    side: BorderSide(
-                      width: 2,
-                      color: brandButtonGroup[2] == true
-                          ? Colors.black
-                          : Colors.grey,
-                    ),
-                  ),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  setState(() {
-                    brandButtonGroup = [false, false, true, false];
-                    selectedBrandValue = adidas;
-                  });
-                },
-                child: Text(
-                  adidas,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: brandButtonGroup[2] == true
-                        ? Colors.black
-                        : Colors.grey,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  minimumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  maximumSize: Size(
-                    MediaQuery.of(context).size.width * 0.15,
-                    MediaQuery.of(context).size.width * 0.088,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                    side: BorderSide(
-                      width: 2,
-                      color: brandButtonGroup[3] == true
-                          ? Colors.black
-                          : Colors.grey,
-                    ),
-                  ),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  setState(() {
-                    brandButtonGroup = [false, false, false, true];
-                    selectedBrandValue = converse;
-                  });
-                },
-                child: Text(
-                  converse,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: brandButtonGroup[3] == true
-                        ? Colors.black
-                        : Colors.grey,
-                  ),
-                ),
-              ),
-            ),
+            brandButton(all),
+            brandButton(nike),
+            brandButton(adidas),
+            brandButton(converse),
             Container(
               margin: const EdgeInsets.only(left: 10),
               width: MediaQuery.of(context).size.width * 0.24,
@@ -295,6 +129,50 @@ class _FavoriteListState extends State<FavoriteList> {
     );
   }
 
+  Widget brandButton(
+    brand,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          minimumSize: Size(
+            MediaQuery.of(context).size.width * 0.15,
+            MediaQuery.of(context).size.width * 0.088,
+          ),
+          maximumSize: Size(
+            MediaQuery.of(context).size.width * 0.15,
+            MediaQuery.of(context).size.width * 0.088,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            side: BorderSide(
+              width: 2,
+              color: selectedBrandValue == brand ? Colors.black : Colors.grey,
+            ),
+          ),
+          foregroundColor: Colors.white,
+        ),
+        onPressed: () {
+          setState(() {
+            selectedBrandValue = brand;
+            getFavoritesDataLength();
+          });
+        },
+        child: Text(
+          brand,
+          style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width * 0.03,
+            fontWeight: FontWeight.bold,
+            color: selectedBrandValue == brand ? Colors.black : Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget favoritesList() {
     return SizedBox(
       height: MediaQuery.of(context).size.width * 1.62,
@@ -305,110 +183,150 @@ class _FavoriteListState extends State<FavoriteList> {
           isDescending,
         ),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                mainAxisExtent: 278,
-                crossAxisCount: 2,
-                crossAxisSpacing: 0,
-                mainAxisSpacing: 0,
-              ),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    // Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return ShoeDetail(
-                            modelName: snapshot.data![index].shoeModelName,
-                            brandName: snapshot.data![index].shoeBrandName,
-                            price: snapshot.data![index].price,
-                          );
+          if (snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.done) {
+            if (dataLength > 0) {
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  mainAxisExtent: MediaQuery.of(context).size.width * 0.7,
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 0,
+                  mainAxisSpacing: 0,
+                ),
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ShoeDetail(
+                              modelName: snapshot.data![index].shoeModelName,
+                              brandName: snapshot.data![index].shoeBrandName,
+                              price: snapshot.data![index].price,
+                            );
+                          },
+                        ),
+                      ).then(
+                        (value) {
+                          setState(() {
+                            // ShoeDetail에서 관심등록 해제하고 올 수 있기 때문에 setState
+                          });
                         },
-                      ),
-                    );
-                  },
-                  child: Card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            Image.network(
-                              snapshot.data![index].shoeImageName,
-                            ),
-                            Positioned(
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    unlikeDialog(
-                                        snapshot.data![index].shoeModelName);
-                                  });
-                                },
-                                icon: const Icon(
-                                  CupertinoIcons.heart_fill,
-                                  color: Colors.red,
+                      );
+                    },
+                    child: Card(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            children: [
+                              Image.network(
+                                snapshot.data![index].shoeImageName,
+                              ),
+                              Positioned(
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      unlikeDialog(
+                                          snapshot.data![index].shoeModelName);
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    CupertinoIcons.heart_fill,
+                                    color: Colors.red,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              top: 3,
-                              right: 3,
-                              child: Image.asset(
-                                snapshot.data![index].shoeBrandName == '아디다스'
-                                    ? './images/converted_adidas.png'
-                                    : snapshot.data![index].shoeBrandName ==
-                                            '나이키'
-                                        ? './images/converted_nike.png'
-                                        : snapshot.data![index].shoeBrandName ==
-                                                '컨버스'
-                                            ? './images/converted_converse.png'
-                                            : './images/googlelogo.png',
-                                width: MediaQuery.of(context).size.width * 0.1,
-                                height: MediaQuery.of(context).size.width * 0.1,
+                              Positioned(
+                                top: 3,
+                                right: 3,
+                                child: Image.asset(
+                                  snapshot.data![index].shoeBrandName == '아디다스'
+                                      ? './images/converted_adidas.png'
+                                      : snapshot.data![index].shoeBrandName ==
+                                              '나이키'
+                                          ? './images/converted_nike.png'
+                                          : snapshot.data![index]
+                                                      .shoeBrandName ==
+                                                  '컨버스'
+                                              ? './images/converted_converse.png'
+                                              : './images/googlelogo.png',
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(5, 3, 5, 2),
+                            child: Text(
+                              snapshot.data![index].shoeBrandName,
+                              style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.033,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 3, 5, 2),
-                          child: Text(
-                            snapshot.data![index].shoeBrandName,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5.0),
+                            child: Text(
+                              snapshot.data![index].shoeModelName,
+                              style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.037,
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5.0),
-                          child: Text(
-                            snapshot.data![index].shoeModelName,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              // fontWeight: FontWeight.bold,
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(5, 2, 0, 0),
+                            child: Text(
+                              '${formatCurrency.format(snapshot.data![index].price)}원',
+                              style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.033,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 2, 0, 0),
-                          child: Text(
-                            '${formatCurrency.format(snapshot.data![index].price)}원',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else {
+              return Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    child: Opacity(
+                      opacity: 0.5,
+                      child: Image.asset(
+                        "images/logo_gray.png",
+                      ),
                     ),
                   ),
-                );
-              },
-            );
+                  const Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Text(
+                      '관심등록한 상품이 없습니다.',
+                      style: TextStyle(color: Colors.black45),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.1,
+                  ),
+                ],
+              ));
+            }
           } else {
             return Center(
               child: Column(
@@ -429,10 +347,10 @@ class _FavoriteListState extends State<FavoriteList> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
+          title: Text(
             '좋아요를 취소 하시겠습니까?',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: MediaQuery.of(context).size.width * 0.05,
             ),
           ),
           actions: [
@@ -478,6 +396,15 @@ class _FavoriteListState extends State<FavoriteList> {
   // Widget End ------------------------
 
   // Function Start --------------------
+
+  /// 날짜 : 2023.03.24
+  /// 만든이 : 신오수
+  /// 설명 : 데이터의 길이 가져오기
+  getFavoritesDataLength() async {
+    FireStoreSelect firestoreSelect = FireStoreSelect();
+    dataLength =
+        await firestoreSelect.getFavoritesDataLength(selectedBrandValue);
+  }
 
   // Function End ----------------------
 }

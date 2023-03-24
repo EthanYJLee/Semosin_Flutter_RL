@@ -806,6 +806,7 @@ class _ShoesListState extends State<ShoesList> with TickerProviderStateMixin {
             key = 0;
           });
           streamSheoList.add(value);
+          myList = value;
         }
       }
     });
