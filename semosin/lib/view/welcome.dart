@@ -46,180 +46,182 @@ class _WelcomeState extends State<Welcome> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        body: Center(
-          child: Column(
-            children: [
-              // 신발 이미지
-              const SizedBox(
-                height: 100,
-              ),
-              SizedBox(
-                height: 150,
-                width: 150,
-                child: Image.asset("images/converse.png"),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-
-              // 타이틀
-
-              const SizedBox(
-                height: 70,
-              ),
-
-              // 이메일 tf
-              _textFormField(_emailController, _emailFocus, false,
-                  TextInputType.emailAddress, false, 'Email', null, null),
-
-              // 비밀번호 tf
-              _textFormField(_passwordController, _passwordFocus, false,
-                  TextInputType.text, true, 'Password', null, null),
-
-              // 이메일 저장 / 자동 로그인 CheckBox
-              _rememberAccount(),
-
-              // 로그인 버튼 : login()
-              SizedBox(
-                width: 300,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
-                  onPressed: () async {
-                    // email, password 확인 하기
-                    isRight().then((value) {
-                      if (value) {
-                        // shared preference에 값들 넣기 -> _isAccountSaved , _isLoginAuto 에 따라서
-                        insertSharedPreference();
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ShoesTabBar(),
-                            ));
-                      } else {
-                        showLoginFailedDialog();
-                      }
-                    });
-                  },
-                  child: const Text('Log In'),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                // 신발 이미지
+                const SizedBox(
+                  height: 100,
                 ),
-              ),
+                SizedBox(
+                  height: 150,
+                  width: 150,
+                  child: Image.asset("images/converse.png"),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
 
-              // 'or' 텍스트
-              const Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Text("or"),
-              ),
+                // 타이틀
 
-              // 구글 로그인 버튼 : googleLoginAPI()
-              SizedBox(
-                width: 300,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
-                  onPressed: () {
-                    //-----
-                    googleLoginAPI();
-                  },
+                const SizedBox(
+                  height: 70,
+                ),
+
+                // 이메일 tf
+                _textFormField(_emailController, _emailFocus, false,
+                    TextInputType.emailAddress, false, 'Email', null, null),
+
+                // 비밀번호 tf
+                _textFormField(_passwordController, _passwordFocus, false,
+                    TextInputType.text, true, 'Password', null, null),
+
+                // 이메일 저장 / 자동 로그인 CheckBox
+                _rememberAccount(),
+
+                // 로그인 버튼 : login()
+                SizedBox(
+                  width: 300,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
+                    onPressed: () async {
+                      // email, password 확인 하기
+                      isRight().then((value) {
+                        if (value) {
+                          // shared preference에 값들 넣기 -> _isAccountSaved , _isLoginAuto 에 따라서
+                          insertSharedPreference();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ShoesTabBar(),
+                              ));
+                        } else {
+                          showLoginFailedDialog();
+                        }
+                      });
+                    },
+                    child: const Text('Log In'),
+                  ),
+                ),
+
+                // 'or' 텍스트
+                const Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: Text("or"),
+                ),
+
+                // 구글 로그인 버튼 : googleLoginAPI()
+                SizedBox(
+                  width: 300,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
+                    onPressed: () {
+                      //-----
+                      googleLoginAPI();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            "images/googlelogo.png",
+                            width: 20,
+                            height: 20,
+                          ),
+                        ),
+                        const Text(
+                          "Continue With Google",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                /// --------------------------------------------------------------------------------------
+                /// Desc : 로그인 화면 이동 버튼 - Login 페이지 이동
+                /// Update : 나눠져있던 구글 로그인 화면과 이메일 로그인 화면을 Welcome에 병합
+                /// Date : 2023.03.15
+                /// Author : youngjin Lee
+                ///
+                // SizedBox(
+                //   width: 300,
+                //   height: 50,
+                //   child: ElevatedButton(
+                //     style: ElevatedButton.styleFrom(
+                //         backgroundColor: Colors.black,
+                //         shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(20))),
+                //     onPressed: () {
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => const Login(),
+                //         ),
+                //       );
+                //     },
+                //     child: const Text("Sign in with password"),
+                //   ),
+                // ),
+                // const SizedBox(
+                //   height: 10,
+                // ),
+                /// --------------------------------------------------------------------------------------
+
+                // 회원 가입 이동 버튼 : SignUp 페이지 이동
+                Padding(
+                  padding: const EdgeInsets.only(top: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(
-                          "images/googlelogo.png",
-                          width: 20,
-                          height: 20,
+                      const Text(
+                        "Don't have account?",
+                        style: TextStyle(
+                          color: Colors.grey,
                         ),
                       ),
-                      const Text(
-                        "Continue With Google",
-                        style: TextStyle(
-                          color: Colors.black,
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EmailSignUp()),
+                          );
+                        },
+                        child: const Text(
+                          "Sign up",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
 
-              /// --------------------------------------------------------------------------------------
-              /// Desc : 로그인 화면 이동 버튼 - Login 페이지 이동
-              /// Update : 나눠져있던 구글 로그인 화면과 이메일 로그인 화면을 Welcome에 병합
-              /// Date : 2023.03.15
-              /// Author : youngjin Lee
-              ///
-              // SizedBox(
-              //   width: 300,
-              //   height: 50,
-              //   child: ElevatedButton(
-              //     style: ElevatedButton.styleFrom(
-              //         backgroundColor: Colors.black,
-              //         shape: RoundedRectangleBorder(
-              //             borderRadius: BorderRadius.circular(20))),
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => const Login(),
-              //         ),
-              //       );
-              //     },
-              //     child: const Text("Sign in with password"),
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 10,
-              // ),
-              /// --------------------------------------------------------------------------------------
-
-              // 회원 가입 이동 버튼 : SignUp 페이지 이동
-              Padding(
-                padding: const EdgeInsets.only(top: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Don't have account?",
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EmailSignUp()),
-                        );
-                      },
-                      child: const Text(
-                        "Sign up",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 비밀번호 찾기 버튼 : findPassword page로 이동
-              TextButton(
-                  onPressed: () {
-                    // -------------
-                  },
-                  child: const Text(
-                    'Forgot the Password?',
-                    style: TextStyle(color: Colors.black),
-                  )),
-            ],
+                // 비밀번호 찾기 버튼 : findPassword page로 이동
+                TextButton(
+                    onPressed: () {
+                      // -------------
+                    },
+                    child: const Text(
+                      'Forgot the Password?',
+                      style: TextStyle(color: Colors.black),
+                    )),
+              ],
+            ),
           ),
         ),
       ),
