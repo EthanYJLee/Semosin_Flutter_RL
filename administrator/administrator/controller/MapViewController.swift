@@ -9,6 +9,9 @@ import UIKit
 
 class MapViewController: UIViewController {
 
+    @IBOutlet weak var searchbarUIView: SearchBarUIView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

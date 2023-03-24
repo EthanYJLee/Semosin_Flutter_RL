@@ -13,7 +13,7 @@
             <objects>
                 <viewController id="wWs-Gg-DPi" customClass="DashBoardViewController" customModule="administrator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1oe-ln-WMO">
-                        <rect key="frame" x="0.0" y="0.0" width="1045.5" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1046" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="aPN-WL-7Gd"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -29,29 +29,29 @@
             <objects>
                 <viewController id="ux1-gS-bIk" customClass="MapViewController" customModule="administrator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bPx-I1-6SX">
-                        <rect key="frame" x="0.0" y="0.0" width="1045.5" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1046" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w8D-bD-WKw">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w8D-bD-WKw" customClass="SearchBarUIView" customModule="administrator" customModuleProvider="target">
                                 <rect key="frame" x="67" y="90" width="912" height="130"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="51" translatesAutoresizingMaskIntoConstraints="NO" id="gsg-IO-TEd">
                                 <rect key="frame" x="67" y="252" width="913" height="120"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Epj-ap-H8w">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Epj-ap-H8w" customClass="StateBarUIView" customModule="administrator" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="190" height="120"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aDr-8h-vzk">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aDr-8h-vzk" customClass="StateBarUIView" customModule="administrator" customModuleProvider="target">
                                         <rect key="frame" x="241" y="0.0" width="190" height="120"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sII-Tc-daO">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sII-Tc-daO" customClass="StateBarUIView" customModule="administrator" customModuleProvider="target">
                                         <rect key="frame" x="482" y="0.0" width="190" height="120"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KX1-b2-dXh">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KX1-b2-dXh" customClass="StateBarUIView" customModule="administrator" customModuleProvider="target">
                                         <rect key="frame" x="723" y="0.0" width="190" height="120"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -62,7 +62,7 @@
                                     <constraint firstItem="aDr-8h-vzk" firstAttribute="leading" secondItem="gsg-IO-TEd" secondAttribute="leading" constant="241" id="vsC-js-mDL"/>
                                 </constraints>
                             </stackView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="afD-Ku-WVL">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="afD-Ku-WVL" customClass="MapUIView" customModule="administrator" customModuleProvider="target">
                                 <rect key="frame" x="67" y="404" width="913" height="600"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
@@ -84,6 +84,9 @@
                             <constraint firstItem="GDq-n5-OBk" firstAttribute="bottom" secondItem="afD-Ku-WVL" secondAttribute="bottom" constant="20" id="wRm-uz-aeq"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="searchbarUIView" destination="w8D-bD-WKw" id="lGE-mr-GjZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Fj-1U-zmB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
