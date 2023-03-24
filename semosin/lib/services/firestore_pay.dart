@@ -14,6 +14,9 @@ class FirestorePay {
     });
   }
 
+  /// Desc : Pay View에 배송시 요청사항 보여주기
+  /// Date : 2023.03.24
+  /// Author : youngjin
   Future<String> getDeliveryRequest() async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
@@ -25,8 +28,6 @@ class FirestorePay {
     if (querySnapshot.data()!.containsKey('deliveryRequest')) {
       result = querySnapshot.data()!['deliveryRequest'];
     }
-    // print(querySnapshot.data().containsKey("deliveryRequest"));
-    // print(result);
     return result;
   }
 }
