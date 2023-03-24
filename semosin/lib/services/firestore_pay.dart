@@ -23,12 +23,15 @@ class FirestorePay {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
     String result = '';
+    try {
+      DocumentSnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(email).get();
 
-    DocumentSnapshot<Map<String, dynamic>> querySnapshot =
-        await FirebaseFirestore.instance.collection('users').doc(email).get();
-
-    if (querySnapshot.data()!.containsKey('deliveryRequest')) {
-      result = querySnapshot.data()!['deliveryRequest'];
+      if (querySnapshot.data()!.containsKey('deliveryRequest')) {
+        result = querySnapshot.data()!['deliveryRequest'];
+      }
+    } catch (e) {
+      rethrow;
     }
     return result;
   }
@@ -40,17 +43,20 @@ class FirestorePay {
   Future<Cart> getOrderSheet(documentId) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('carts')
+          .where(FieldPath.documentId, isEqualTo: documentId)
+          .get();
 
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(email)
-        .collection('carts')
-        .where(FieldPath.documentId, isEqualTo: documentId)
-        .get();
-
-    Map<String, dynamic> data =
-        querySnapshot.docs[0].data() as Map<String, dynamic>;
-    Cart cart = Cart.fromJson(data);
-    return cart;
+      Map<String, dynamic> data =
+          querySnapshot.docs[0].data() as Map<String, dynamic>;
+      Cart cart = Cart.fromJson(data);
+      return cart;
+    } catch (e) {
+      rethrow;
+    }
   }
 }
