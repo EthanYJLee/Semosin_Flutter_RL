@@ -214,7 +214,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         onPageChanged: (value) {
                                           setState(() {
                                             selectedImageIndex = value;
-                                            print(selectedImageIndex);
                                           });
                                         },
                                         itemCount:
@@ -269,8 +268,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                                                           context)
                                                                   .showSnackBar(
                                                                       SnackBar(
-                                                                content: Column(
-                                                                  children: const [
+                                                                content:
                                                                     SizedBox(
                                                                         height:
                                                                             15,
@@ -280,8 +278,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                                                           textAlign:
                                                                               TextAlign.center,
                                                                         )),
-                                                                  ],
-                                                                ),
                                                                 dismissDirection:
                                                                     DismissDirection
                                                                         .up,
@@ -333,7 +329,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
 
                                     return GestureDetector(
                                       onTap: () {
-                                        print(index);
                                         setState(() {
                                           selectedImageIndex = index;
                                           if (pageController.hasClients) {
@@ -862,7 +857,6 @@ class _ShoeDetailState extends State<ShoeDetail> {
                         setState(() {
                           selectedSize = size.toString();
                           availableQuantity = quantity.toString();
-                          print(availableQuantity);
                         });
                         Navigator.of(context).pop();
                       },

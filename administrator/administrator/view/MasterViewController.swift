@@ -11,7 +11,7 @@ class MasterViewController: UIViewController {
     
     @IBOutlet var tvListView: UITableView!
     
-    var category = ["대시 보드","배송 관리"]
+    var category = ["대시 보드","배송 조회"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,11 +38,11 @@ extension MasterViewController : UITableViewDelegate , UITableViewDataSource {
         print(indexPath)
         
         if(indexPath.row == 0){
-            self.performSegue(withIdentifier: "segueOne", sender: nil)
+            self.performSegue(withIdentifier: "dashboardSegue", sender: nil)
         }
         
         if(indexPath.row == 1){
-            self.performSegue(withIdentifier: "segueTwo", sender: nil)
+            self.performSegue(withIdentifier: "mapSegue", sender: nil)
         }
         
     }

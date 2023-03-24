@@ -1,14 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:semosin/view/result.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-
-import '../widget/myappbar.dart';
 
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
@@ -26,8 +20,6 @@ typedef ImageSizeCallback = void Function(
 class _ImageUploadState extends State<ImageUpload> {
   // 선택한 이미지
   XFile? _imageFile;
-  // 선택한 이미지의 경로
-  late String _imagePath = '';
   // Image Picker
   final ImagePicker _picker = ImagePicker();
   // 이미지 선택 오류
@@ -42,20 +34,22 @@ class _ImageUploadState extends State<ImageUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(30.0),
-              child: Text(
-                "이미지 선택",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(30.0),
+                child: Text(
+                  "이미지 선택",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            const SizedBox(height: 30),
-            _handlePreview(),
-          ],
+              const SizedBox(height: 30),
+              _handlePreview(),
+            ],
+          ),
         ),
       ),
     );
@@ -77,7 +71,6 @@ class _ImageUploadState extends State<ImageUpload> {
           maxHeight: maxHeight,
           imageQuality: quality,
         );
-        print(source);
         setState(() {
           _setImageFromFile(pickedFile);
         });

@@ -38,34 +38,37 @@ class _EmailSignUpState extends State<EmailSignUp> {
   /// 내용 :  Email Sign up 화면
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(), // 없음
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // 신발 이미지
-            // 타이틀 Sign Up
-            // 이메일 tf
-            textFormField(emailTextController, null, false,
-                TextInputType.emailAddress, false, 'email', null, null),
-            // 비밀번호 tf
-            textFormField(pwTextController, null, false, TextInputType.text,
-                true, 'password', null, null),
-            // 비밀번호 확인 tf
-            textFormField(checkpwTextController, null, false,
-                TextInputType.text, true, 'check password', null, null),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                sendEmailButton(),
-                nextButton(),
-                // 이메일 인증 버튼 : 1. sendEmailAPI()
-                //                2. email인증 버튼으로 바뀜
-                // 회원가입 버튼 : fireAuthEmailAuth check() 후 SignUp page 이동
-              ],
-            ),
-          ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(), // 없음
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 신발 이미지
+              // 타이틀 Sign Up
+              // 이메일 tf
+              textFormField(emailTextController, null, false,
+                  TextInputType.emailAddress, false, 'email', null, null),
+              // 비밀번호 tf
+              textFormField(pwTextController, null, false, TextInputType.text,
+                  true, 'password', null, null),
+              // 비밀번호 확인 tf
+              textFormField(checkpwTextController, null, false,
+                  TextInputType.text, true, 'check password', null, null),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  sendEmailButton(),
+                  nextButton(),
+                  // 이메일 인증 버튼 : 1. sendEmailAPI()
+                  //                2. email인증 버튼으로 바뀜
+                  // 회원가입 버튼 : fireAuthEmailAuth check() 후 SignUp page 이동
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

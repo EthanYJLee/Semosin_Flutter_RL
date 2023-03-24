@@ -1,5 +1,5 @@
 //
-//  DetailTwoViewController.swift
+//  DetailOneViewController.swift
 //  administrator
 //
 //  Created by 권순형 on 2023/03/23.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailTwoViewController: UIViewController {
+class DashBoardViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -1,5 +1,5 @@
 //
-//  DetailOneViewController.swift
+//  DetailTwoViewController.swift
 //  administrator
 //
 //  Created by 권순형 on 2023/03/23.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailOneViewController: UIViewController {
+class MapViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
