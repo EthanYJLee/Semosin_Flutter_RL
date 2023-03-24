@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:semosin/model/cart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FirestorePay {
@@ -29,5 +31,26 @@ class FirestorePay {
       result = querySnapshot.data()!['deliveryRequest'];
     }
     return result;
+  }
+
+  /// Desc : Pay View에 구매할 (장바구니에서 가져온) 상품 정보 보여주기
+  /// cartStatus, modelName, brandName, size, amount, price, color, shoesimage
+  /// Date : 2023.03.24
+  /// Author : youngjin
+  Future<Cart> getOrderSheet(documentId) async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(email)
+        .collection('carts')
+        .where(FieldPath.documentId, isEqualTo: documentId)
+        .get();
+
+    Map<String, dynamic> data =
+        querySnapshot.docs[0].data() as Map<String, dynamic>;
+    Cart cart = Cart.fromJson(data);
+    return cart;
   }
 }

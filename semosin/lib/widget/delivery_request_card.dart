@@ -115,7 +115,10 @@ class _DeliveryRequestCardState extends State<DeliveryRequestCard> {
               width: MediaQuery.of(context).size.width / 1.5,
               initialSelection: requestList[0],
               controller: requestController,
-              label: const Text('요청사항'),
+              label: const Text(
+                '요청사항',
+                style: TextStyle(color: Colors.black),
+              ),
               dropdownMenuEntries: requestEntries,
               onSelected: (value) {
                 if (value == '직접 입력') {
