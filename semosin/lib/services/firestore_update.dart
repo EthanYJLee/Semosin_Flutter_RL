@@ -120,10 +120,6 @@ class FirestoreUpdate {
     String? email = pref.getString('saemosinemail');
     final db = FirebaseFirestore.instance;
     final docRef = db.collection("users").doc(email);
-    print(email);
-    print(address);
-    print(detailAddress);
-    print(postCode);
     docRef.update({
       "address": address,
       "addressDetail": detailAddress,

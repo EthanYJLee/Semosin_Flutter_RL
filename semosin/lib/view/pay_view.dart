@@ -23,6 +23,7 @@ class _PayViewState extends State<PayView> {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
+        // 배송지 정보 (회원가입시 입력했던 주소지) 불러오기 -------------------------------------------
         child: FutureBuilder(
           future: fireStoreSelect.getUserInfo(),
           builder: (context, snapshot) {
