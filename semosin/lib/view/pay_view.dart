@@ -41,6 +41,7 @@ class _PayViewState extends State<PayView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 223, 223, 223),
         appBar: AppBar(),
         body: Center(
           // 배송지 정보 (회원가입시 입력했던 주소지) 불러오기 -------------------------------------------
@@ -146,7 +147,7 @@ class _PayViewState extends State<PayView> {
                             Row(
                               children: const [
                                 Text(
-                                  '최종 결제 금액',
+                                  '주문정보',
                                   style: TextStyle(fontSize: 20),
                                 ),
                               ],
