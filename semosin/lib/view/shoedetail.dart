@@ -1,6 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/services/shoes_info.dart';
 import 'package:semosin/view/cartview.dart';
@@ -60,6 +61,10 @@ class _ShoeDetailState extends State<ShoeDetail> {
   ShoesInfo shoesInfo = ShoesInfo();
   // 이미지 경로 뷰모델
   late ImagePathViewModel imagePathViewModel;
+
+  // 가격 표시 formatting
+  final formatCurrency =
+      NumberFormat.simpleCurrency(locale: "ko_KR", name: "", decimalDigits: 0);
 
   // ------------------------------------------------------------------------------------------
   // front
@@ -391,7 +396,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                             height: 3,
                                           ),
                                           Text(
-                                            '${snapshot.data!.price}원',
+                                            '${formatCurrency.format(int.parse(snapshot.data!.price))}원',
                                             style: const TextStyle(
                                               fontSize: 20,
                                             ),

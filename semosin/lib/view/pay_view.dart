@@ -36,6 +36,7 @@ class _PayViewState extends State<PayView> {
   late String selectedPostcode = '';
   late String selectedAddress = '';
   late String selectedAddressDetail = '';
+  late String selectedDeliveryRequest = '';
 
   @override
   Widget build(BuildContext context) {
@@ -207,7 +208,7 @@ class _PayViewState extends State<PayView> {
                                                             const EdgeInsets
                                                                 .only(left: 10),
                                                         child: Text(
-                                                            '가격: ${widget.cartModelList[index].price}'),
+                                                            '가격: ${formatCurrency.format(int.parse(widget.cartModelList[index].price))}원'),
                                                       ),
                                                       Padding(
                                                         padding:
@@ -259,6 +260,7 @@ class _PayViewState extends State<PayView> {
                             selectedPostcode,
                             selectedAddress,
                             selectedAddressDetail,
+                            selectedDeliveryRequest,
                             product.modelName,
                             product.selectedSize,
                             product.amount);
@@ -436,6 +438,7 @@ class _PayViewState extends State<PayView> {
       future: firestorePay.getDeliveryRequest(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          selectedDeliveryRequest = snapshot.data!;
           // 1. 입력한 요청사항이 빈 칸이면 ('') 추가 버튼 보여주기
           if (snapshot.data == '') {
             return Column(

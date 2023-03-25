@@ -221,8 +221,8 @@ class FirestorePay {
     return docId;
   }
 
-  setPurchaseOrders(name, phone, postcode, address, addressDetail, orderModel,
-      orderedSize, amount) async {
+  setPurchaseOrders(name, phone, postcode, address, addressDetail,
+      deliveryRequest, orderModel, orderedSize, amount) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
     FirebaseFirestore.instance
@@ -236,6 +236,7 @@ class FirestorePay {
       'postcode': postcode,
       'address': address,
       'addressDetail': addressDetail,
+      'deliveryRequest': deliveryRequest,
       'orderModel': orderModel,
       'orderedSize': orderedSize,
       'amount': amount,

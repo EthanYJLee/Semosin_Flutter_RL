@@ -5,6 +5,7 @@ class Order {
   final String postcode;
   final String address;
   final String addressDetail;
+  final String deliveryRequest;
   // ---------- 주문 정보 ----------
   final String orderNo;
   final String orderModel;
@@ -27,6 +28,7 @@ class Order {
     required this.postcode,
     required this.address,
     required this.addressDetail,
+    required this.deliveryRequest,
     required this.orderNo,
     required this.orderModel,
     required this.orderedSize,
@@ -49,6 +51,7 @@ class Order {
         postcode = json['postcode'].toString(),
         address = json['address'].toString(),
         addressDetail = json['addressDetail'].toString(),
+        deliveryRequest = json['deliveryRequest'].toString(),
         orderNo = json['orderNo'].toString(),
         orderModel = json['orderModel'].toString(),
         orderedSize = json['orderedSize'].toString(),
