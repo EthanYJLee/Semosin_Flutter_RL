@@ -66,7 +66,7 @@ class FirestorePay {
   /// Desc : 신규 배송지 추가하기
   /// Date : 2023.03.24
   /// Author : youngjin
-  addShippingAddress(name, postcode, address, detailAddress) async {
+  addShippingAddress(name, phone, postcode, address, detailAddress) async {
     final pref = await SharedPreferences.getInstance();
     String? email = pref.getString('saemosinemail');
 
@@ -77,6 +77,7 @@ class FirestorePay {
         .doc()
         .set({
       'name': name,
+      'phone': phone,
       'postcode': postcode,
       'address': address,
       'detailAddress': detailAddress
@@ -120,6 +121,30 @@ class FirestorePay {
         shippingAddressModelList.add(newShippingAddressModel);
       }
       return shippingAddressModelList;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Desc : Cart View에서 체크박스 선택한 상품만 Pay View로 넘기기
+  /// Date : 2023.03.25
+  /// Author : youngjin
+  Future<List<Cart>> cartToPay() async {
+    final pref = await SharedPreferences.getInstance();
+    String email = pref.getString('saemosinemail')!;
+    List<Cart> cartList = [];
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('carts')
+          .where('cartStatus', isEqualTo: true)
+          .get();
+      for (var document in querySnapshot.docs) {
+        Cart cartModel = Cart.fromJson(document.data() as Map<String, dynamic>);
+        cartList.add(cartModel);
+      }
+      return cartList;
     } catch (e) {
       rethrow;
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:semosin/services/firestore_pay.dart';
 import 'package:semosin/view/pay_view.dart';
 import '../services/firebase_delete.dart';
 import 'package:intl/intl.dart';
@@ -39,6 +40,7 @@ class _CartViewState extends State<CartView> {
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(),
       body: Column(
         children: [
           Padding(
@@ -147,7 +149,7 @@ class _CartViewState extends State<CartView> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                            '${snapshotList[3]} ${snapshotList[2]}'),
+                                            '${snapshotList[3]}\n${snapshotList[2]}'),
                                       ],
                                     ),
                                     Row(
@@ -205,9 +207,34 @@ class _CartViewState extends State<CartView> {
                       Text(
                           'Total Price : ${formatCurrency.format(totalPrice)}원'),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => PayView()));
+                        onPressed: () async {
+                          /// Desc : 'carts' collection에서 cartStatus가 True인 것만 불러와서 List<Cart>에 담아 PayView로 보냄
+                          /// FirestorePay
+                          /// Date : 2023.03.25
+                          /// Author : youngjin
+                          FirestorePay firestorePay = FirestorePay();
+                          List<Cart> cartList = await firestorePay.cartToPay();
+                          if (cartList.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Column(
+                                children: const [
+                                  SizedBox(
+                                      height: 15,
+                                      child: Text(
+                                        '상품을 선택해주십시오',
+                                        textAlign: TextAlign.center,
+                                      )),
+                                ],
+                              ),
+                              dismissDirection: DismissDirection.up,
+                              duration: const Duration(milliseconds: 500),
+                            ));
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => PayView(
+                                      cartModelList: cartList,
+                                    )));
+                          }
                           //PayView
                         },
                         child: const Text(

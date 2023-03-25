@@ -263,9 +263,24 @@ class _AddressCardState extends State<AddressCard> {
   Widget anotherAddressWidget() {
     return Column(
       children: [
-        TextField(
-          controller: newNameController,
-          decoration: const InputDecoration(helperText: '받는사람'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 4.5,
+              child: TextField(
+                controller: newNameController,
+                decoration: const InputDecoration(helperText: '받는사람'),
+              ),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 2.2,
+              child: TextField(
+                controller: newPhoneController,
+                decoration: const InputDecoration(helperText: '휴대폰 번호'),
+              ),
+            ),
+          ],
         ),
         Row(
           children: [
@@ -302,27 +317,49 @@ class _AddressCardState extends State<AddressCard> {
         ),
         ElevatedButton(
             onPressed: () {
-              FirestorePay firestorePay = FirestorePay();
-              firestorePay.addShippingAddress(
-                  newNameController.text,
-                  newPostcodeController.text,
-                  newAddressController.text,
-                  newAddressDetailController.text);
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Column(
-                  children: const [
-                    SizedBox(
-                        height: 15,
-                        child: Text(
-                          '배송지목록에 추가되었습니다',
-                          textAlign: TextAlign.center,
-                        )),
-                  ],
-                ),
-                dismissDirection: DismissDirection.up,
-                duration: const Duration(milliseconds: 500),
-              ));
+              if (newNameController.text.isNotEmpty &
+                  newPhoneController.text.isNotEmpty &
+                  newPostcodeController.text.isNotEmpty &
+                  newAddressController.text.isNotEmpty &
+                  newAddressDetailController.text.isNotEmpty) {
+                FirestorePay firestorePay = FirestorePay();
+                firestorePay.addShippingAddress(
+                    newNameController.text.trim(),
+                    newPhoneController.text.trim(),
+                    newPostcodeController.text.trim(),
+                    newAddressController.text.trim(),
+                    newAddressDetailController.text.trim());
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Column(
+                    children: const [
+                      SizedBox(
+                          height: 15,
+                          child: Text(
+                            '배송지목록에 추가되었습니다',
+                            textAlign: TextAlign.center,
+                          )),
+                    ],
+                  ),
+                  dismissDirection: DismissDirection.up,
+                  duration: const Duration(milliseconds: 500),
+                ));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Column(
+                    children: const [
+                      SizedBox(
+                          height: 15,
+                          child: Text(
+                            '모든 정보를 입력해주십시오',
+                            textAlign: TextAlign.center,
+                          )),
+                    ],
+                  ),
+                  dismissDirection: DismissDirection.up,
+                  duration: const Duration(milliseconds: 500),
+                ));
+              }
             },
             child: const Text('추가하기'))
       ],

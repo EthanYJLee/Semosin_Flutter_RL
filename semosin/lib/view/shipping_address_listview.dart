@@ -25,8 +25,8 @@ class _ShippingAddressListviewState extends State<ShippingAddressListview> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Container(
-                    height: 500,
-                    width: 200,
+                    height: MediaQuery.of(context).size.height / 1.5,
+                    width: MediaQuery.of(context).size.width / 1.2,
                     child: ListView.builder(
                         itemCount: snapshot.data!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -39,7 +39,7 @@ class _ShippingAddressListviewState extends State<ShippingAddressListview> {
                               color: const Color.fromARGB(255, 245, 239, 221),
                               elevation: 0.5,
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32)),
+                                  borderRadius: BorderRadius.circular(10)),
                               child: SingleChildScrollView(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
@@ -52,16 +52,10 @@ class _ShippingAddressListviewState extends State<ShippingAddressListview> {
                                             fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(
-                                        height: 20,
+                                        height: 10,
                                       ),
                                       Text(
-                                        snapshot.data![index].address,
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Text(
-                                        snapshot.data![index].detailAddress,
+                                        '${snapshot.data![index].address}, ${snapshot.data![index].detailAddress}',
                                       ),
                                       const SizedBox(
                                         height: 10,

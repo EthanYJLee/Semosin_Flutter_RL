@@ -1,9 +1,11 @@
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/services/shoes_info.dart';
 import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view/pay_view.dart';
+import 'package:semosin/view/tabbar.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/popup_card.dart';
@@ -307,11 +309,11 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                                           },
                                                           icon: Icon(
                                                             bookmark
-                                                                ? Icons
-                                                                    .bookmark_outlined
-                                                                : Icons
-                                                                    .bookmark_outline,
-                                                            size: 44,
+                                                                ? CupertinoIcons
+                                                                    .heart_fill
+                                                                : CupertinoIcons
+                                                                    .heart,
+                                                            size: 35,
                                                           ),
                                                         ),
                                                       ),
@@ -1069,10 +1071,19 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                // ------------------------------------------------
-                Navigator.of(context).pop();
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => PayView()));
+                insertCart(true, model, widget.brandName, size, count, price,
+                    imagePathViewModel.imagePath[0]);
+                // 홈 화면 라우터 설정
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    settings: const RouteSettings(name: "/home"),
+                    builder: (context) => const ShoesTabBar(),
+                  ),
+                );
+                // 홈 화면까지 pop
+                Navigator.of(context).popUntil(ModalRoute.withName("/home"));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const CartView()));
               },
             ),
           ],

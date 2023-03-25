@@ -66,15 +66,33 @@ class _DeliveryRequestCardState extends State<DeliveryRequestCard> {
                       ),
                       ElevatedButton(
                           onPressed: () {
-                            if (requestController.text == '선택 안 함' ||
-                                requestController.text == '') {
-                              firestorePay.addDeliveryRequest('');
-                              Navigator.of(context).pop();
+                            if (requestController.text.trim().length > 20) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Column(
+                                  children: const [
+                                    SizedBox(
+                                        height: 15,
+                                        child: Text(
+                                          '20자 이내로 입력해주십시오',
+                                          textAlign: TextAlign.center,
+                                        )),
+                                  ],
+                                ),
+                                dismissDirection: DismissDirection.up,
+                                duration: const Duration(milliseconds: 500),
+                              ));
                             } else {
-                              // ----------------
-                              firestorePay
-                                  .addDeliveryRequest(requestController.text);
-                              Navigator.pop(context);
+                              if (requestController.text == '선택 안 함' ||
+                                  requestController.text == '') {
+                                firestorePay.addDeliveryRequest('');
+                                Navigator.of(context).pop();
+                              } else {
+                                // ----------------
+                                firestorePay.addDeliveryRequest(
+                                    requestController.text.trim());
+                                Navigator.pop(context);
+                              }
                             }
                           },
                           child: const Text('입력'))

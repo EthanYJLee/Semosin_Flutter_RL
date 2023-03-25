@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:intl/intl.dart';
+import 'package:semosin/model/cart.dart';
 import 'package:semosin/model/user.dart';
 import 'package:semosin/services/firestore_pay.dart';
 import 'package:semosin/services/firestore_select.dart';
@@ -11,7 +13,8 @@ import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/delivery_request_card.dart';
 
 class PayView extends StatefulWidget {
-  const PayView({super.key});
+  const PayView({super.key, required this.cartModelList});
+  final List<Cart> cartModelList;
 
   @override
   State<PayView> createState() => _PayViewState();
@@ -20,6 +23,9 @@ class PayView extends StatefulWidget {
 class _PayViewState extends State<PayView> {
   FireStoreSelect fireStoreSelect = FireStoreSelect();
   FirestorePay firestorePay = FirestorePay();
+  int totalPrice = 0;
+  final formatCurrency =
+      NumberFormat.simpleCurrency(locale: "ko_KR", name: "", decimalDigits: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,7 @@ class _PayViewState extends State<PayView> {
             children: [
               deliveryAddressWidget(),
               Container(
-                  height: MediaQuery.of(context).size.height / 6.7,
+                  height: MediaQuery.of(context).size.height / 7.5,
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Card(
                     elevation: 5,
@@ -41,7 +47,7 @@ class _PayViewState extends State<PayView> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                             child: Column(
                               children: [
                                 Row(
@@ -64,7 +70,7 @@ class _PayViewState extends State<PayView> {
                     ),
                   )),
               Container(
-                  height: MediaQuery.of(context).size.height / 6.7,
+                  height: MediaQuery.of(context).size.height / 7.5,
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Card(
                     elevation: 5,
@@ -73,7 +79,7 @@ class _PayViewState extends State<PayView> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(10.0),
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                             child: Column(
                               children: [
                                 Row(
@@ -116,7 +122,7 @@ class _PayViewState extends State<PayView> {
                     ),
                   )),
               Container(
-                  height: MediaQuery.of(context).size.height / 5,
+                  height: MediaQuery.of(context).size.height / 4,
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Card(
                     elevation: 5,
@@ -137,23 +143,94 @@ class _PayViewState extends State<PayView> {
                             const Divider(
                               thickness: 2,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const Text(
-                                  '이미지',
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                                Column(
-                                  children: const [
-                                    Text('상품명'),
-                                    Text('가격'),
-                                    Text('주문수량')
-                                  ],
-                                )
-                              ],
+                            Expanded(
+                              child: ListView.builder(
+                                  itemCount: widget.cartModelList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    calcTotalPrice();
+                                    return Hero(
+                                        tag: 'product$index',
+                                        createRectTween: (begin, end) {
+                                          return RectTween(
+                                              begin: begin, end: end);
+                                        },
+                                        child: Material(
+                                          color: const Color.fromARGB(
+                                              218, 212, 214, 241),
+                                          elevation: 0.5,
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(width: 0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(2)),
+                                          child: SingleChildScrollView(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 5, bottom: 5),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 10,
+                                                            right: 10),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          '${widget.cartModelList[index].brandName}, ${widget.cartModelList[index].modelName}',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(left: 10),
+                                                        child: Text(
+                                                            '가격: ${widget.cartModelList[index].price}'),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 10),
+                                                        child: Text(
+                                                            '수량: ${widget.cartModelList[index].amount}'),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ));
+                                  }),
                             ),
-                            const Text('총 결제 금액')
+                            const Divider(
+                              thickness: 2,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '총 결제금액:',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  '${formatCurrency.format(totalPrice)}원',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),
@@ -330,23 +407,23 @@ class _PayViewState extends State<PayView> {
           // 1. 입력한 요청사항이 빈 칸이면 ('') 추가 버튼 보여주기
           if (snapshot.data == '') {
             return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  child: SizedBox(
-                    height: 40,
-                    width: 100,
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(CardDialog(builder: (context) {
-                            return const DeliveryRequestCard();
-                          })).then((_) {
-                            setState(() {
-                              firestorePay.getDeliveryRequest();
-                            });
-                          });
-                        },
-                        icon: const Icon(
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(CardDialog(builder: (context) {
+                      return const DeliveryRequestCard();
+                    })).then((_) {
+                      setState(() {
+                        firestorePay.getDeliveryRequest();
+                      });
+                    });
+                  },
+                  child: Container(
+                    child: SizedBox(
+                        height: 40,
+                        width: MediaQuery.of(context).size.width / 1.2,
+                        child: const Icon(
                           Icons.add,
                         )),
                   ),
@@ -390,22 +467,50 @@ class _PayViewState extends State<PayView> {
           }
         } else {
           // 3. 요청사항 필드가 아예 없어도 추가버튼 보여주기
-          return Container(
-            decoration: BoxDecoration(
-                border: Border.all(width: 1),
-                borderRadius: BorderRadius.circular(10)),
-            child: IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(CardDialog(builder: (context) {
-                    return const DeliveryRequestCard();
-                  }));
-                },
-                icon: const Icon(
+          return InkWell(
+            onTap: () {
+              Navigator.of(context).push(CardDialog(builder: (context) {
+                return const DeliveryRequestCard();
+              }));
+            },
+            child: Container(
+                height: 40,
+                width: MediaQuery.of(context).size.width / 1.2,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 1),
+                    borderRadius: BorderRadius.circular(10)),
+                child: const Icon(
                   Icons.add,
                 )),
           );
         }
       },
     );
+  }
+
+  calcTotalPrice() async {
+    List<Cart> list = await fireStoreSelect.selectCart();
+    int result = 0;
+    if (list.isEmpty) {
+      totalPrice = 0;
+    } else {
+      int i = 0;
+      totalPrice = 0;
+      while (true) {
+        if (list[i].cartStatus == true) {
+          result += int.parse(list[i].price) * int.parse(list[i].amount);
+        }
+        i++;
+        if (i >= list.length) {
+          break;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          totalPrice = result;
+        });
+      }
+    }
+    // return result;
   }
 }
