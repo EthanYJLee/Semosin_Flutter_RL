@@ -11,6 +11,8 @@ import 'package:semosin/view/shipping_address_listview.dart';
 import 'package:semosin/widget/address_card.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/delivery_request_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PayView extends StatefulWidget {
   const PayView({super.key, required this.cartModelList});
@@ -26,6 +28,14 @@ class _PayViewState extends State<PayView> {
   int totalPrice = 0;
   final formatCurrency =
       NumberFormat.simpleCurrency(locale: "ko_KR", name: "", decimalDigits: 0);
+  late String docId = '';
+
+  // 주문시 사용
+  late String selectedName = '';
+  late String selectedPhone = '';
+  late String selectedPostcode = '';
+  late String selectedAddress = '';
+  late String selectedAddressDetail = '';
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +170,8 @@ class _PayViewState extends State<PayView> {
                                               218, 212, 214, 241),
                                           elevation: 0.5,
                                           shape: RoundedRectangleBorder(
-                                              side: BorderSide(width: 0.5),
+                                              side:
+                                                  const BorderSide(width: 0.5),
                                               borderRadius:
                                                   BorderRadius.circular(2)),
                                           child: SingleChildScrollView(
@@ -221,13 +232,13 @@ class _PayViewState extends State<PayView> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   '총 결제금액:',
                                   style: TextStyle(fontSize: 20),
                                 ),
                                 Text(
                                   '${formatCurrency.format(totalPrice)}원',
-                                  style: TextStyle(fontSize: 20),
+                                  style: const TextStyle(fontSize: 20),
                                 ),
                               ],
                             )
@@ -241,6 +252,17 @@ class _PayViewState extends State<PayView> {
                 child: ElevatedButton(
                     onPressed: () {
                       // --------------------------------------------------------
+                      for (var product in widget.cartModelList) {
+                        firestorePay.setPurchaseOrders(
+                            selectedName,
+                            selectedPhone,
+                            selectedPostcode,
+                            selectedAddress,
+                            selectedAddressDetail,
+                            product.modelName,
+                            product.selectedSize,
+                            product.amount);
+                      }
                     },
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.grey),
@@ -256,10 +278,17 @@ class _PayViewState extends State<PayView> {
   /// Date : 2023.03.24
   /// Author : youngjin
   Widget deliveryAddressWidget() {
+    // getDocumentId();
+    // print(docId);
     return FutureBuilder(
-      future: fireStoreSelect.getUserInfo(),
+      future: firestorePay.getSelectedAddress(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          selectedName = snapshot.data!.name;
+          selectedPhone = snapshot.data!.phone;
+          selectedPostcode = snapshot.data!.postcode;
+          selectedAddress = snapshot.data!.address;
+          selectedAddressDetail = snapshot.data!.addressDetail;
           return Column(
             children: [
               Container(
@@ -302,10 +331,13 @@ class _PayViewState extends State<PayView> {
                                         Navigator.of(context)
                                             .push(MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ShippingAddressListview()))
+                                                    ShippingAddressListview(
+                                                      cartList:
+                                                          widget.cartModelList,
+                                                    )))
                                             .then((_) {
                                           setState(() {
-                                            fireStoreSelect.getUserInfo();
+                                            firestorePay.getSelectedAddress();
                                           });
                                         });
                                       },
@@ -342,7 +374,7 @@ class _PayViewState extends State<PayView> {
                             })).then((_) {
                               // 주소 수정하고 돌아오면 Future함수 재실행
                               setState(() {
-                                fireStoreSelect.getUserInfo();
+                                firestorePay.getSelectedAddress();
                               });
                             });
                           },
@@ -488,6 +520,9 @@ class _PayViewState extends State<PayView> {
     );
   }
 
+  /// Desc : 총 결제금액 계산
+  /// Date : 2023.03.26
+  /// Author : youngjin
   calcTotalPrice() async {
     List<Cart> list = await fireStoreSelect.selectCart();
     int result = 0;
@@ -511,6 +546,21 @@ class _PayViewState extends State<PayView> {
         });
       }
     }
-    // return result;
+  }
+
+  /// Desc : 결제방법 위젯
+  /// Date : 2023.03.26
+  /// Author : youngjin
+  // Widget setPaymentMethod() {
+  //   return Container();
+  // }
+
+  /// Desc : 다른 배송지 목록 가져올 때 documentId -> SharedPreferences에서 가져오기 (없으면 기본 주소)
+  /// Date : 2023.03.26
+  /// Author : youngjin
+  getDocumentId() async {
+    final pref = await SharedPreferences.getInstance();
+    docId = pref.getString('addressId')!;
+    // print(docId);
   }
 }

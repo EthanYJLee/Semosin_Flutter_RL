@@ -1,4 +1,11 @@
 class Order {
+  // ---------- 배송할 대상 고객의 정보 ----------
+  final String name;
+  final String phone;
+  final String postcode;
+  final String address;
+  final String addressDetail;
+  // ---------- 주문 정보 ----------
   final String orderNo;
   final String orderModel;
   final String orderedSize;
@@ -6,15 +13,20 @@ class Order {
   final String orderDate;
   final int orderStatus;
   final int cancelStatus;
-  final String cancelNo;
+  String? cancelNo;
   final int refundStatus;
-  final String refundNo;
+  String? refundNo;
   final int exchangeStatus;
-  final String exchangeNo;
+  String? exchangeNo;
   final String changeStatusDate;
-  final String changeStatusDoneDate;
+  String? changeStatusDoneDate;
 
   Order({
+    required this.name,
+    required this.phone,
+    required this.postcode,
+    required this.address,
+    required this.addressDetail,
     required this.orderNo,
     required this.orderModel,
     required this.orderedSize,
@@ -22,17 +34,22 @@ class Order {
     required this.orderDate,
     required this.orderStatus,
     required this.cancelStatus,
-    required this.cancelNo,
+    this.cancelNo,
     required this.refundStatus,
-    required this.refundNo,
+    this.refundNo,
     required this.exchangeStatus,
-    required this.exchangeNo,
+    this.exchangeNo,
     required this.changeStatusDate,
-    required this.changeStatusDoneDate,
+    this.changeStatusDoneDate,
   });
 
   Order.fromJson(Map<String, dynamic> json)
-      : orderNo = json['orderNo'].toString(),
+      : name = json['name'].toString(),
+        phone = json['phone'].toString(),
+        postcode = json['postcode'].toString(),
+        address = json['address'].toString(),
+        addressDetail = json['addressDetail'].toString(),
+        orderNo = json['orderNo'].toString(),
         orderModel = json['orderModel'].toString(),
         orderedSize = json['orderedSize'].toString(),
         amount = int.parse(['amount'].toString()),

@@ -1,18 +1,24 @@
 class ShippingAddressModel {
+  final String documentId;
   final String name;
+  final String postcode;
   final String address;
-  final String detailAddress;
+  final String addressDetail;
   final String phone;
 
   ShippingAddressModel(
-      {required this.name,
+      {required this.documentId,
+      required this.name,
+      required this.postcode,
       required this.address,
-      required this.detailAddress,
+      required this.addressDetail,
       required this.phone});
 
   ShippingAddressModel.fromJson(Map<String, dynamic> json)
-      : name = json['name'].toString(),
+      : documentId = json['documentId'].toString(),
+        name = json['name'].toString(),
+        postcode = json['postcode'].toString(),
         address = json['address'].toString(),
-        detailAddress = json['detailAddress'].toString(),
+        addressDetail = json['addressDetail'].toString(),
         phone = json['phone'].toString();
 }

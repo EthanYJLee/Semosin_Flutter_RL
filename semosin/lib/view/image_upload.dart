@@ -42,20 +42,22 @@ class _ImageUploadState extends State<ImageUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(30.0),
-              child: Text(
-                "이미지 선택",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(30.0),
+                child: Text(
+                  "이미지 선택",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            const SizedBox(height: 30),
-            _handlePreview(),
-          ],
+              const SizedBox(height: 30),
+              _handlePreview(),
+            ],
+          ),
         ),
       ),
     );
