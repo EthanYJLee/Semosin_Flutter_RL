@@ -6,7 +6,6 @@ import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/view/tabbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
 import '../services/firestore_select.dart';
 
 class UserInfoPage extends StatefulWidget {
@@ -408,6 +407,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   /// 만든이 : 신오수
   /// 내용 : Kpostal openAPI 이용하여 주소 정보 가져오기
   /// 수정사항 : 예외 처리
+  /// result 값이 없을 때 입력되지 않도록 예외처리함.(상혁)
   Future<void> takeAddress() async {
     Kpostal? result = await Navigator.push(
         context,
@@ -509,7 +509,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   /// 작성자 : 이상혁
   /// 만든이 : 이상혁
   /// 내용 : 비밀번호를 위한 정규식
-  /// 비고 : Firestore 에서 User 정보에 deleteDate를 추가
+  /// 비고 :
   /// 수정 :
   bool validatePassword(String value) {
     return RegExp(
