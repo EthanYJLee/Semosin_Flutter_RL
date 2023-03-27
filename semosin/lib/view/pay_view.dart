@@ -13,6 +13,7 @@ import 'package:semosin/view/tabbar.dart';
 import 'package:semosin/widget/address_card.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/delivery_request_card.dart';
+import 'package:semosin/widget/payment_method_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,269 +46,299 @@ class _PayViewState extends State<PayView> {
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 223, 223, 223),
         appBar: AppBar(),
-        body: Center(
-          // 배송지 정보 (회원가입시 입력했던 주소지) 불러오기 -------------------------------------------
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              deliveryAddressWidget(),
-              Container(
-                  height: MediaQuery.of(context).size.height / 7.5,
-                  width: MediaQuery.of(context).size.width / 1.2,
-                  child: Card(
-                    elevation: 5,
-                    color: Colors.white,
-                    child: InkWell(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: const [
-                                    Text(
-                                      '배송시 요청사항',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(
-                                  thickness: 2,
-                                ),
-                              ],
-                            ),
-                          ),
-                          deliveryRequestWidget(),
-                        ],
-                      ),
-                    ),
-                  )),
-              Container(
-                  height: MediaQuery.of(context).size.height / 7.5,
-                  width: MediaQuery.of(context).size.width / 1.2,
-                  child: Card(
-                    elevation: 5,
-                    color: Colors.white,
-                    child: InkWell(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: const [
-                                    Text(
-                                      '결제수단',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(
-                                  thickness: 2,
-                                ),
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              print('payment ontap');
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Text(
-                                    '결제수단 선택',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Icon(Icons.arrow_forward_ios_rounded),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )),
-              Container(
-                  height: MediaQuery.of(context).size.height / 4,
-                  width: MediaQuery.of(context).size.width / 1.2,
-                  child: Card(
-                    elevation: 5,
-                    color: Colors.white,
-                    child: InkWell(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
+        body: SingleChildScrollView(
+          child: Center(
+            // 배송지 정보 (회원가입시 입력했던 주소지) 불러오기 -------------------------------------------
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 30,
+                ),
+                deliveryAddressWidget(),
+                Container(
+                    height: MediaQuery.of(context).size.height / 7.5,
+                    width: MediaQuery.of(context).size.width / 1.2,
+                    child: Card(
+                      elevation: 5,
+                      color: Colors.white,
+                      child: InkWell(
                         child: Column(
                           children: [
-                            Row(
-                              children: const [
-                                Text(
-                                  '주문정보',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: const [
+                                      Text(
+                                        '배송시 요청사항',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                  const Divider(
+                                    thickness: 2,
+                                  ),
+                                ],
+                              ),
                             ),
-                            const Divider(
-                              thickness: 2,
+                            deliveryRequestWidget(),
+                          ],
+                        ),
+                      ),
+                    )),
+                Container(
+                    height: MediaQuery.of(context).size.height / 7.5,
+                    width: MediaQuery.of(context).size.width / 1.2,
+                    child: Card(
+                      elevation: 5,
+                      color: Colors.white,
+                      child: InkWell(
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: const [
+                                      Text(
+                                        '결제수단',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                  const Divider(
+                                    thickness: 2,
+                                  ),
+                                ],
+                              ),
                             ),
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: widget.cartModelList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    calcTotalPrice();
-                                    return Hero(
-                                        tag: 'product$index',
-                                        createRectTween: (begin, end) {
-                                          return RectTween(
-                                              begin: begin, end: end);
-                                        },
-                                        child: Material(
-                                          color: const Color.fromARGB(
-                                              218, 212, 214, 241),
-                                          elevation: 0.5,
-                                          shape: RoundedRectangleBorder(
-                                              side:
-                                                  const BorderSide(width: 0.5),
-                                              borderRadius:
-                                                  BorderRadius.circular(2)),
-                                          child: SingleChildScrollView(
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 5, bottom: 5),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 10,
-                                                            right: 10),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          '${widget.cartModelList[index].brandName}, ${widget.cartModelList[index].modelName}',
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(left: 10),
-                                                        child: Text(
-                                                            '가격: ${formatCurrency.format(int.parse(widget.cartModelList[index].price))}원'),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                right: 10),
-                                                        child: Text(
-                                                            '수량: ${widget.cartModelList[index].amount}'),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ));
-                                  }),
-                            ),
-                            const Divider(
-                              thickness: 2,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  '총 결제금액:',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                Text(
-                                  '${formatCurrency.format(totalPrice)}원',
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                              ],
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .push(CardDialog(builder: (context) {
+                                  return const PaymentMethodCard();
+                                })).then((_) {
+                                  // 주소 수정하고 돌아오면 Future함수 재실행
+                                  setState(() {});
+                                });
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Padding(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Text(
+                                      '결제수단 선택',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(10.0),
+                                    child:
+                                        Icon(Icons.arrow_forward_ios_rounded),
+                                  ),
+                                ],
+                              ),
                             )
                           ],
                         ),
                       ),
-                    ),
-                  )),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: ElevatedButton(
-                    onPressed: () {
-                      // --------------------------------------------------------
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('주문결정'),
-                              content: const Text('선택하신 상품을 구매하시겠습니까?'),
-                              actions: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    TextButton(
-                                        onPressed: () {
-                                          for (var product
-                                              in widget.cartModelList) {
-                                            firestorePay.setPurchaseOrders(
-                                                selectedName,
-                                                selectedPhone,
-                                                selectedPostcode,
-                                                selectedAddress,
-                                                selectedAddressDetail,
-                                                selectedDeliveryRequest,
-                                                product.modelName,
-                                                product.selectedSize,
-                                                product.amount);
-                                          }
-                                          Navigator.of(context).pop();
-                                          payCompleted();
-                                        },
-                                        child: const Text('확인',
-                                            style: TextStyle(
-                                                color: Colors.black))),
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('취소',
-                                            style:
-                                                TextStyle(color: Colors.black)))
-                                  ],
-                                )
-                              ],
-                            );
-                          });
+                    )),
+                Container(
+                    height: MediaQuery.of(context).size.height / 4,
+                    width: MediaQuery.of(context).size.width / 1.2,
+                    child: Card(
+                      elevation: 5,
+                      color: Colors.white,
+                      child: InkWell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: const [
+                                  Text(
+                                    '주문정보',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                              const Divider(
+                                thickness: 2,
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                    itemCount: widget.cartModelList.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      calcTotalPrice();
+                                      return Hero(
+                                          tag: 'product$index',
+                                          createRectTween: (begin, end) {
+                                            return RectTween(
+                                                begin: begin, end: end);
+                                          },
+                                          child: Material(
+                                            color: const Color.fromARGB(
+                                                218, 212, 214, 241),
+                                            elevation: 0.5,
+                                            shape: RoundedRectangleBorder(
+                                                side: const BorderSide(
+                                                    width: 0.5),
+                                                borderRadius:
+                                                    BorderRadius.circular(2)),
+                                            child: SingleChildScrollView(
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 5, bottom: 5),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 10,
+                                                              right: 10),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            '${widget.cartModelList[index].brandName}, ${widget.cartModelList[index].modelName}',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 10),
+                                                          child: Text(
+                                                              '가격: ${formatCurrency.format(int.parse(widget.cartModelList[index].price))}원'),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  right: 10),
+                                                          child: Text(
+                                                              '수량: ${widget.cartModelList[index].amount}'),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ));
+                                    }),
+                              ),
+                              const Divider(
+                                thickness: 2,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    '총 결제금액:',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Text(
+                                    '${formatCurrency.format(totalPrice)}원',
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    )),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        // --------------------------------------------------------
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('주문결정'),
+                                content: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height / 7,
+                                  child: Column(
+                                    children: [
+                                      const Text('선택하신 상품을 구매하시겠습니까?'),
+                                      const Divider(
+                                        thickness: 2,
+                                      ),
+                                      Text(
+                                          '주문건수: ${widget.cartModelList.length}'),
+                                      Text('총 결제금액: $totalPrice원'),
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      TextButton(
+                                          onPressed: () {
+                                            for (var product
+                                                in widget.cartModelList) {
+                                              firestorePay.setPurchaseOrders(
+                                                  selectedName,
+                                                  selectedPhone,
+                                                  selectedPostcode,
+                                                  selectedAddress,
+                                                  selectedAddressDetail,
+                                                  selectedDeliveryRequest,
+                                                  product.modelName,
+                                                  product.selectedSize,
+                                                  product.amount);
+                                            }
+                                            Navigator.of(context).pop();
+                                            payCompleted();
+                                          },
+                                          child: const Text('확인',
+                                              style: TextStyle(
+                                                  color: Colors.black))),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('취소',
+                                              style: TextStyle(
+                                                  color: Colors.black)))
+                                    ],
+                                  )
+                                ],
+                              );
+                            });
 
-                      // payCompleted();
-                    },
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                    child: const Text('결제하기')),
-              )
-            ],
+                        // payCompleted();
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey),
+                      child: const Text('결제하기')),
+                )
+              ],
+            ),
           ),
         ));
   }
