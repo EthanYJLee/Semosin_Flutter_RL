@@ -13,7 +13,7 @@
             <objects>
                 <viewController id="wWs-Gg-DPi" customClass="DashBoardViewController" customModule="administrator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1oe-ln-WMO">
-                        <rect key="frame" x="0.0" y="0.0" width="1046" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1045.5" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="aPN-WL-7Gd"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -29,7 +29,7 @@
             <objects>
                 <viewController id="ux1-gS-bIk" customClass="MapViewController" customModule="administrator" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bPx-I1-6SX">
-                        <rect key="frame" x="0.0" y="0.0" width="1046" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1045.5" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w8D-bD-WKw" customClass="SearchBarUIView" customModule="administrator" customModuleProvider="target">
@@ -57,13 +57,29 @@
                                     </view>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="sII-Tc-daO" firstAttribute="leading" secondItem="gsg-IO-TEd" secondAttribute="leading" constant="482" id="Jwe-TI-03N"/>
-                                    <constraint firstItem="KX1-b2-dXh" firstAttribute="leading" secondItem="gsg-IO-TEd" secondAttribute="leading" constant="723" id="UFL-AE-nA8"/>
-                                    <constraint firstItem="aDr-8h-vzk" firstAttribute="leading" secondItem="gsg-IO-TEd" secondAttribute="leading" constant="241" id="vsC-js-mDL"/>
+                                    <constraint firstItem="sII-Tc-daO" firstAttribute="width" secondItem="Epj-ap-H8w" secondAttribute="width" id="19t-0z-AtG"/>
+                                    <constraint firstItem="aDr-8h-vzk" firstAttribute="width" secondItem="Epj-ap-H8w" secondAttribute="width" id="1CI-pq-LCo"/>
+                                    <constraint firstItem="KX1-b2-dXh" firstAttribute="top" secondItem="gsg-IO-TEd" secondAttribute="top" id="2qu-eA-Lv8"/>
+                                    <constraint firstItem="KX1-b2-dXh" firstAttribute="leading" secondItem="sII-Tc-daO" secondAttribute="trailing" constant="51" id="5ux-FT-dc3"/>
+                                    <constraint firstItem="aDr-8h-vzk" firstAttribute="height" secondItem="Epj-ap-H8w" secondAttribute="height" id="5xb-VB-Mvh"/>
+                                    <constraint firstAttribute="bottom" secondItem="sII-Tc-daO" secondAttribute="bottom" id="Ahf-o2-gvo"/>
+                                    <constraint firstAttribute="bottom" secondItem="aDr-8h-vzk" secondAttribute="bottom" id="CLV-cO-YVN"/>
+                                    <constraint firstAttribute="bottom" secondItem="KX1-b2-dXh" secondAttribute="bottom" id="Hgv-lC-IsH"/>
+                                    <constraint firstItem="KX1-b2-dXh" firstAttribute="height" secondItem="Epj-ap-H8w" secondAttribute="height" id="Isa-YV-ab9"/>
+                                    <constraint firstItem="sII-Tc-daO" firstAttribute="top" secondItem="gsg-IO-TEd" secondAttribute="top" id="KuE-CD-A60"/>
+                                    <constraint firstItem="sII-Tc-daO" firstAttribute="height" secondItem="Epj-ap-H8w" secondAttribute="height" id="Ls6-3s-B1D"/>
+                                    <constraint firstAttribute="bottom" secondItem="Epj-ap-H8w" secondAttribute="bottom" id="QbA-uR-QEt"/>
+                                    <constraint firstItem="Epj-ap-H8w" firstAttribute="top" secondItem="gsg-IO-TEd" secondAttribute="top" id="XU7-fw-jyT"/>
+                                    <constraint firstItem="aDr-8h-vzk" firstAttribute="leading" secondItem="Epj-ap-H8w" secondAttribute="trailing" constant="51" id="c63-jd-EHH"/>
+                                    <constraint firstItem="KX1-b2-dXh" firstAttribute="width" secondItem="Epj-ap-H8w" secondAttribute="width" id="h0j-Ri-voC"/>
+                                    <constraint firstAttribute="trailing" secondItem="KX1-b2-dXh" secondAttribute="trailing" id="hJd-s3-iFm"/>
+                                    <constraint firstItem="aDr-8h-vzk" firstAttribute="top" secondItem="gsg-IO-TEd" secondAttribute="top" id="sN4-P9-Hpk"/>
+                                    <constraint firstItem="sII-Tc-daO" firstAttribute="leading" secondItem="aDr-8h-vzk" secondAttribute="trailing" constant="51" id="tRE-T5-rNC"/>
+                                    <constraint firstItem="Epj-ap-H8w" firstAttribute="leading" secondItem="gsg-IO-TEd" secondAttribute="leading" id="uih-nG-Vdq"/>
                                 </constraints>
                             </stackView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="afD-Ku-WVL" customClass="MapUIView" customModule="administrator" customModuleProvider="target">
-                                <rect key="frame" x="67" y="404" width="913" height="600"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yCw-D0-jbw" customClass="MapUIView" customModule="administrator" customModuleProvider="target">
+                                <rect key="frame" x="67" y="404" width="912" height="600"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                         </subviews>
@@ -73,18 +89,23 @@
                             <constraint firstItem="w8D-bD-WKw" firstAttribute="leading" secondItem="GDq-n5-OBk" secondAttribute="leading" constant="67" id="0Qq-ZL-d7T"/>
                             <constraint firstItem="gsg-IO-TEd" firstAttribute="top" secondItem="w8D-bD-WKw" secondAttribute="bottom" constant="32" id="2sf-V3-Zap"/>
                             <constraint firstItem="gsg-IO-TEd" firstAttribute="top" secondItem="bPx-I1-6SX" secondAttribute="top" constant="252" id="5wj-bi-blf"/>
+                            <constraint firstItem="GDq-n5-OBk" firstAttribute="bottom" secondItem="yCw-D0-jbw" secondAttribute="bottom" constant="20" id="6EX-qR-OUV"/>
                             <constraint firstItem="GDq-n5-OBk" firstAttribute="trailing" secondItem="w8D-bD-WKw" secondAttribute="trailing" constant="66.5" id="BKR-Tt-UQk"/>
-                            <constraint firstItem="afD-Ku-WVL" firstAttribute="leading" secondItem="GDq-n5-OBk" secondAttribute="leading" constant="67" id="JKa-1o-k7O"/>
                             <constraint firstItem="GDq-n5-OBk" firstAttribute="bottom" secondItem="gsg-IO-TEd" secondAttribute="bottom" constant="652" id="JcX-Ei-T2p"/>
-                            <constraint firstItem="gsg-IO-TEd" firstAttribute="leading" secondItem="GDq-n5-OBk" secondAttribute="leading" constant="67" id="LMO-fi-AYY"/>
-                            <constraint firstItem="afD-Ku-WVL" firstAttribute="top" secondItem="gsg-IO-TEd" secondAttribute="bottom" constant="32" id="MtH-zU-lgP"/>
                             <constraint firstItem="w8D-bD-WKw" firstAttribute="top" secondItem="GDq-n5-OBk" secondAttribute="top" constant="20" id="bQ5-y1-kqz"/>
+                            <constraint firstItem="yCw-D0-jbw" firstAttribute="leading" secondItem="GDq-n5-OBk" secondAttribute="leading" constant="67" id="d8i-lN-NOZ"/>
+                            <constraint firstItem="yCw-D0-jbw" firstAttribute="top" secondItem="gsg-IO-TEd" secondAttribute="bottom" constant="32" id="f0P-yd-KzK"/>
                             <constraint firstItem="GDq-n5-OBk" firstAttribute="trailing" secondItem="gsg-IO-TEd" secondAttribute="trailing" constant="65.5" id="pNV-Xa-ioT"/>
-                            <constraint firstItem="GDq-n5-OBk" firstAttribute="trailing" secondItem="afD-Ku-WVL" secondAttribute="trailing" constant="65.5" id="vx2-1F-Q6V"/>
-                            <constraint firstItem="GDq-n5-OBk" firstAttribute="bottom" secondItem="afD-Ku-WVL" secondAttribute="bottom" constant="20" id="wRm-uz-aeq"/>
+                            <constraint firstItem="GDq-n5-OBk" firstAttribute="trailing" secondItem="yCw-D0-jbw" secondAttribute="trailing" constant="66.5" id="pcc-NC-8Vw"/>
+                            <constraint firstItem="gsg-IO-TEd" firstAttribute="leading" secondItem="GDq-n5-OBk" secondAttribute="leading" constant="67" id="tTo-hg-6z1"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="completeDeliveryUIView" destination="sII-Tc-daO" id="cip-cu-uyA"/>
+                        <outlet property="delayDeliveryUIView" destination="aDr-8h-vzk" id="Oib-zt-0Tj"/>
+                        <outlet property="delayPercentageUIView" destination="KX1-b2-dXh" id="YaN-z7-Why"/>
+                        <outlet property="inDeliveryUIView" destination="Epj-ap-H8w" id="AMG-nf-vDW"/>
+                        <outlet property="mapUIView" destination="yCw-D0-jbw" id="cst-ho-9gU"/>
                         <outlet property="searchbarUIView" destination="w8D-bD-WKw" id="lGE-mr-GjZ"/>
                     </connections>
                 </viewController>

@@ -19,13 +19,13 @@ class StateBarUIView: UIView {
         self.title = ""
         self.content = ""
         super.init(frame: frame)
-        setup()
+//        setup()
     }
 
     // storyboard에서 만들 떄 불려진다.
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup()
+//        setup()
     }
     
     
@@ -41,10 +41,10 @@ class StateBarUIView: UIView {
     /// 만든이 : 권순형
     /// 설명 : 뷰 모양 세팅
     func viewSetup(){
+        // 각 뷰에다가 복사하기
         self.layer.cornerRadius = 10
-        
         self.addBottomShadow()
-    
+        // -----------------
     }
     
     /// 날짜 : 2023.03.24
@@ -76,11 +76,11 @@ class StateBarUIView: UIView {
         lblState.textAlignment = .center
         
         lblTitle.text = title
-        lblTitle.font = UIFont.systemFont(ofSize: CGFloat(16), weight: .medium)
+        lblTitle.font = UIFont.systemFont(ofSize: CGFloat(20), weight: .medium)
         lblTitle.textColor = .lightGray
         
         lblState.text = content
-        lblState.font = UIFont.systemFont(ofSize: CGFloat(20), weight: .bold)
+        lblState.font = UIFont.systemFont(ofSize: CGFloat(25), weight: .bold)
         lblState.textColor = .darkGray
         
         self.lblTitle = lblTitle

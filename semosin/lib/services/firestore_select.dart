@@ -30,8 +30,8 @@ class FireStoreSelect {
       shoeViewModelList.add(shoeViewModel);
       var url = await FirebaseStorage.instance
           .ref()
-          .child('신발 이미지')
-          .child(shoeViewModel.shoeImageName.substring(8))
+          // .child('신발 이미지')
+          .child(shoeViewModel.shoeImageName.substring(2))
           .getDownloadURL();
       String urlString = url.toString();
       shoeViewModelList[i].shoeImageName = urlString;
@@ -65,8 +65,8 @@ class FireStoreSelect {
 
           var url = await FirebaseStorage.instance
               .ref()
-              .child('신발 이미지')
-              .child(shoeViewModel.shoeImageName.substring(8))
+              // .child('신발 이미지')
+              .child(shoeViewModel.shoeImageName.substring(2))
               .getDownloadURL();
           String urlString = url.toString();
           shoeViewModelList[j].shoeImageName = urlString;
@@ -106,8 +106,8 @@ class FireStoreSelect {
       // print(shoeViewModel.shoeImageName.substring(8));
       var url = await FirebaseStorage.instance
           .ref()
-          .child('신발 이미지')
-          .child(shoeViewModel.shoeImageName.substring(8))
+          // .child('신발 이미지')
+          .child(shoeViewModel.shoeImageName.substring(2))
           .getDownloadURL();
       String urlString = url.toString();
       shoeViewModelList[i].shoeImageName = urlString;
@@ -151,8 +151,8 @@ class FireStoreSelect {
 
           var url = await FirebaseStorage.instance
               .ref()
-              .child('신발 이미지')
-              .child(shoeViewModel.shoeImageName.substring(8))
+              // .child('신발 이미지')
+              .child(shoeViewModel.shoeImageName.substring(2))
               .getDownloadURL();
           String urlString = url.toString();
           shoeViewModelList[j].shoeImageName = urlString;
