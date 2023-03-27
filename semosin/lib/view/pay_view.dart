@@ -7,7 +7,9 @@ import 'package:semosin/model/cart.dart';
 import 'package:semosin/model/user.dart';
 import 'package:semosin/services/firestore_pay.dart';
 import 'package:semosin/services/firestore_select.dart';
+import 'package:semosin/view/order_status.dart';
 import 'package:semosin/view/shipping_address_listview.dart';
+import 'package:semosin/view/tabbar.dart';
 import 'package:semosin/widget/address_card.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/delivery_request_card.dart';
@@ -254,18 +256,52 @@ class _PayViewState extends State<PayView> {
                 child: ElevatedButton(
                     onPressed: () {
                       // --------------------------------------------------------
-                      for (var product in widget.cartModelList) {
-                        firestorePay.setPurchaseOrders(
-                            selectedName,
-                            selectedPhone,
-                            selectedPostcode,
-                            selectedAddress,
-                            selectedAddressDetail,
-                            selectedDeliveryRequest,
-                            product.modelName,
-                            product.selectedSize,
-                            product.amount);
-                      }
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('주문결정'),
+                              content: const Text('선택하신 상품을 구매하시겠습니까?'),
+                              actions: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    TextButton(
+                                        onPressed: () {
+                                          for (var product
+                                              in widget.cartModelList) {
+                                            firestorePay.setPurchaseOrders(
+                                                selectedName,
+                                                selectedPhone,
+                                                selectedPostcode,
+                                                selectedAddress,
+                                                selectedAddressDetail,
+                                                selectedDeliveryRequest,
+                                                product.modelName,
+                                                product.selectedSize,
+                                                product.amount);
+                                          }
+                                          Navigator.of(context).pop();
+                                          payCompleted();
+                                        },
+                                        child: const Text('확인',
+                                            style: TextStyle(
+                                                color: Colors.black))),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('취소',
+                                            style:
+                                                TextStyle(color: Colors.black)))
+                                  ],
+                                )
+                              ],
+                            );
+                          });
+
+                      // payCompleted();
                     },
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.grey),
@@ -524,6 +560,61 @@ class _PayViewState extends State<PayView> {
     );
   }
 
+  /// Desc : 주문완료 Dialog
+  payCompleted() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('주문완료'),
+            content: const Text('주문이 완료되었습니다'),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        // 홈 화면 라우터 설정
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            settings: const RouteSettings(name: "/home"),
+                            builder: (context) => const ShoesTabBar(),
+                          ),
+                        );
+                        // 홈 화면까지 pop
+                        Navigator.of(context)
+                            .popUntil(ModalRoute.withName("/home"));
+                      },
+                      child: const Text(
+                        '홈으로',
+                        style: TextStyle(color: Colors.black),
+                      )),
+                  TextButton(
+                      onPressed: () {
+                        // 홈 화면 라우터 설정
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            settings: const RouteSettings(name: "/home"),
+                            builder: (context) => const ShoesTabBar(),
+                          ),
+                        );
+                        // 홈 화면까지 pop
+                        Navigator.of(context)
+                            .popUntil(ModalRoute.withName("/home"));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const OrderStatus()));
+                      },
+                      child: const Text('주문현황으로',
+                          style: TextStyle(color: Colors.black)))
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  // ---------------------- FUNCTIONS ----------------------
+
   /// Desc : 총 결제금액 계산
   /// Date : 2023.03.26
   /// Author : youngjin
@@ -564,7 +655,7 @@ class _PayViewState extends State<PayView> {
   /// Author : youngjin
   getDocumentId() async {
     final pref = await SharedPreferences.getInstance();
-    docId = pref.getString('addressId')!;
+    docId = pref.getString('addressId') ?? "";
     // print(docId);
   }
 }
