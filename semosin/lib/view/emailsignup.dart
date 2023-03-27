@@ -124,6 +124,8 @@ class _EmailSignUpState extends State<EmailSignUp> {
   sendEmailButton() {
     return emailTextController.text.trim().isNotEmpty &
             pwTextController.text.trim().isNotEmpty &
+            isValidPassword(pwTextController.text.trim()) &
+            isValidEmailFormat(emailTextController.text.trim()) &
             (checkpwTextController.text.trim() ==
                 pwTextController.text.trim()) &
             (resend == 0)
@@ -167,7 +169,17 @@ class _EmailSignUpState extends State<EmailSignUp> {
               height: 58,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                onPressed: () {},
+                onPressed: () {
+                  // 입력된 email이 정규식을 만족하지 않을 때
+                  if (!isValidEmailFormat(emailTextController.text.trim())) {
+                    showAlertRegEmailDialog();
+                    // 입력된 패스워드가 동일하지 않거나 패스워드가 정규식을 만족하지 않을 때
+                  } else if ((pwTextController.text.trim() !=
+                          checkpwTextController.text.trim()) |
+                      (!isValidPassword(pwTextController.text.trim()))) {
+                    showAlertRegPassDialog();
+                  }
+                },
                 child: const Text(
                   'Send Auth E-mail',
                   style: TextStyle(
@@ -308,8 +320,59 @@ class _EmailSignUpState extends State<EmailSignUp> {
       },
     );
   }
-  //------------------------------------------------------------------------------------
 
+  //------------------------------------------------------------------------------------
+  /// 날짜 :2023.03.17
+  /// 작성자 : 권순형
+  /// 만든이 : 권순형
+  /// 수정 : 이상혁
+  /// 내용 : 정규식적용되지 않았을 때 다이얼로그
+  /// 비고 :
+  showAlertRegPassDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("알림"),
+          content: const Text("비밀번호는 8자이상 영문 대소문자, 숫자 및 특수문자를 사용해주세요!"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('닫기'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// 날짜 :2023.03.17
+  /// 작성자 : 권순형
+  /// 만든이 : 권순형
+  /// 수정 : 이상혁
+  /// 내용 : 정규식적용되지 않았을 때 다이얼로그
+  /// 비고 :
+  showAlertRegEmailDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("알림"),
+          content: const Text("email형식에 맞춰서 입력해주세요!"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('닫기'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------
   // backend
   /// 날짜 :2023.03.16
@@ -379,6 +442,30 @@ class _EmailSignUpState extends State<EmailSignUp> {
       }
     }
     return null;
+  }
+
+  /// 날짜 : 2023.03.24
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 내용 : 비밀번호를 위한 정규식
+  /// 비고 :
+  /// 수정 :
+  bool isValidPassword(String value) {
+    return RegExp(
+            r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+        .hasMatch(value);
+  }
+
+  /// 날짜 : 2023.03.24
+  /// 작성자 : 이상혁
+  /// 만든이 : 이상혁
+  /// 내용 : 이메일을 위한 정규식
+  /// 비고 :
+  /// 수정 :
+  bool isValidEmailFormat(String value) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(value);
   }
 
   /// 날짜 :2023.03.16

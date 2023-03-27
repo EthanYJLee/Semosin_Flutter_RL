@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -56,8 +55,8 @@ class FirestoreUpdate {
     String? email = pref.getString('saemosinemail');
     final db = FirebaseFirestore.instance;
     final docRef = db.collection("users").doc(email);
-    print(email);
-    print(password);
+    // print(email);
+    // print(password);
     docRef.update({"password": password});
     docRef.get().then(
           (value) => {print('바뀐패스워드:' + value['password'])},
@@ -75,20 +74,22 @@ class FirestoreUpdate {
     String? email = pref.getString('saemosinemail');
     final db = FirebaseFirestore.instance;
     final docRef = db.collection("users").doc(email);
-    print(email);
-    print(address);
-    print(detailAddress);
-    print(postCode);
-    docRef.update({"address": address});
-    docRef.update({"addressDetail": detailAddress});
-    docRef.update({"postcode": postCode});
-    docRef.get().then(
-          (value) => {
-            print('바뀐주소:' + value['address']),
-            print('바뀐상세주소:' + value['detailaddress']),
-            print('바뀐우편번호:' + value['postcode']),
-          },
-        );
+    // print(email);
+    // print(address);
+    // print(detailAddress);
+    // print(postCode);
+    docRef.update({
+      "address": address,
+      "addressDetail": detailAddress,
+      "postcode": postCode
+    });
+    // docRef.get().then(
+    //       (value) => {
+    //         print('바뀐주소:' + value['address']),
+    //         print('바뀐상세주소:' + value['detailaddress']),
+    //         print('바뀐우편번호:' + value['postcode']),
+    //       },
+    //     );
   }
 
   /// 날짜 : 2023.03.23

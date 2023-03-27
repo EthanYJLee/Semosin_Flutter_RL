@@ -483,6 +483,7 @@ class _SignupState extends State<Signup> {
   /// 만든이 : 신오수
   /// 내용 : Kpostal openAPI 이용하여 주소 정보 가져오기
   /// 수정사항 : 예외 처리
+  /// 주소 입력창에서 입력없이 돌아왔을 때(result 값이 없을 때) 생기는 예외처리 추가함(상혁)
   takeAddress() async {
     Kpostal result = await Navigator.push(
         context,
@@ -490,8 +491,10 @@ class _SignupState extends State<Signup> {
           builder: (_) => KpostalView(),
         ));
     setState(() {
-      addressTextController.text = result.address;
-      postcodeTextController.text = result.postCode;
+      if (result != null) {
+        addressTextController.text = result.address;
+        postcodeTextController.text = result.postCode;
+      }
     });
   }
 
