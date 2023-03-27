@@ -594,18 +594,20 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        if (availableQuantity != null) {
-                                          if (productCount >
-                                              int.parse(availableQuantity!)) {
-                                            checkQuantities('잔여수량을 확인해주세요');
-                                          }
-                                        }
                                         if (selectedSize != null) {
-                                          addToCart(
-                                              widget.modelName,
-                                              productCount,
-                                              int.parse(snapshot.data!.price),
-                                              int.parse(selectedSize!));
+                                          if (availableQuantity != null) {
+                                            if (productCount >
+                                                int.parse(availableQuantity!)) {
+                                              checkQuantities('잔여수량을 확인해주세요');
+                                            } else {
+                                              addToCart(
+                                                  widget.modelName,
+                                                  productCount,
+                                                  int.parse(
+                                                      snapshot.data!.price),
+                                                  int.parse(selectedSize!));
+                                            }
+                                          }
                                         } else {
                                           checkQuantities('사이즈를 선택해주세요');
                                         }
@@ -628,18 +630,20 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        if (availableQuantity != null) {
-                                          if (productCount >
-                                              int.parse(availableQuantity!)) {
-                                            checkQuantities('잔여수량을 확인해주세요');
-                                          }
-                                        }
                                         if (selectedSize != null) {
-                                          checkOut(
-                                              widget.modelName,
-                                              productCount,
-                                              int.parse(snapshot.data!.price),
-                                              int.parse(selectedSize!));
+                                          if (availableQuantity != null) {
+                                            if (productCount >
+                                                int.parse(availableQuantity!)) {
+                                              checkQuantities('잔여수량을 확인해주세요');
+                                            } else {
+                                              checkOut(
+                                                  widget.modelName,
+                                                  productCount,
+                                                  int.parse(
+                                                      snapshot.data!.price),
+                                                  int.parse(selectedSize!));
+                                            }
+                                          }
                                         } else {
                                           checkQuantities('사이즈를 선택해주세요');
                                         }
