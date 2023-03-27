@@ -65,12 +65,15 @@ class _ImageUploadState extends State<ImageUpload> {
     await _showAccessDialog(context!,
         (double? maxWidth, double? maxHeight, int? quality) async {
       try {
+        print(1);
         final XFile? pickedFile = await _picker.pickImage(
           source: source,
           maxWidth: maxWidth,
           maxHeight: maxHeight,
           imageQuality: quality,
         );
+        print(2);
+
         setState(() {
           _setImageFromFile(pickedFile);
         });

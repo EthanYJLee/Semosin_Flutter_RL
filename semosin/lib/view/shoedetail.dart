@@ -1,8 +1,12 @@
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:semosin/services/firestore_update.dart';
 import 'package:semosin/services/shoes_info.dart';
+import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view/pay_view.dart';
+import 'package:semosin/view/tabbar.dart';
 import 'package:semosin/view_model/image_path_view_model.dart';
 import 'package:semosin/widget/card_dialog.dart';
 import 'package:semosin/widget/popup_card.dart';
@@ -57,6 +61,10 @@ class _ShoeDetailState extends State<ShoeDetail> {
   ShoesInfo shoesInfo = ShoesInfo();
   // 이미지 경로 뷰모델
   late ImagePathViewModel imagePathViewModel;
+
+  // 가격 표시 formatting
+  final formatCurrency =
+      NumberFormat.simpleCurrency(locale: "ko_KR", name: "", decimalDigits: 0);
 
   // ------------------------------------------------------------------------------------------
   // front
@@ -303,11 +311,11 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                                           },
                                                           icon: Icon(
                                                             bookmark
-                                                                ? Icons
-                                                                    .bookmark_outlined
-                                                                : Icons
-                                                                    .bookmark_outline,
-                                                            size: 44,
+                                                                ? CupertinoIcons
+                                                                    .heart_fill
+                                                                : CupertinoIcons
+                                                                    .heart,
+                                                            size: 35,
                                                           ),
                                                         ),
                                                       ),
@@ -385,7 +393,7 @@ class _ShoeDetailState extends State<ShoeDetail> {
                                             height: 3,
                                           ),
                                           Text(
-                                            '${snapshot.data!.price}원',
+                                            '${formatCurrency.format(int.parse(snapshot.data!.price))}원',
                                             style: const TextStyle(
                                               fontSize: 20,
                                             ),
@@ -897,6 +905,9 @@ class _ShoeDetailState extends State<ShoeDetail> {
   /// Desc : 장바구니 다이어로그창
   /// Date : 2023.03.20
   /// Author : 이성연
+  ///   - Modify & Addtion
+  ///   - 2023.03.24
+  ///   - Hosik
   void addToCart(String model, int count, int price, int size) {
     if (selectedSize == null) {
       showDialog(
@@ -961,23 +972,32 @@ class _ShoeDetailState extends State<ShoeDetail> {
               ),
               onPressed: () {
                 // ------------------------------------------------
-                // FireStoreInsert fireStoreInsert = FireStoreInsert();
-                // fireStoreInsert.insertIntoCart(
-                //     model, imagePathViewModel.imagePath[0], size, price, count);
-                // Navigator.of(context).pop();
-                // showDialog(
-                //     context: context,
-                //     builder: (context) {
-                //       return AlertDialog(
-                //         title: const Text('상품이 장바구니에 담겼습니다'),
-                //         actions: [
-                //           TextButton(
-                //               onPressed: () {}, child: const Text('홈으로')),
-                //           TextButton(
-                //               onPressed: () {}, child: const Text('장바구니로 이동'))
-                //         ],
-                //       );
-                //     });
+                insertCart(true, model, widget.brandName, size, count, price,
+                    imagePathViewModel.imagePath[0]);
+                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('상품이 장바구니에 담겼습니다'),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('홈으로')),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const CartView()));
+                              },
+                              child: const Text('장바구니로 이동'))
+                        ],
+                      );
+                    });
               },
             ),
           ],
@@ -1053,9 +1073,19 @@ class _ShoeDetailState extends State<ShoeDetail> {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                // ------------------------------------------------
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => PayView()));
+                insertCart(true, model, widget.brandName, size, count, price,
+                    imagePathViewModel.imagePath[0]);
+                // 홈 화면 라우터 설정
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    settings: const RouteSettings(name: "/home"),
+                    builder: (context) => const ShoesTabBar(),
+                  ),
+                );
+                // 홈 화면까지 pop
+                Navigator.of(context).popUntil(ModalRoute.withName("/home"));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const CartView()));
               },
             ),
           ],
@@ -1085,12 +1115,21 @@ class _ShoeDetailState extends State<ShoeDetail> {
         imagePathViewModel = ImagePathViewModel(imagePath: pathList);
       });
     }
-  }
+  } // getImageURL END
 
   Future<void> checkFavorite() async {
     bool result = await FireStoreFavorite().isFavorite(widget.modelName);
     setState(() {
       bookmark = result;
     });
+  } // checkFavorite END
+
+// Hosik Add
+// Firebase DB Insert
+  Future<void> insertCart(
+      cartStatus, modelName, brandName, size, amount, price, shoesimage) async {
+    FireStoreInsert fireStoreInsert = FireStoreInsert();
+    fireStoreInsert.insertCart(
+        cartStatus, modelName, brandName, size, amount, price, shoesimage);
   }
 }

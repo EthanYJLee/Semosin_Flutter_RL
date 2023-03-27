@@ -9,6 +9,7 @@ class Cart {
   String color;
   final String initDate;
   final String documentId;
+  int shoesAmount;
 
   Cart(
       {required this.cartStatus,
@@ -20,7 +21,8 @@ class Cart {
       required this.image,
       required this.color,
       required this.initDate,
-      required this.documentId});
+      required this.documentId,
+      required this.shoesAmount});
 
   Cart.fromJson(Map<String, dynamic> json)
       // : cartStatus = json['cartStatus'].toString(),
@@ -33,5 +35,7 @@ class Cart {
         image = json['image'].toString(),
         color = json['color'].toString(),
         initDate = json['initDate'].toString(),
-        documentId = json['documentId'].toString();
+        documentId = json['documentId'].toString(),
+        // shoeAmount = int.parse(json['shoeAmount'].toString());
+        shoesAmount = int.parse(json['shoesAmount'].toString());
 }

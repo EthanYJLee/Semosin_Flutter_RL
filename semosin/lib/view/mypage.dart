@@ -16,11 +16,14 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   FireStoreSelect userInfo = FireStoreSelect();
   late SharedPreferences pref;
+  late TextEditingController passwordTextController;
 
   @override
   void initState() {
     super.initState();
     sharedPreference();
+
+    passwordTextController = TextEditingController();
   }
 
   @override
@@ -94,11 +97,12 @@ class _MyPageState extends State<MyPage> {
             splashFactory: NoSplash.splashFactory,
           ),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: (context) {
-                return UserInfoPage();
-              },
-            ));
+            // Navigator.push(context, MaterialPageRoute(
+            //   builder: (context) {
+            //     return UserInfoPage();
+            //   },
+            // ));
+            _showPasswordCheckDialog(context);
             print('btnInfoUpdate onTap');
           },
           child: const Text(
@@ -285,6 +289,138 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
+  /// Desc : 패스워드 변경 Alert Dialog
+  /// Date : 2023.03.21
+  /// Modified : sanghyuk
+  Future<void> _showPasswordCheckDialog(
+    BuildContext context,
+  ) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('회원정보 수정'),
+            content: const Text('패스워드를 입력하세요'),
+            actions: [
+              // 현재비밀번호 tf
+              textFormField(passwordTextController, null, false,
+                  TextInputType.text, true, 'Password', null, null),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                    onPressed: () {
+                      final prefPw = pref.getString("saemosinpassword") ?? "0";
+                      if (passwordTextController.text == prefPw) {
+                        passwordTextController.text = "";
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return const UserInfoPage();
+                          },
+                        ));
+                      } else {
+                        //print('Password Change Failed');
+                        _errorPasswordDialog(context, "비밀번호가 틀렸습니다!");
+                        //Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                  TextButton(
+                      child: const Text(
+                        '취소',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      }),
+                ],
+              ),
+            ],
+          );
+        });
+  }
+
+  // child widget
+  /// 날짜 : 2023.03.14
+  /// 작성자 : 신오수
+  /// 만든이 : 신오수
+  /// 수정이 : 권순형 , 이영진
+  /// 내용 : sign up에 사용되는 textField
+  /// 비고 : obscureText를 추가함(상혁)
+  textFormField(controller, focusNode, readOnly, keyboardType, obscureText,
+      label, inputFormatters, onChanged) {
+    return SizedBox(
+      width: 290,
+      height: 80,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          readOnly: readOnly,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            label: Text(label),
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                width: 1,
+                color: Colors.grey,
+              ),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                width: 1,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          inputFormatters: inputFormatters,
+          onChanged: (value) {
+            onChanged;
+            setState(() {});
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _errorPasswordDialog(
+    BuildContext context,
+    String message,
+  ) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(message),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context, "OK");
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
   // Widget End ------------------------
 
   // Function Start ----------------------

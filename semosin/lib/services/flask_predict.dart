@@ -21,6 +21,7 @@ class FlaskPredict {
     request.headers.addAll(headers);
     var resp = await request.send();
     http.Response response = await http.Response.fromStream(resp);
+
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
 
     return [dataConvertedJSON['result'], dataConvertedJSON['error']];

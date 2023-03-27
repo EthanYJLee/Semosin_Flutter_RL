@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:semosin/main.dart';
 import 'package:semosin/view/cartview.dart';
 import 'package:semosin/view/findshoes.dart';
-import 'package:semosin/view/hosik_insert_test.dart';
 import 'package:semosin/view/image_upload.dart';
 import 'package:semosin/view/mypage.dart';
 import 'package:semosin/view/shoeslist.dart';
