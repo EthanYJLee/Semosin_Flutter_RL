@@ -110,4 +110,20 @@ class FirestoreUpdate {
           (value) => {print('입력된 deleteDate:' + value['deletedate'])},
         );
   }
+
+  changeDeliveryInfo(
+    String address,
+    String detailAddress,
+    String postCode,
+  ) async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+    final db = FirebaseFirestore.instance;
+    final docRef = db.collection("users").doc(email);
+    docRef.update({
+      "address": address,
+      "addressDetail": detailAddress,
+      "postcode": postCode,
+    });
+  }
 }

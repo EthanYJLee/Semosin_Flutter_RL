@@ -17,4 +17,19 @@ class FireStoreDelete {
         .doc(modelName)
         .delete();
   }
+
+  /// 날짜 :2023.03.23
+  /// 만든이 : Hosik
+  /// 내용 : Delete Cart
+  deleteCart(documentId) async {
+    final pref = await SharedPreferences.getInstance();
+    String? email = pref.getString('saemosinemail');
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(email)
+        .collection('carts')
+        .doc(documentId)
+        .delete();
+  }
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:semosin/model/cart.dart';
 import 'package:semosin/model/favorites.dart';
+import 'package:semosin/model/shoe.dart';
 import 'package:semosin/model/user.dart';
 import 'package:semosin/view_model/shoe_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -418,6 +419,33 @@ class FireStoreSelect {
       Cart cart = Cart.fromJson(map);
       cartList.add(cart);
     }
+
     return cartList;
   } //select cart end
+
+  // select shoes
+  // 작성자 : 호식
+  Future<Shoe> selectModelNameData(String modelName) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('shoes')
+        .where('model', isEqualTo: modelName)
+        .get();
+
+    Map<String, dynamic> data =
+        querySnapshot.docs[0].data() as Map<String, dynamic>;
+
+    Shoe _selectedShoe = Shoe.fromJson(data);
+
+    return _selectedShoe;
+  }
+
+  // 신발모델 이름으로 amount 값 가져오기
+  // 작성자 : 호식
+  Future countShoesAmount(String getShoeModelName, String size) async {
+    FireStoreSelect shoesAmount = FireStoreSelect();
+    Shoe map = await shoesAmount.selectModelNameData(getShoeModelName);
+    int shoeAmount = int.parse(map.sizes[size].toString());
+
+    return shoeAmount;
+  }
 }//FireStoreSelect End
