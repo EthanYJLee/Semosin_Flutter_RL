@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:semosin/main.dart';
+import 'package:semosin/services/firestore_select.dart';
 import 'package:semosin/widget/myappbar.dart';
 
 class OrderStatus extends StatefulWidget {
@@ -24,48 +25,12 @@ class _OrderStatusState extends State<OrderStatus> {
         child: Column(
           children: [
             // 배송현황 ----------------------------------------------------
-            Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  orderStatus(
-                    iconData: Icons.flutter_dash_outlined,
-                    status: "전체",
-                    counts: 9,
-                  ),
-                  const Icon(Icons.arrow_forward),
-                  orderStatus(
-                    iconData: Icons.receipt_long_outlined,
-                    status: "주문확인",
-                    counts: 3,
-                  ),
-                  const Icon(Icons.arrow_forward),
-                  orderStatus(
-                    iconData: Icons.local_shipping_outlined,
-                    status: "배송중",
-                    counts: 3,
-                  ),
-                  const Icon(Icons.arrow_forward),
-                  orderStatus(
-                    iconData: Icons.home_outlined,
-                    status: "배송완료",
-                    counts: 99,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
+            orderStatuss(),
             // 날짜 -------------------------------------------------------------
             orderDate(),
-            const SizedBox(
-              height: 6,
-            ),
             // listview---------------------------------------------------------
             SizedBox(
-              height: 650,
+              height: 640,
               width: 360,
               child: orderListView(),
             ),
@@ -76,6 +41,54 @@ class _OrderStatusState extends State<OrderStatus> {
   }
 
   // -----------------------------------Widget----------------------------------
+
+  // 배송현황 정리한 위젯
+  Widget orderStatuss() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 9,
+            child: orderStatus(
+              iconData: Icons.flutter_dash_outlined,
+              status: "전체",
+              counts: 9,
+            ),
+          ),
+          const Expanded(flex: 3, child: Icon(Icons.arrow_forward)),
+          Expanded(
+            flex: 9,
+            child: orderStatus(
+              iconData: Icons.receipt_long_outlined,
+              status: "주문확인",
+              counts: 3,
+            ),
+          ),
+          const Expanded(flex: 3, child: Icon(Icons.arrow_forward)),
+          Expanded(
+            flex: 9,
+            child: orderStatus(
+              iconData: Icons.local_shipping_outlined,
+              status: "배송중",
+              counts: 3,
+            ),
+          ),
+          const Expanded(flex: 3, child: Icon(Icons.arrow_forward)),
+          Expanded(
+            flex: 9,
+            child: orderStatus(
+              iconData: Icons.home_outlined,
+              status: "배송완료",
+              counts: 99,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // 배송현황 위젯
   Widget orderStatus(
       {required IconData iconData,
@@ -93,8 +106,8 @@ class _OrderStatusState extends State<OrderStatus> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: clickStatus == status
-              ? Color.fromARGB(133, 73, 73, 73)
-              : Color.fromARGB(255, 221, 221, 221),
+              ? const Color.fromARGB(133, 73, 73, 73)
+              : const Color.fromARGB(255, 221, 221, 221),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -162,7 +175,7 @@ class _OrderStatusState extends State<OrderStatus> {
                   padding: const EdgeInsets.only(right: 18),
                   child: GestureDetector(
                     onTap: () {
-                      print("x");
+                      //
                     },
                     child: const Text(
                       "X",
@@ -179,13 +192,13 @@ class _OrderStatusState extends State<OrderStatus> {
 // 제품 리스트 위젯
   Widget orderListView() {
     return ListView.builder(
-      itemCount: 15,
+      itemCount: 5,
       itemBuilder: (BuildContext context, int index) {
         return Card(
           margin: const EdgeInsets.all(5.0),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          color: Color.fromARGB(255, 241, 241, 241),
+          color: const Color.fromARGB(255, 241, 241, 241),
           child: Row(
             children: [
               Padding(
@@ -242,7 +255,7 @@ class _OrderStatusState extends State<OrderStatus> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            print("주문취소");
+                            //
                           },
                           child: const Text(
                             "주문취소",

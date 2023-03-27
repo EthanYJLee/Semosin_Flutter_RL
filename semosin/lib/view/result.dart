@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:semosin/view/image_upload.dart';
+import 'package:semosin/view/shoedetail.dart';
 import 'package:semosin/view/tabbar.dart';
 
 import '../services/flask_predict.dart';
@@ -21,6 +22,7 @@ class Result extends StatefulWidget {
 class _ResultState extends State<Result> with TickerProviderStateMixin {
   late String result = '';
   late AnimationController controller;
+  String errorReult = "입력하신 이미지가 상당히 잘못 되었습니다.";
   @override
   void initState() {
     // TODO: implement initState
@@ -139,9 +141,7 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                result == "입력하신 이미지가 상당히 잘못 되었습니다."
-                    ? "입력하신 이미지가 상당히 잘못 되었습니다."
-                    : "해당 이미지는 $result 입니다.",
+                result == errorReult ? errorReult : "해당 이미지는 $result 입니다.",
                 style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
@@ -175,15 +175,29 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
                   const SizedBox(
                     width: 10,
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                    ),
-                    onPressed: () {
-                      //
-                    },
-                    child: const Text("제품 보러가기"),
-                  ),
+                  result == errorReult
+                      ? ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("닫기"),
+                        )
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                          ),
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return ShoeDetail(
+                                  modelName: "갤럭시 6", brandName: "", price: 0);
+                            }));
+                          },
+                          child: const Text("제품 보러가기"),
+                        ),
                 ],
               ),
             ),
@@ -205,7 +219,7 @@ class _ResultState extends State<Result> with TickerProviderStateMixin {
 
     if (flaskResult[1]) {
       setState(() {
-        result = "입력하신 이미지가 상당히 잘못 되었습니다.";
+        result = errorReult;
       });
     } else {
       setState(() {

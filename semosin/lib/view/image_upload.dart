@@ -92,37 +92,6 @@ class _ImageUploadState extends State<ImageUpload> {
     });
   }
 
-  /// Desc : Photos / Camera 접근 전 Alert Dialog
-  /// Date : 2023.03.16
-  /// Authot : youngjin
-  // Future<void> _showAccessDialog(
-  //     BuildContext context, ImageSizeCallback imageSize) async {
-  //   return showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: const Text('이미지 선택'),
-  //           actions: <Widget>[
-  //             TextButton(
-  //               child: const Text('취소'),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //             ),
-  //             TextButton(
-  //                 child: const Text('선택'),
-  //                 onPressed: () {
-  //                   // imageSize(128, 128, null);
-  //                   /// [수정] 우선 크게 보여주고 다음 화면에서 예측할 때 resize하는 것으로 변경
-  //                   /// Date : 2023.03.16
-  //                   imageSize(300, 300, null);
-  //                   Navigator.of(context).pop();
-  //                 }),
-  //           ],
-  //         );
-  //       });
-  // }
-
   // 바로 갤러리로 이동할 수 있게 밑에 있는 코드로 바꿔줌
 
   Future<void> _showAccessDialog(
@@ -137,10 +106,13 @@ class _ImageUploadState extends State<ImageUpload> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("이미지 오류"),
-          content: const Text("다른 사진을 선택해주세요"),
+          content: const Text("png 이미지는 사용하실 수 없습니다\njpg 이미지를 사용해 주세요."),
           actions: [
             TextButton(
-              child: const Text("확인"),
+              child: const Text(
+                "확인",
+                style: TextStyle(color: Colors.black),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
