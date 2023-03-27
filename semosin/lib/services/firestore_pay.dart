@@ -217,7 +217,7 @@ class FirestorePay {
   /// Author : youngjin
   Future<String> getDocumentId() async {
     final pref = await SharedPreferences.getInstance();
-    String docId = pref.getString('addressId')!;
+    String docId = pref.getString('addressId') ?? "";
     return docId;
   }
 

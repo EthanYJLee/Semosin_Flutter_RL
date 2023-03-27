@@ -251,7 +251,13 @@ class _ShoesListState extends State<ShoesList> with TickerProviderStateMixin {
                                                     .data![index].shoeBrandName,
                                                 price: snapshot
                                                     .data![index].shoePrice,
-                                              )));
+                                              ))).then((value) {
+                                    setState(() {
+                                      myList = [];
+                                      allStreamList(null);
+                                      getBrandDataLength();
+                                    });
+                                  });
                                 },
                                 child: Row(
                                   children: [
