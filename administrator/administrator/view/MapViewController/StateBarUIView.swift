@@ -8,7 +8,7 @@
 import UIKit
 
 class StateBarUIView: UIView {
-
+    
     @IBOutlet weak var lblTitle:UILabel!
     @IBOutlet weak var lblState:UILabel!
     
